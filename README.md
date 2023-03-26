@@ -12,8 +12,11 @@ la interfaz del usuario en términos de usabilidad, al igual que se implementar�
 ## Lineamientos técnicos
 
 ***FrontEnd:*** React (JavaScript)
+
 ***BackEnd:*** SpringBoot (Java)
+
 ***BD:*** MySQL
+
 ***Arquitectura:*** REST microservicios
 
 ## Integrantes:
