@@ -22,9 +22,14 @@ la interfaz del usuario en términos de usabilidad, al igual que se implementar�
 ## Integrantes:
 
 ***- Andrés Rubiano (Líder)***
+
 ***- Arnold Steeven Catamuscay Pérez (Developer)***
+
 ***- Cristian Eduardo Núñez Valencia (Developer)***
+
 ***- Daniel Mauricio Cisneros Silva (Tester)***
+
 ***- José Gregorio Narváez Alarcon (Tester)***
+
 ***- Daniel Contreras (QA)***
 
