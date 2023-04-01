@@ -4,9 +4,7 @@
 
 <Workspace>
 	<Local Expanded="Yes">
-		<Model Expanded="Yes" ID="{16B422C3-744F-4855-8260-2EC72B907337}" Loaded="No" Name="Base de datos Proyecto I" Type="{FF4B6538-9856-42CF-B9B9-304ED370CEAA}" URL="Base de datos Proyecto I.prj"/>
-		<Model Expanded="Yes" ID="{16B422C3-744F-4855-8260-2EC72B907337}" Loaded="No" Name="Base de datos Proyecto I" Type="{FF4B6538-9856-42CF-B9B9-304ED370CEAA}" URL="Base de datos Proyecto I.prj"/>
-		<Model Expanded="Yes" ID="{16B422C3-744F-4855-8260-2EC72B907337}" Name="Base de datos Proyecto I" Type="{FF4B6538-9856-42CF-B9B9-304ED370CEAA}" URL="Base de datos Proyecto I.prj"/>
+		<Model ID="{16B422C3-744F-4855-8260-2EC72B907337}" Name="Base de datos Proyecto I" Selected="Yes" Type="{FF4B6538-9856-42CF-B9B9-304ED370CEAA}" URL="Base de datos Proyecto I.prj"/>
 	</Local>
 	<BrowserModule Name="Repository"/>
 </Workspace>
