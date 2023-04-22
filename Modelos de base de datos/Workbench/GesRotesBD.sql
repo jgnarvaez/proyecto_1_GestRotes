@@ -26,7 +26,7 @@ CREATE TABLE IF NOT EXISTS `mydb`.`tbl_departamento` (
   `dept_id` INT NOT NULL AUTO_INCREMENT,
   `dept_nombre` VARCHAR(30) NULL,
   PRIMARY KEY (`dept_id`),
-  UNIQUE INDEX `dept_id_UNIQUE` (`dept_id` ASC) VISIBLE)
+  UNIQUE INDEX `dept_id_UNIQUE` (`dept_id` ASC))
 ENGINE = InnoDB;
 
 
@@ -39,7 +39,7 @@ CREATE TABLE IF NOT EXISTS `mydb`.`tbl_ciudad` (
   `ciu_id` INT NOT NULL AUTO_INCREMENT,
   `ciu_nombre` VARCHAR(30) NULL,
   PRIMARY KEY (`ciu_id`),
-  UNIQUE INDEX `ciu_id_UNIQUE` (`ciu_id` ASC) VISIBLE)
+  UNIQUE INDEX `ciu_id_UNIQUE` (`ciu_id` ASC))
 ENGINE = InnoDB;
 
 
@@ -55,9 +55,9 @@ CREATE TABLE IF NOT EXISTS `mydb`.`tbl_direccion` (
   `dept_id` INT NOT NULL,
   `ciu_id` INT NOT NULL,
   PRIMARY KEY (`dir_id`, `dept_id`, `ciu_id`),
-  UNIQUE INDEX `dir_id_UNIQUE` (`dir_id` ASC) VISIBLE,
-  INDEX `fk_tbl_direccion_tbl_departamento1_idx` (`dept_id` ASC) VISIBLE,
-  INDEX `fk_tbl_direccion_tbl_ciudad1_idx` (`ciu_id` ASC) VISIBLE,
+  UNIQUE INDEX `dir_id_UNIQUE` (`dir_id` ASC) ,
+  INDEX `fk_tbl_direccion_tbl_departamento1_idx` (`dept_id` ASC) ,
+  INDEX `fk_tbl_direccion_tbl_ciudad1_idx` (`ciu_id` ASC) ,
   CONSTRAINT `fk_tbl_direccion_tbl_departamento1`
     FOREIGN KEY (`dept_id`)
     REFERENCES `mydb`.`tbl_departamento` (`dept_id`)
@@ -84,8 +84,8 @@ CREATE TABLE IF NOT EXISTS `mydb`.`tbl_acudiente` (
   `acu_numero` BIGINT(10) NULL,
   `dir_id` INT NOT NULL,
   PRIMARY KEY (`acu_id`, `dir_id`),
-  UNIQUE INDEX `acu_id_UNIQUE` (`acu_id` ASC) VISIBLE,
-  INDEX `fk_tbl_acudiente_tbl_direccion1_idx` (`dir_id` ASC) VISIBLE,
+  UNIQUE INDEX `acu_id_UNIQUE` (`acu_id` ASC) ,
+  INDEX `fk_tbl_acudiente_tbl_direccion1_idx` (`dir_id` ASC) ,
   CONSTRAINT `fk_tbl_acudiente_tbl_direccion1`
     FOREIGN KEY (`dir_id`)
     REFERENCES `mydb`.`tbl_direccion` (`dir_id`)
@@ -104,9 +104,9 @@ CREATE TABLE IF NOT EXISTS `mydb`.`tbl_lugar_nac` (
   `ciu_id` INT NOT NULL,
   `dept_id` INT NOT NULL,
   PRIMARY KEY (`lnac_id`, `ciu_id`, `dept_id`),
-  UNIQUE INDEX `lnac_id_UNIQUE` (`lnac_id` ASC) VISIBLE,
-  INDEX `fk_tbl_lugar_nac_tbl_ciudad1_idx` (`ciu_id` ASC) VISIBLE,
-  INDEX `fk_tbl_lugar_nac_tbl_departamento1_idx` (`dept_id` ASC) VISIBLE,
+  UNIQUE INDEX `lnac_id_UNIQUE` (`lnac_id` ASC) ,
+  INDEX `fk_tbl_lugar_nac_tbl_ciudad1_idx` (`ciu_id` ASC) ,
+  INDEX `fk_tbl_lugar_nac_tbl_departamento1_idx` (`dept_id` ASC) ,
   CONSTRAINT `fk_tbl_lugar_nac_tbl_ciudad1`
     FOREIGN KEY (`ciu_id`)
     REFERENCES `mydb`.`tbl_ciudad` (`ciu_id`)
@@ -129,7 +129,7 @@ CREATE TABLE IF NOT EXISTS `mydb`.`tbl_programa` (
   `prog_id` INT NOT NULL AUTO_INCREMENT,
   `prog_nombre` VARCHAR(30) NULL,
   PRIMARY KEY (`prog_id`),
-  UNIQUE INDEX `prog_id_UNIQUE` (`prog_id` ASC) VISIBLE)
+  UNIQUE INDEX `prog_id_UNIQUE` (`prog_id` ASC) )
 ENGINE = InnoDB;
 
 
@@ -157,12 +157,12 @@ CREATE TABLE IF NOT EXISTS `mydb`.`tbl_persona_universitaria` (
   `lnac_id` INT NOT NULL,
   `prog_id` INT NOT NULL,
   PRIMARY KEY (`pu_id`, `dir_id`, `acu_id`, `lnac_id`, `prog_id`),
-  UNIQUE INDEX `pu_id_UNIQUE` (`pu_id` ASC) VISIBLE,
-  UNIQUE INDEX `pu_identificacion_UNIQUE` (`pu_identificacion` ASC) VISIBLE,
-  INDEX `fk_tbl_persona_universitaria_tbl_direccion1_idx` (`dir_id` ASC) VISIBLE,
-  INDEX `fk_tbl_persona_universitaria_tbl_acudiente1_idx` (`acu_id` ASC) VISIBLE,
-  INDEX `fk_tbl_persona_universitaria_tbl_lugar_nac1_idx` (`lnac_id` ASC) VISIBLE,
-  INDEX `fk_tbl_persona_universitaria_tbl_programa1_idx` (`prog_id` ASC) VISIBLE,
+  UNIQUE INDEX `pu_id_UNIQUE` (`pu_id` ASC) ,
+  UNIQUE INDEX `pu_identificacion_UNIQUE` (`pu_identificacion` ASC) ,
+  INDEX `fk_tbl_persona_universitaria_tbl_direccion1_idx` (`dir_id` ASC) ,
+  INDEX `fk_tbl_persona_universitaria_tbl_acudiente1_idx` (`acu_id` ASC) ,
+  INDEX `fk_tbl_persona_universitaria_tbl_lugar_nac1_idx` (`lnac_id` ASC) ,
+  INDEX `fk_tbl_persona_universitaria_tbl_programa1_idx` (`prog_id` ASC) ,
   CONSTRAINT `fk_tbl_persona_universitaria_tbl_direccion1`
     FOREIGN KEY (`dir_id`)
     REFERENCES `mydb`.`tbl_direccion` (`dir_id`)
@@ -230,7 +230,7 @@ CREATE TABLE IF NOT EXISTS `mydb`.`tbl_vacuna` (
   `vac_lote` VARCHAR(15) NULL,
   `vac_fecha` DATE NULL,
   PRIMARY KEY (`vac_id`),
-  UNIQUE INDEX `vac_id_UNIQUE` (`vac_id` ASC) VISIBLE)
+  UNIQUE INDEX `vac_id_UNIQUE` (`vac_id` ASC) )
 ENGINE = InnoDB;
 
 
@@ -243,8 +243,8 @@ CREATE TABLE IF NOT EXISTS `mydb`.`tbl_vacuna_persona_universitaria` (
   `vac_id` INT NOT NULL,
   `pu_id` INT NOT NULL,
   PRIMARY KEY (`vac_id`, `pu_id`),
-  INDEX `fk_tbl_vacuna_has_tbl_persona_universitaria_tbl_persona_uni_idx` (`pu_id` ASC) VISIBLE,
-  INDEX `fk_tbl_vacuna_has_tbl_persona_universitaria_tbl_vacuna1_idx` (`vac_id` ASC) VISIBLE,
+  INDEX `fk_tbl_vacuna_has_tbl_persona_universitaria_tbl_persona_uni_idx` (`pu_id` ASC) ,
+  INDEX `fk_tbl_vacuna_has_tbl_persona_universitaria_tbl_vacuna1_idx` (`vac_id` ASC) ,
   CONSTRAINT `fk_tbl_vacuna_has_tbl_persona_universitaria_tbl_vacuna1`
     FOREIGN KEY (`vac_id`)
     REFERENCES `mydb`.`tbl_vacuna` (`vac_id`)
@@ -269,8 +269,8 @@ CREATE TABLE IF NOT EXISTS `mydb`.`tbl_datos_generales` (
   `dg_estado` TINYINT NULL,
   `pu_id` INT NOT NULL,
   PRIMARY KEY (`dg_id`, `pu_id`),
-  UNIQUE INDEX `dg_id_UNIQUE` (`dg_id` ASC) VISIBLE,
-  INDEX `fk_tbl_datos_generales_tbl_persona_universitaria1_idx` (`pu_id` ASC) VISIBLE,
+  UNIQUE INDEX `dg_id_UNIQUE` (`dg_id` ASC) ,
+  INDEX `fk_tbl_datos_generales_tbl_persona_universitaria1_idx` (`pu_id` ASC) ,
   CONSTRAINT `fk_tbl_datos_generales_tbl_persona_universitaria1`
     FOREIGN KEY (`pu_id`)
     REFERENCES `mydb`.`tbl_persona_universitaria` (`pu_id`)
@@ -291,7 +291,7 @@ CREATE TABLE IF NOT EXISTS `mydb`.`tbl_formacion_academica` (
   `fac_diploma` VARCHAR(150) NULL,
   `fac_institucion` VARCHAR(30) NULL,
   PRIMARY KEY (`fac_id`),
-  UNIQUE INDEX `fac_id_UNIQUE` (`fac_id` ASC) VISIBLE)
+  UNIQUE INDEX `fac_id_UNIQUE` (`fac_id` ASC) )
 ENGINE = InnoDB;
 
 
@@ -306,8 +306,8 @@ CREATE TABLE IF NOT EXISTS `mydb`.`tbl_produccion_intelectual` (
   `pi_finalizado` TINYINT NULL,
   `ciu_id` INT NOT NULL,
   PRIMARY KEY (`pi_id`, `ciu_id`),
-  UNIQUE INDEX `pi_id_UNIQUE` (`pi_id` ASC) VISIBLE,
-  INDEX `fk_tbl_produccion_intelectual_tbl_ciudad1_idx` (`ciu_id` ASC) VISIBLE,
+  UNIQUE INDEX `pi_id_UNIQUE` (`pi_id` ASC) ,
+  INDEX `fk_tbl_produccion_intelectual_tbl_ciudad1_idx` (`ciu_id` ASC) ,
   CONSTRAINT `fk_tbl_produccion_intelectual_tbl_ciudad1`
     FOREIGN KEY (`ciu_id`)
     REFERENCES `mydb`.`tbl_ciudad` (`ciu_id`)
@@ -330,10 +330,10 @@ CREATE TABLE IF NOT EXISTS `mydb`.`tbl_datos_academicos` (
   `fac_id` INT NOT NULL,
   `pi_id` INT NOT NULL,
   PRIMARY KEY (`dac_id`, `pu_id`, `fac_id`, `pi_id`),
-  UNIQUE INDEX `dac_id_UNIQUE` (`dac_id` ASC) VISIBLE,
-  INDEX `fk_tbl_datos_academicos_tbl_persona_universitaria1_idx` (`pu_id` ASC) VISIBLE,
-  INDEX `fk_tbl_datos_academicos_tbl_formacion_academica1_idx` (`fac_id` ASC) VISIBLE,
-  INDEX `fk_tbl_datos_academicos_tbl_produccion_intelectual1_idx` (`pi_id` ASC) VISIBLE,
+  UNIQUE INDEX `dac_id_UNIQUE` (`dac_id` ASC) ,
+  INDEX `fk_tbl_datos_academicos_tbl_persona_universitaria1_idx` (`pu_id` ASC) ,
+  INDEX `fk_tbl_datos_academicos_tbl_formacion_academica1_idx` (`fac_id` ASC) ,
+  INDEX `fk_tbl_datos_academicos_tbl_produccion_intelectual1_idx` (`pi_id` ASC) ,
   CONSTRAINT `fk_tbl_datos_academicos_tbl_persona_universitaria1`
     FOREIGN KEY (`pu_id`)
     REFERENCES `mydb`.`tbl_persona_universitaria` (`pu_id`)
@@ -360,7 +360,7 @@ DROP TABLE IF EXISTS `mydb`.`tbl_reconocimiento_academico` ;
 CREATE TABLE IF NOT EXISTS `mydb`.`tbl_reconocimiento_academico` (
   `reac_id` INT NOT NULL AUTO_INCREMENT,
   PRIMARY KEY (`reac_id`),
-  UNIQUE INDEX `reac_id_UNIQUE` (`reac_id` ASC) VISIBLE)
+  UNIQUE INDEX `reac_id_UNIQUE` (`reac_id` ASC) )
 ENGINE = InnoDB;
 
 
@@ -376,9 +376,9 @@ CREATE TABLE IF NOT EXISTS `mydb`.`tbl_datos_academicos_estudiante` (
   `dac_id` INT NOT NULL,
   `reac_id` INT NOT NULL,
   PRIMARY KEY (`dace_id`, `dac_id`, `reac_id`),
-  UNIQUE INDEX `dace_id_UNIQUE` (`dace_id` ASC) VISIBLE,
-  INDEX `fk_tbl_datos_academicos_estudiante_tbl_datos_academicos1_idx` (`dac_id` ASC) VISIBLE,
-  INDEX `fk_tbl_datos_academicos_estudiante_tbl_reconocimiento_acade_idx` (`reac_id` ASC) VISIBLE,
+  UNIQUE INDEX `dace_id_UNIQUE` (`dace_id` ASC) ,
+  INDEX `fk_tbl_datos_academicos_estudiante_tbl_datos_academicos1_idx` (`dac_id` ASC) ,
+  INDEX `fk_tbl_datos_academicos_estudiante_tbl_reconocimiento_acade_idx` (`reac_id` ASC) ,
   CONSTRAINT `fk_tbl_datos_academicos_estudiante_tbl_datos_academicos1`
     FOREIGN KEY (`dac_id`)
     REFERENCES `mydb`.`tbl_datos_academicos` (`dac_id`)
@@ -401,7 +401,7 @@ CREATE TABLE IF NOT EXISTS `mydb`.`tbl_pais` (
   `pais_id` INT NOT NULL AUTO_INCREMENT,
   `pais_nombre` VARCHAR(30) NULL,
   PRIMARY KEY (`pais_id`),
-  UNIQUE INDEX `pais_id_UNIQUE` (`pais_id` ASC) VISIBLE)
+  UNIQUE INDEX `pais_id_UNIQUE` (`pais_id` ASC) )
 ENGINE = InnoDB;
 
 
@@ -418,9 +418,9 @@ CREATE TABLE IF NOT EXISTS `mydb`.`tbls_institucion_exp` (
   `pais_id` INT NOT NULL,
   `dir_id` INT NOT NULL,
   PRIMARY KEY (`inst_id`, `pais_id`, `dir_id`),
-  UNIQUE INDEX `inst_id_UNIQUE` (`inst_id` ASC) VISIBLE,
-  INDEX `fk_tbls_institucion_exp_tbl_pais1_idx` (`pais_id` ASC) VISIBLE,
-  INDEX `fk_tbls_institucion_exp_tbl_direccion1_idx` (`dir_id` ASC) VISIBLE,
+  UNIQUE INDEX `inst_id_UNIQUE` (`inst_id` ASC) ,
+  INDEX `fk_tbls_institucion_exp_tbl_pais1_idx` (`pais_id` ASC) ,
+  INDEX `fk_tbls_institucion_exp_tbl_direccion1_idx` (`dir_id` ASC) ,
   CONSTRAINT `fk_tbls_institucion_exp_tbl_pais1`
     FOREIGN KEY (`pais_id`)
     REFERENCES `mydb`.`tbl_pais` (`pais_id`)
@@ -444,8 +444,8 @@ CREATE TABLE IF NOT EXISTS `mydb`.`tbl_dependencia` (
   `depd_nombre` VARCHAR(30) NULL,
   `inst_id` INT NOT NULL,
   PRIMARY KEY (`depd_id`, `inst_id`),
-  UNIQUE INDEX `depd_id_UNIQUE` (`depd_id` ASC) VISIBLE,
-  INDEX `fk_tbl_dependencia_tbls_institucion_exp1_idx` (`inst_id` ASC) VISIBLE,
+  UNIQUE INDEX `depd_id_UNIQUE` (`depd_id` ASC) ,
+  INDEX `fk_tbl_dependencia_tbls_institucion_exp1_idx` (`inst_id` ASC) ,
   CONSTRAINT `fk_tbl_dependencia_tbls_institucion_exp1`
     FOREIGN KEY (`inst_id`)
     REFERENCES `mydb`.`tbls_institucion_exp` (`inst_id`)
@@ -468,9 +468,9 @@ CREATE TABLE IF NOT EXISTS `mydb`.`tbl_experiencia_docente` (
   `depd_id` INT NOT NULL,
   `inst_id` INT NOT NULL,
   PRIMARY KEY (`expd_id`, `depd_id`, `inst_id`),
-  UNIQUE INDEX `expd_id_UNIQUE` (`expd_id` ASC) VISIBLE,
-  INDEX `fk_tbl_experiencia_docente_tbl_dependencia1_idx` (`depd_id` ASC) VISIBLE,
-  INDEX `fk_tbl_experiencia_docente_tbls_institucion_exp1_idx` (`inst_id` ASC) VISIBLE,
+  UNIQUE INDEX `expd_id_UNIQUE` (`expd_id` ASC) ,
+  INDEX `fk_tbl_experiencia_docente_tbl_dependencia1_idx` (`depd_id` ASC) ,
+  INDEX `fk_tbl_experiencia_docente_tbls_institucion_exp1_idx` (`inst_id` ASC) ,
   CONSTRAINT `fk_tbl_experiencia_docente_tbl_dependencia1`
     FOREIGN KEY (`depd_id`)
     REFERENCES `mydb`.`tbl_dependencia` (`depd_id`)
@@ -496,7 +496,7 @@ CREATE TABLE IF NOT EXISTS `mydb`.`tbl_tarjeta_profesional` (
   `tjp_resolucion` VARCHAR(150) NULL,
   `tjp_constancia` VARCHAR(150) NULL,
   PRIMARY KEY (`tjp_id`),
-  UNIQUE INDEX `tjp_id_UNIQUE` (`tjp_id` ASC) VISIBLE)
+  UNIQUE INDEX `tjp_id_UNIQUE` (`tjp_id` ASC) )
 ENGINE = InnoDB;
 
 
@@ -514,10 +514,10 @@ CREATE TABLE IF NOT EXISTS `mydb`.`tbl_datos_academicos_docente` (
   `expd_id` INT NOT NULL,
   `tjp_id` INT NOT NULL,
   PRIMARY KEY (`dacd_id`, `dac_id`, `expd_id`, `tjp_id`),
-  UNIQUE INDEX `dacd_id_UNIQUE` (`dacd_id` ASC) VISIBLE,
-  INDEX `fk_tbl_datos_academicos_docente_tbl_datos_academicos1_idx` (`dac_id` ASC) VISIBLE,
-  INDEX `fk_tbl_datos_academicos_docente_tbl_experiencia_docente1_idx` (`expd_id` ASC) VISIBLE,
-  INDEX `fk_tbl_datos_academicos_docente_tbl_tarjeta_profesional1_idx` (`tjp_id` ASC) VISIBLE,
+  UNIQUE INDEX `dacd_id_UNIQUE` (`dacd_id` ASC) ,
+  INDEX `fk_tbl_datos_academicos_docente_tbl_datos_academicos1_idx` (`dac_id` ASC) ,
+  INDEX `fk_tbl_datos_academicos_docente_tbl_experiencia_docente1_idx` (`expd_id` ASC) ,
+  INDEX `fk_tbl_datos_academicos_docente_tbl_tarjeta_profesional1_idx` (`tjp_id` ASC) ,
   CONSTRAINT `fk_tbl_datos_academicos_docente_tbl_datos_academicos1`
     FOREIGN KEY (`dac_id`)
     REFERENCES `mydb`.`tbl_datos_academicos` (`dac_id`)
@@ -545,7 +545,7 @@ CREATE TABLE IF NOT EXISTS `mydb`.`tbl_idioma` (
   `idm_id` INT NOT NULL AUTO_INCREMENT,
   `idm_nombre` VARCHAR(30) NULL,
   PRIMARY KEY (`idm_id`),
-  UNIQUE INDEX `idm_id_UNIQUE` (`idm_id` ASC) VISIBLE)
+  UNIQUE INDEX `idm_id_UNIQUE` (`idm_id` ASC) )
 ENGINE = InnoDB;
 
 
@@ -561,8 +561,8 @@ CREATE TABLE IF NOT EXISTS `mydb`.`tbl_manejo_idioma` (
   `mid_lee` ENUM('Bueno', 'Regular', 'Malo') NULL,
   `idm_id` INT NOT NULL,
   PRIMARY KEY (`mid_id`, `idm_id`),
-  UNIQUE INDEX `mid_id_UNIQUE` (`mid_id` ASC) VISIBLE,
-  INDEX `fk_tbl_manejo_idioma_tbl_idioma1_idx` (`idm_id` ASC) VISIBLE,
+  UNIQUE INDEX `mid_id_UNIQUE` (`mid_id` ASC) ,
+  INDEX `fk_tbl_manejo_idioma_tbl_idioma1_idx` (`idm_id` ASC) ,
   CONSTRAINT `fk_tbl_manejo_idioma_tbl_idioma1`
     FOREIGN KEY (`idm_id`)
     REFERENCES `mydb`.`tbl_idioma` (`idm_id`)
@@ -580,8 +580,8 @@ CREATE TABLE IF NOT EXISTS `mydb`.`tbl_manejo_idioma_has_tbl_datos_academicos` (
   `mid_id` INT NOT NULL,
   `dac_id` INT NOT NULL,
   PRIMARY KEY (`mid_id`, `dac_id`),
-  INDEX `fk_tbl_manejo_idioma_has_tbl_datos_academicos_tbl_datos_aca_idx` (`dac_id` ASC) VISIBLE,
-  INDEX `fk_tbl_manejo_idioma_has_tbl_datos_academicos_tbl_manejo_id_idx` (`mid_id` ASC) VISIBLE,
+  INDEX `fk_tbl_manejo_idioma_has_tbl_datos_academicos_tbl_datos_aca_idx` (`dac_id` ASC) ,
+  INDEX `fk_tbl_manejo_idioma_has_tbl_datos_academicos_tbl_manejo_id_idx` (`mid_id` ASC) ,
   CONSTRAINT `fk_tbl_manejo_idioma_has_tbl_datos_academicos_tbl_manejo_idio1`
     FOREIGN KEY (`mid_id`)
     REFERENCES `mydb`.`tbl_manejo_idioma` (`mid_id`)
@@ -606,8 +606,8 @@ CREATE TABLE IF NOT EXISTS `mydb`.`tbl_verificacion_inmunizacion` (
   `vim_estado` TINYINT NULL,
   `pu_id` INT NOT NULL,
   PRIMARY KEY (`vim_id`, `pu_id`),
-  UNIQUE INDEX `vim_UNIQUE` (`vim_id` ASC) VISIBLE,
-  INDEX `fk_tbl_verificacion_inmunizacion_tbl_persona_universitaria1_idx` (`pu_id` ASC) VISIBLE,
+  UNIQUE INDEX `vim_UNIQUE` (`vim_id` ASC) ,
+  INDEX `fk_tbl_verificacion_inmunizacion_tbl_persona_universitaria1_idx` (`pu_id` ASC) ,
   CONSTRAINT `fk_tbl_verificacion_inmunizacion_tbl_persona_universitaria1`
     FOREIGN KEY (`pu_id`)
     REFERENCES `mydb`.`tbl_persona_universitaria` (`pu_id`)
@@ -627,7 +627,7 @@ CREATE TABLE IF NOT EXISTS `mydb`.`tbl_requisito_escenario` (
   `req_es_titulacion` TINYINT NULL,
   `req_estado` TINYINT NULL,
   PRIMARY KEY (`req_id`),
-  UNIQUE INDEX `req_id_UNIQUE` (`req_id` ASC) VISIBLE)
+  UNIQUE INDEX `req_id_UNIQUE` (`req_id` ASC) )
 ENGINE = InnoDB;
 
 
@@ -640,8 +640,8 @@ CREATE TABLE IF NOT EXISTS `mydb`.`tbl_verificacion_requisito` (
   `req_id` INT NOT NULL,
   `vim_id` INT NOT NULL,
   PRIMARY KEY (`req_id`, `vim_id`),
-  INDEX `fk_tbl_requisito_escenario_has_tbl_verificacion_inmunizacio_idx` (`vim_id` ASC) VISIBLE,
-  INDEX `fk_tbl_requisito_escenario_has_tbl_verificacion_inmunizacio_idx1` (`req_id` ASC) VISIBLE,
+  INDEX `fk_tbl_requisito_escenario_has_tbl_verificacion_inmunizacio_idx` (`vim_id` ASC) ,
+  INDEX `fk_tbl_requisito_escenario_has_tbl_verificacion_inmunizacio_idx1` (`req_id` ASC) ,
   CONSTRAINT `fk_tbl_requisito_escenario_has_tbl_verificacion_inmunizacion_1`
     FOREIGN KEY (`req_id`)
     REFERENCES `mydb`.`tbl_requisito_escenario` (`req_id`)
@@ -665,8 +665,8 @@ CREATE TABLE IF NOT EXISTS `mydb`.`tbl_vacunacion` (
   `vcn_dosis_requeridas` INT NULL,
   `req_id` INT NOT NULL,
   PRIMARY KEY (`vcn_id`, `req_id`),
-  UNIQUE INDEX `vcn_id_UNIQUE` (`vcn_id` ASC) VISIBLE,
-  INDEX `fk_tbl_vacunacion_tbl_requisito_escenario1_idx` (`req_id` ASC) VISIBLE,
+  UNIQUE INDEX `vcn_id_UNIQUE` (`vcn_id` ASC) ,
+  INDEX `fk_tbl_vacunacion_tbl_requisito_escenario1_idx` (`req_id` ASC) ,
   CONSTRAINT `fk_tbl_vacunacion_tbl_requisito_escenario1`
     FOREIGN KEY (`req_id`)
     REFERENCES `mydb`.`tbl_requisito_escenario` (`req_id`)
@@ -686,8 +686,8 @@ CREATE TABLE IF NOT EXISTS `mydb`.`tbl_titulacion` (
   `titu_documento` VARCHAR(150) NULL,
   `pu_id` INT NOT NULL,
   PRIMARY KEY (`titu_id`, `pu_id`),
-  UNIQUE INDEX `titu_id_UNIQUE` (`titu_id` ASC) VISIBLE,
-  INDEX `fk_tbl_titulacion_tbl_persona_universitaria1_idx` (`pu_id` ASC) VISIBLE,
+  UNIQUE INDEX `titu_id_UNIQUE` (`titu_id` ASC) ,
+  INDEX `fk_tbl_titulacion_tbl_persona_universitaria1_idx` (`pu_id` ASC) ,
   CONSTRAINT `fk_tbl_titulacion_tbl_persona_universitaria1`
     FOREIGN KEY (`pu_id`)
     REFERENCES `mydb`.`tbl_persona_universitaria` (`pu_id`)
@@ -714,8 +714,8 @@ CREATE TABLE IF NOT EXISTS `mydb`.`tbl_salud_seguridad` (
   `sase_estado` TINYINT NULL,
   `pu_id` INT NOT NULL,
   PRIMARY KEY (`sase_id`, `pu_id`),
-  UNIQUE INDEX `sase_id_UNIQUE` (`sase_id` ASC) VISIBLE,
-  INDEX `fk_tbl_salud_seguridad_tbl_persona_universitaria1_idx` (`pu_id` ASC) VISIBLE,
+  UNIQUE INDEX `sase_id_UNIQUE` (`sase_id` ASC) ,
+  INDEX `fk_tbl_salud_seguridad_tbl_persona_universitaria1_idx` (`pu_id` ASC) ,
   CONSTRAINT `fk_tbl_salud_seguridad_tbl_persona_universitaria1`
     FOREIGN KEY (`pu_id`)
     REFERENCES `mydb`.`tbl_persona_universitaria` (`pu_id`)
@@ -733,7 +733,7 @@ CREATE TABLE IF NOT EXISTS `mydb`.`tbl_escenario_practica` (
   `esc_id` INT NOT NULL AUTO_INCREMENT,
   `esc_nombre` VARCHAR(30) NULL,
   PRIMARY KEY (`esc_id`),
-  UNIQUE INDEX `esc_id_UNIQUE` (`esc_id` ASC) VISIBLE)
+  UNIQUE INDEX `esc_id_UNIQUE` (`esc_id` ASC) )
 ENGINE = InnoDB;
 
 
@@ -748,9 +748,9 @@ CREATE TABLE IF NOT EXISTS `mydb`.`tbl_pruebas_realizadas` (
   `pu_id` INT NOT NULL,
   `esc_id` INT NOT NULL,
   PRIMARY KEY (`prlz_id`, `pu_id`, `esc_id`),
-  UNIQUE INDEX `prlz_id_UNIQUE` (`prlz_id` ASC) VISIBLE,
-  INDEX `fk_tbl_pruebas_realizadas_tbl_persona_universitaria1_idx` (`pu_id` ASC) VISIBLE,
-  INDEX `fk_tbl_pruebas_realizadas_tbl_escenario_practica1_idx` (`esc_id` ASC) VISIBLE,
+  UNIQUE INDEX `prlz_id_UNIQUE` (`prlz_id` ASC) ,
+  INDEX `fk_tbl_pruebas_realizadas_tbl_persona_universitaria1_idx` (`pu_id` ASC) ,
+  INDEX `fk_tbl_pruebas_realizadas_tbl_escenario_practica1_idx` (`esc_id` ASC) ,
   CONSTRAINT `fk_tbl_pruebas_realizadas_tbl_persona_universitaria1`
     FOREIGN KEY (`pu_id`)
     REFERENCES `mydb`.`tbl_persona_universitaria` (`pu_id`)
@@ -778,7 +778,7 @@ CREATE TABLE IF NOT EXISTS `mydb`.`tbl_coordinador` (
   `coo_rol` ENUM('Asignatura', 'Programa') NULL,
   `coo_foto_perfil` VARCHAR(150) NULL,
   PRIMARY KEY (`coo_id`),
-  UNIQUE INDEX `coo_id_UNIQUE` (`coo_id` ASC) VISIBLE)
+  UNIQUE INDEX `coo_id_UNIQUE` (`coo_id` ASC) )
 ENGINE = InnoDB;
 
 
@@ -791,7 +791,7 @@ CREATE TABLE IF NOT EXISTS `mydb`.`tbl_asignatura` (
   `asig_id` INT NOT NULL AUTO_INCREMENT,
   `asig_nombre` VARCHAR(50) NULL,
   PRIMARY KEY (`asig_id`),
-  UNIQUE INDEX `asig_id_UNIQUE` (`asig_id` ASC) VISIBLE)
+  UNIQUE INDEX `asig_id_UNIQUE` (`asig_id` ASC) )
 ENGINE = InnoDB;
 
 
@@ -804,8 +804,8 @@ CREATE TABLE IF NOT EXISTS `mydb`.`tbl_asignatura_programa` (
   `asig_id` INT NOT NULL,
   `prog_id` INT NOT NULL,
   PRIMARY KEY (`asig_id`, `prog_id`),
-  INDEX `fk_tbl_asignatura_has_tbl_programa_tbl_programa1_idx` (`prog_id` ASC) VISIBLE,
-  INDEX `fk_tbl_asignatura_has_tbl_programa_tbl_asignatura1_idx` (`asig_id` ASC) VISIBLE,
+  INDEX `fk_tbl_asignatura_has_tbl_programa_tbl_programa1_idx` (`prog_id` ASC) ,
+  INDEX `fk_tbl_asignatura_has_tbl_programa_tbl_asignatura1_idx` (`asig_id` ASC) ,
   CONSTRAINT `fk_tbl_asignatura_has_tbl_programa_tbl_asignatura1`
     FOREIGN KEY (`asig_id`)
     REFERENCES `mydb`.`tbl_asignatura` (`asig_id`)
@@ -832,9 +832,9 @@ CREATE TABLE IF NOT EXISTS `mydb`.`tbl_documento` (
   `esc_id` INT NOT NULL,
   `asig_id` INT NOT NULL,
   PRIMARY KEY (`doc_id`, `esc_id`, `asig_id`),
-  UNIQUE INDEX `doc_id_UNIQUE` (`doc_id` ASC) VISIBLE,
-  INDEX `fk_tbl_documento_tbl_escenario_practica1_idx` (`esc_id` ASC) VISIBLE,
-  INDEX `fk_tbl_documento_tbl_asignatura1_idx` (`asig_id` ASC) VISIBLE,
+  UNIQUE INDEX `doc_id_UNIQUE` (`doc_id` ASC) ,
+  INDEX `fk_tbl_documento_tbl_escenario_practica1_idx` (`esc_id` ASC) ,
+  INDEX `fk_tbl_documento_tbl_asignatura1_idx` (`asig_id` ASC) ,
   CONSTRAINT `fk_tbl_documento_tbl_escenario_practica1`
     FOREIGN KEY (`esc_id`)
     REFERENCES `mydb`.`tbl_escenario_practica` (`esc_id`)
@@ -859,7 +859,7 @@ CREATE TABLE IF NOT EXISTS `mydb`.`tbl_jornada` (
   `jor_hora_inicio` TIME NULL,
   `jor_hora_fin` TIME NULL,
   PRIMARY KEY (`jor_id`),
-  UNIQUE INDEX `jor_id_UNIQUE` (`jor_id` ASC) VISIBLE)
+  UNIQUE INDEX `jor_id_UNIQUE` (`jor_id` ASC) )
 ENGINE = InnoDB;
 
 
@@ -872,7 +872,7 @@ CREATE TABLE IF NOT EXISTS `mydb`.`tbl_servicio` (
   `ser_id` INT NOT NULL AUTO_INCREMENT,
   `ser_nombre` VARCHAR(20) NULL,
   PRIMARY KEY (`ser_id`),
-  UNIQUE INDEX `ser_id_UNIQUE` (`ser_id` ASC) VISIBLE)
+  UNIQUE INDEX `ser_id_UNIQUE` (`ser_id` ASC) )
 ENGINE = InnoDB;
 
 
@@ -887,9 +887,9 @@ CREATE TABLE IF NOT EXISTS `mydb`.`tbl_etiqueta` (
   `esc_id` INT NOT NULL,
   `ser_id` INT NOT NULL,
   PRIMARY KEY (`eti_id`, `esc_id`, `ser_id`),
-  UNIQUE INDEX `eti_id_UNIQUE` (`eti_id` ASC) VISIBLE,
-  INDEX `fk_tbl_etiqueta_tbl_escenario_practica1_idx` (`esc_id` ASC) VISIBLE,
-  INDEX `fk_tbl_etiqueta_tbl_servicio1_idx` (`ser_id` ASC) VISIBLE,
+  UNIQUE INDEX `eti_id_UNIQUE` (`eti_id` ASC) ,
+  INDEX `fk_tbl_etiqueta_tbl_escenario_practica1_idx` (`esc_id` ASC) ,
+  INDEX `fk_tbl_etiqueta_tbl_servicio1_idx` (`ser_id` ASC) ,
   CONSTRAINT `fk_tbl_etiqueta_tbl_escenario_practica1`
     FOREIGN KEY (`esc_id`)
     REFERENCES `mydb`.`tbl_escenario_practica` (`esc_id`)
@@ -916,11 +916,11 @@ CREATE TABLE IF NOT EXISTS `mydb`.`tbl_turno` (
   `esc_id` INT NOT NULL,
   `asig_id` INT NOT NULL,
   PRIMARY KEY (`tur_id`, `jor_id`, `eti_id`, `esc_id`, `asig_id`),
-  UNIQUE INDEX `tur_id_UNIQUE` (`tur_id` ASC) VISIBLE,
-  INDEX `fk_tbl_turno_tbl_jornada1_idx` (`jor_id` ASC) VISIBLE,
-  INDEX `fk_tbl_turno_tbl_etiqueta1_idx` (`eti_id` ASC) VISIBLE,
-  INDEX `fk_tbl_turno_tbl_escenario_practica1_idx` (`esc_id` ASC) VISIBLE,
-  INDEX `fk_tbl_turno_tbl_asignatura1_idx` (`asig_id` ASC) VISIBLE,
+  UNIQUE INDEX `tur_id_UNIQUE` (`tur_id` ASC) ,
+  INDEX `fk_tbl_turno_tbl_jornada1_idx` (`jor_id` ASC) ,
+  INDEX `fk_tbl_turno_tbl_etiqueta1_idx` (`eti_id` ASC) ,
+  INDEX `fk_tbl_turno_tbl_escenario_practica1_idx` (`esc_id` ASC) ,
+  INDEX `fk_tbl_turno_tbl_asignatura1_idx` (`asig_id` ASC) ,
   CONSTRAINT `fk_tbl_turno_tbl_jornada1`
     FOREIGN KEY (`jor_id`)
     REFERENCES `mydb`.`tbl_jornada` (`jor_id`)
@@ -958,9 +958,9 @@ CREATE TABLE IF NOT EXISTS `mydb`.`tbl_horario` (
   `ser_id` INT NOT NULL,
   `esc_id` INT NOT NULL,
   PRIMARY KEY (`hor_id`, `ser_id`, `esc_id`),
-  UNIQUE INDEX `hor_id_UNIQUE` (`hor_id` ASC) VISIBLE,
-  INDEX `fk_tbl_horario_tbl_servicio1_idx` (`ser_id` ASC) VISIBLE,
-  INDEX `fk_tbl_horario_tbl_escenario_practica1_idx` (`esc_id` ASC) VISIBLE,
+  UNIQUE INDEX `hor_id_UNIQUE` (`hor_id` ASC) ,
+  INDEX `fk_tbl_horario_tbl_servicio1_idx` (`ser_id` ASC) ,
+  INDEX `fk_tbl_horario_tbl_escenario_practica1_idx` (`esc_id` ASC) ,
   CONSTRAINT `fk_tbl_horario_tbl_servicio1`
     FOREIGN KEY (`ser_id`)
     REFERENCES `mydb`.`tbl_servicio` (`ser_id`)
@@ -984,7 +984,7 @@ CREATE TABLE IF NOT EXISTS `mydb`.`tbl_ciclo` (
   `cic_fecha_inicio` DATE NULL,
   `cic_fecha_fin` DATE NULL,
   PRIMARY KEY (`cic_id`),
-  UNIQUE INDEX `cic_id_UNIQUE` (`cic_id` ASC) VISIBLE)
+  UNIQUE INDEX `cic_id_UNIQUE` (`cic_id` ASC) )
 ENGINE = InnoDB;
 
 
@@ -997,7 +997,7 @@ CREATE TABLE IF NOT EXISTS `mydb`.`tbl_grupo` (
   `gru_id` INT NOT NULL AUTO_INCREMENT,
   `gru_numero` INT NULL,
   PRIMARY KEY (`gru_id`),
-  UNIQUE INDEX `gru_id_UNIQUE` (`gru_id` ASC) VISIBLE)
+  UNIQUE INDEX `gru_id_UNIQUE` (`gru_id` ASC) )
 ENGINE = InnoDB;
 
 
@@ -1012,10 +1012,10 @@ CREATE TABLE IF NOT EXISTS `mydb`.`tbl_rote` (
   `gru_id` INT NOT NULL,
   `asig_id` INT NOT NULL,
   PRIMARY KEY (`rote_id`, `cic_id`, `gru_id`, `asig_id`),
-  UNIQUE INDEX `rote_id_UNIQUE` (`rote_id` ASC) VISIBLE,
-  INDEX `fk_tbl_rote_tbl_ciclo1_idx` (`cic_id` ASC) VISIBLE,
-  INDEX `fk_tbl_rote_tbl_grupo1_idx` (`gru_id` ASC) VISIBLE,
-  INDEX `fk_tbl_rote_tbl_asignatura1_idx` (`asig_id` ASC) VISIBLE,
+  UNIQUE INDEX `rote_id_UNIQUE` (`rote_id` ASC) ,
+  INDEX `fk_tbl_rote_tbl_ciclo1_idx` (`cic_id` ASC) ,
+  INDEX `fk_tbl_rote_tbl_grupo1_idx` (`gru_id` ASC) ,
+  INDEX `fk_tbl_rote_tbl_asignatura1_idx` (`asig_id` ASC) ,
   CONSTRAINT `fk_tbl_rote_tbl_ciclo1`
     FOREIGN KEY (`cic_id`)
     REFERENCES `mydb`.`tbl_ciclo` (`cic_id`)
@@ -1043,8 +1043,8 @@ CREATE TABLE IF NOT EXISTS `mydb`.`tbl_horario_rote` (
   `rote_id` INT NOT NULL,
   `hor_id` INT NOT NULL,
   PRIMARY KEY (`rote_id`, `hor_id`),
-  INDEX `fk_tbl_rote_has_tbl_horario_tbl_horario1_idx` (`hor_id` ASC) VISIBLE,
-  INDEX `fk_tbl_rote_has_tbl_horario_tbl_rote1_idx` (`rote_id` ASC) VISIBLE,
+  INDEX `fk_tbl_rote_has_tbl_horario_tbl_horario1_idx` (`hor_id` ASC) ,
+  INDEX `fk_tbl_rote_has_tbl_horario_tbl_rote1_idx` (`rote_id` ASC) ,
   CONSTRAINT `fk_tbl_rote_has_tbl_horario_tbl_rote1`
     FOREIGN KEY (`rote_id`)
     REFERENCES `mydb`.`tbl_rote` (`rote_id`)
@@ -1067,8 +1067,8 @@ CREATE TABLE IF NOT EXISTS `mydb`.`tbl_docente_rote` (
   `rote_id` INT NOT NULL,
   `pu_id` INT NOT NULL,
   PRIMARY KEY (`rote_id`, `pu_id`),
-  INDEX `fk_tbl_rote_has_tbl_docente_tbl_docente1_idx` (`pu_id` ASC) VISIBLE,
-  INDEX `fk_tbl_rote_has_tbl_docente_tbl_rote1_idx` (`rote_id` ASC) VISIBLE,
+  INDEX `fk_tbl_rote_has_tbl_docente_tbl_docente1_idx` (`pu_id` ASC) ,
+  INDEX `fk_tbl_rote_has_tbl_docente_tbl_rote1_idx` (`rote_id` ASC) ,
   CONSTRAINT `fk_tbl_rote_has_tbl_docente_tbl_rote1`
     FOREIGN KEY (`rote_id`)
     REFERENCES `mydb`.`tbl_rote` (`rote_id`)
@@ -1091,8 +1091,8 @@ CREATE TABLE IF NOT EXISTS `mydb`.`tbl_escenario_persona` (
   `esc_id` INT NOT NULL,
   `pu_id` INT NOT NULL,
   PRIMARY KEY (`esc_id`, `pu_id`),
-  INDEX `fk_tbl_escenario_practica_has_tbl_persona_universitaria_tbl_idx` (`pu_id` ASC) VISIBLE,
-  INDEX `fk_tbl_escenario_practica_has_tbl_persona_universitaria_tbl_idx1` (`esc_id` ASC) VISIBLE,
+  INDEX `fk_tbl_escenario_practica_has_tbl_persona_universitaria_tbl_idx` (`pu_id` ASC) ,
+  INDEX `fk_tbl_escenario_practica_has_tbl_persona_universitaria_tbl_idx1` (`esc_id` ASC) ,
   CONSTRAINT `fk_tbl_escenario_practica_has_tbl_persona_universitaria_tbl_e1`
     FOREIGN KEY (`esc_id`)
     REFERENCES `mydb`.`tbl_escenario_practica` (`esc_id`)
@@ -1115,8 +1115,8 @@ CREATE TABLE IF NOT EXISTS `mydb`.`tbl_asignatura_estudiante` (
   `asig_id` INT NOT NULL,
   `pu_id` INT NOT NULL,
   PRIMARY KEY (`asig_id`, `pu_id`),
-  INDEX `fk_tbl_asignatura_has_tbl_estudiante_tbl_estudiante1_idx` (`pu_id` ASC) VISIBLE,
-  INDEX `fk_tbl_asignatura_has_tbl_estudiante_tbl_asignatura1_idx` (`asig_id` ASC) VISIBLE,
+  INDEX `fk_tbl_asignatura_has_tbl_estudiante_tbl_estudiante1_idx` (`pu_id` ASC) ,
+  INDEX `fk_tbl_asignatura_has_tbl_estudiante_tbl_asignatura1_idx` (`asig_id` ASC) ,
   CONSTRAINT `fk_tbl_asignatura_has_tbl_estudiante_tbl_asignatura1`
     FOREIGN KEY (`asig_id`)
     REFERENCES `mydb`.`tbl_asignatura` (`asig_id`)
@@ -1139,8 +1139,8 @@ CREATE TABLE IF NOT EXISTS `mydb`.`tbl_asignatura_docente` (
   `asig_id` INT NOT NULL,
   `doc_pu_id` INT NOT NULL,
   PRIMARY KEY (`asig_id`, `doc_pu_id`),
-  INDEX `fk_tbl_asignatura_has_tbl_docente_tbl_docente1_idx` (`doc_pu_id` ASC) VISIBLE,
-  INDEX `fk_tbl_asignatura_has_tbl_docente_tbl_asignatura1_idx` (`asig_id` ASC) VISIBLE,
+  INDEX `fk_tbl_asignatura_has_tbl_docente_tbl_docente1_idx` (`doc_pu_id` ASC) ,
+  INDEX `fk_tbl_asignatura_has_tbl_docente_tbl_asignatura1_idx` (`asig_id` ASC) ,
   CONSTRAINT `fk_tbl_asignatura_has_tbl_docente_tbl_asignatura1`
     FOREIGN KEY (`asig_id`)
     REFERENCES `mydb`.`tbl_asignatura` (`asig_id`)
@@ -1166,8 +1166,8 @@ CREATE TABLE IF NOT EXISTS `mydb`.`tbl_alimentacion` (
   `ali_comida` TINYINT NULL,
   `tbl_turno_tur_id` INT NOT NULL,
   PRIMARY KEY (`ali_id`, `tbl_turno_tur_id`),
-  UNIQUE INDEX `ali_id_UNIQUE` (`ali_id` ASC) VISIBLE,
-  INDEX `fk_tbl_alimentacion_tbl_turno1_idx` (`tbl_turno_tur_id` ASC) VISIBLE,
+  UNIQUE INDEX `ali_id_UNIQUE` (`ali_id` ASC) ,
+  INDEX `fk_tbl_alimentacion_tbl_turno1_idx` (`tbl_turno_tur_id` ASC) ,
   CONSTRAINT `fk_tbl_alimentacion_tbl_turno1`
     FOREIGN KEY (`tbl_turno_tur_id`)
     REFERENCES `mydb`.`tbl_turno` (`tur_id`)
