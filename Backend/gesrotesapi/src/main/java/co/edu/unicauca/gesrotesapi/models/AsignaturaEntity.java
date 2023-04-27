@@ -11,6 +11,8 @@ public class AsignaturaEntity {
     
     private int asig_id;
     private String asig_nombre;
+    private int coo_id;
+    private int prog_id;
 
     public AsignaturaEntity(){
         

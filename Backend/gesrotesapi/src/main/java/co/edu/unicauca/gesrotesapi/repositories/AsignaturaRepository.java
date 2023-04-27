@@ -26,6 +26,8 @@ public class AsignaturaRepository {
             AsignaturaEntity asignatura = new AsignaturaEntity();
             asignatura.setAsig_id((Integer) row.get("asig_id"));
             asignatura.setAsig_nombre((String) row.get("asig_nombre"));
+            asignatura.setProg_id((Integer) row.get("prog_id"));
+            asignatura.setCoo_id((Integer) row.get("coo_id"));
             listadoAsignaturas.add(asignatura);
         }
         return listadoAsignaturas;

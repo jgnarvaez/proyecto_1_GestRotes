@@ -11,9 +11,8 @@ import lombok.Setter;
 @AllArgsConstructor
 public class ProgramaEntity {
     
-    private int id;
-    private String nombre;
-    private List<AsignaturaEntity> asignaturas;
+    private int prog_id;
+    private String prog_nombre;
 
     public ProgramaEntity(){
 
