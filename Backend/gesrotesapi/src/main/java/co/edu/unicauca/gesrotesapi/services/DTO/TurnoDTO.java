@@ -1,6 +1,6 @@
-package co.edu.unicauca.gesrotesapi.models;
+package co.edu.unicauca.gesrotesapi.services.DTO;
 
-import java.util.List;
+import java.sql.Date;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,15 +9,13 @@ import lombok.Setter;
 @Getter
 @Setter
 @AllArgsConstructor
-public class AlimentacionEntity {
+public class TurnoDTO {
     
     private int id;
+    private Date fecha;
     private Boolean desayuno;
     private Boolean almuerzo;
     private Boolean comida;
-    private List<TurnoEntity> turnos;
-
-    public AlimentacionEntity(){
-
-    }
+    private JornadaDTO jornada;
+    private EtiquetaDTO etiqueta;
 }

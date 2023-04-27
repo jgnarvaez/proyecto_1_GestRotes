@@ -14,6 +14,9 @@ public class TurnoEntity {
     
     private int id;
     private Date fecha;
+    private Boolean desayuno;
+    private Boolean almuerzo;
+    private Boolean comida;
     private JornadaEntity jornada;
     private EtiquetaEntity etiqueta;
     private List<EstudianteEntity> estudiantes;
