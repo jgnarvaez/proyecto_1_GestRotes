@@ -14,14 +14,20 @@
 }
 
 .App-header {
-  background-color: #282c34;
-  min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   font-size: calc(10px + 2vmin);
-  color: white;
+  color: rgb(16, 15, 15);
+}
+.App-aside {
+  width: 300px;
+  padding: 15px;
+}
+
+.App-main {
+  padding: 20px;
 }
 
 .App-link {
@@ -36,3 +42,90 @@
     transform: rotate(360deg);
   }
 }
+.grid-container {
+  display: grid;
+  grid-template-columns: 2fr 10fr; /* la primera ocupa una fracción del ancho total y la segunda ocupa tres fracciones */
+}
+
+.input-text-custom {
+  width: 300px;
+}
+
+.nav-container {
+  margin-bottom: 20px;
+  width: 100%;
+  background-color: #f2f2f2;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.user-container {
+  border-left: 2px solid black;
+}
+
+.asider-container {
+  width: 100%;
+  height: 670px; /* Aquí puedes cambiar el ancho a tu preferencia */
+  background-color: #f2f2f2; /* Aquí puedes cambiar el color de fondo a tu preferencia */
+  border-radius: 10px; /* Agregar borde redondeado */
+  padding: 10px; /* Agregar padding */
+}
+
+.component-container {
+  border: 1px solid #f9f5f5;
+  box-sizing: border-box;
+  width: 100%;
+  height: 570px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border-radius: 8px;
+  background-color:#f2f2f2;
+}
+
+.component-grid {
+  padding-top: 20px;
+}
+
+.user-profile {
+  display: flex;
+  align-items: center;
+  padding-right: 20px;
+  padding-left: 25px;
+  border-left: 1px solid #cecdcd;
+  box-sizing: border-box;
+}
+
+.user-profile .p-avatar {
+  margin-right: 8px;
+}
+.user-profile .user-info {
+  margin-left: 8px;
+}
+
+.contact-profile {
+  display: flex;
+  align-items: center;
+  padding-right: 20px;
+  padding-left: 25px;
+  box-sizing: border-box;
+}
+
+.contact-profile .p-avatar {
+  margin-right: 8px;
+}
+.contact-profile .user-info {
+  margin-left: 8px;
+}
+
+
+.user-name {
+  font-weight: bold;
+}
+
+.user-profession {
+  font-size: 10px;
+  color: #888;
+  margin-top: 5px;
+}
+
