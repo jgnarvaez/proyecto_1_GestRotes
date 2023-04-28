@@ -1,25 +1,26 @@
 import React from 'react';
 import { InputText } from "primereact/inputtext";
-import { experimentalStyled as styled } from '@mui/material/styles';
 import Box from '@mui/material/Box';
-import Paper from '@mui/material/Paper';
 import Grid from '@mui/material/Grid';
+import { Card } from 'primereact/card';
 import { Button } from 'primereact/button';
+import fetch from 'isomorphic-fetch';
+
 
 export const PrimerComponente = () => {
 
-  const Item = styled(Paper)(({ theme }) => ({
-    backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
-    ...theme.typography.body2,
-    padding: theme.spacing(7),
-    textAlign: 'center',
-    color: theme.palette.text.secondary,
-  }));
+  const url = 'http://127.0.0.1:8085/asignaturas/'
 
-  
+  fetch(url)
+  .then(response => response.json())
+  .then(data => console.log(data))
+  .catch(error => console.error(error));
+
+
+
 
   return (
-    <div className='component-container'>
+    <div className='component-container-grid'>
         <div className="card flex flex-wrap justify-content-center gap-3">
             <span className="p-input-icon-left">
                 <i className="pi pi-search" />
@@ -31,22 +32,25 @@ export const PrimerComponente = () => {
             <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 8, md: 12 }}>
               {Array.from(Array(12)).map((_, index) => (
                 <Grid item xs={2} sm={4} md={4} key={index}>
-                  <Item>
-                    <div style={{background:'blue' }}>
-
-                    </div>
-
-                    <div className="item-part item-part-1">
-                      <p>Part 1</p>
-                    </div>
-                    <div className="item-part item-part-2">
-                      <p>Part 2</p>
-                    </div>
-                    <div className="item-part item-part-3" >
-                      <Button variant="contained" color="primary">ESTADO DE LA ASIGNATURA</Button>
-                      <Button variant="contained" color="secondary">GESTIONAR ASIGNATURA</Button>
-                    </div>
-                  </Item>
+                   <div className="card">
+                    <Card >
+                      <div className="flex-container">
+                        <div className="flex-item top">
+                          <p>Asignatura</p>
+                          
+                          
+                        </div>
+                        <div className="flex-item center">
+                          <br></br>
+                          <br></br>
+                        </div>
+                        <div className="flex-item bottom">
+                        <Button label="Estado" severity="success" />
+                        <Button label="Gestion" severity="success" />
+                        </div>
+                      </div>
+                    </Card>
+                  </div>
                 </Grid>
               ))}
             </Grid>
