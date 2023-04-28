@@ -5,7 +5,7 @@ import Perfil from './Perfil';
 export const Navegador = () => {
      const items = [{ label: 'Asignaturas' }, { label: 'Prueba' }];
 
-    const home = { icon: 'pi pi-home', url: 'https://primereact.org' }
+    const home = { icon: 'pi pi-home', url: '/' }
 
    
 
