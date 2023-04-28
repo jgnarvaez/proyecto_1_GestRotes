@@ -3,7 +3,7 @@ import { Menu } from 'primereact/menu';
 import { Toast } from 'primereact/toast';
 import Contacto from './Contacto';
 import { Link, Route, Routes } from 'react-router-dom';
-import { PrimerComponente } from './PrimerComponente';
+import { GridAsignaturas } from './GridAsignaturas';
 
 export const MenuLateral = () => {
     const toast = useRef(null);
@@ -15,7 +15,7 @@ export const MenuLateral = () => {
         { label: 'GESTIÓN', items: [
             { label: 'Verificar Estudiantes', icon: 'pi pi-users' },
             { label: 'Verificar Docentes', icon: 'pi pi-user-edit' },
-            { label: 'Asignaturas', icon: 'pi pi-book', template: () => (<Link to="/asignaturas" className="p-menuitem-link"><span>Asignaturas</span></Link>)},
+            { template: () => (<Link to="/asignaturas" className="p-menuitem-link"><i className="pi pi-book"></i><span>&nbsp;</span><span>Asignaturas</span></Link>)},
         ],  style: { background:'#f2f2f2' } },
         {},
         { label: 'MI PERFIL', items: [
@@ -42,7 +42,7 @@ export const MenuLateral = () => {
 const App = () => {
     return (
         <Routes>
-            <Route path="/asignaturas" element={<PrimerComponente />} />
+            <Route path="/asignaturas" element={<GridAsignaturas />} />
         </Routes>
     )
 }

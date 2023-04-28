@@ -1,7 +1,7 @@
 import React from 'react'
 import {MenuLateral} from './MenuLateral';
 import {Navegador} from './Navegador';
-import { PrimerComponente } from './PrimerComponente';
+import { GridAsignaturas } from './GridAsignaturas';
 
 export const Asignaturas = () => {
     return (
@@ -12,7 +12,7 @@ export const Asignaturas = () => {
               </aside>
               <main className='App-main'>
                 <Navegador/>
-                <PrimerComponente/>
+                <GridAsignaturas/>
               </main>
             </div>
         </div>
