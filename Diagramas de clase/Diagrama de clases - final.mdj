@@ -975,13 +975,30 @@
 											"height": 13,
 											"text": "-coordinador: CoordinadorAsignatura",
 											"horizontalAlignment": 0
+										},
+										{
+											"_type": "UMLAttributeView",
+											"_id": "AAAAAAGHyEivO2wQNaI=",
+											"_parent": {
+												"$ref": "AAAAAAGHRK76FwEDbec="
+											},
+											"model": {
+												"$ref": "AAAAAAGHyEivAGwNghM="
+											},
+											"font": "Arial;13;0",
+											"left": 1405,
+											"top": 787,
+											"width": 213.9033203125,
+											"height": 13,
+											"text": "-programa: Programa",
+											"horizontalAlignment": 0
 										}
 									],
 									"font": "Arial;13;0",
 									"left": 1400,
 									"top": 737,
 									"width": 223.9033203125,
-									"height": 53
+									"height": 68
 								},
 								{
 									"_type": "UMLOperationCompartmentView",
@@ -994,7 +1011,7 @@
 									},
 									"font": "Arial;13;0",
 									"left": 1400,
-									"top": 790,
+									"top": 805,
 									"width": 223.9033203125,
 									"height": 10
 								},
@@ -1036,7 +1053,7 @@
 							"left": 1400,
 							"top": 712,
 							"width": 223.9033203125,
-							"height": 88,
+							"height": 103,
 							"nameCompartment": {
 								"$ref": "AAAAAAGHRK76FwD+1S8="
 							},
@@ -9320,6 +9337,18 @@
 							"visibility": "private",
 							"type": {
 								"$ref": "AAAAAAGHw62Hv5V2ovk="
+							}
+						},
+						{
+							"_type": "UMLAttribute",
+							"_id": "AAAAAAGHyEivAGwNghM=",
+							"_parent": {
+								"$ref": "AAAAAAGHRK76FgD7fzw="
+							},
+							"name": "programa",
+							"visibility": "private",
+							"type": {
+								"$ref": "AAAAAAGHue+yWwe1rn8="
 							}
 						}
 					]
