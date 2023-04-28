@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { InputText } from "primereact/inputtext";
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
@@ -9,14 +9,16 @@ import fetch from 'isomorphic-fetch';
 
 export const PrimerComponente = () => {
 
-  const url = 'http://127.0.0.1:8085/asignaturas/'
+  const [asignaturas, setAsignaturas] = useState([]);
 
-  fetch(url)
-  .then(response => response.json())
-  .then(data => console.log(data))
-  .catch(error => console.error(error));
+  useEffect(() => {
+    const url = 'http://127.0.0.1:8085/asignaturas/'
 
-
+    fetch(url)
+    .then(response => response.json())
+    .then(data => setAsignaturas(data))
+    .catch(error => console.error(error));
+  }, []);
 
 
   return (
@@ -30,13 +32,14 @@ export const PrimerComponente = () => {
         <div className='component-grid' style={{ maxHeight: '500px', overflowY: 'auto' }}>
            <Box sx={{ flexGrow: 1 }}>
             <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 8, md: 12 }}>
-              {Array.from(Array(12)).map((_, index) => (
+              {asignaturas.map((asignatura, index) => (
                 <Grid item xs={2} sm={4} md={4} key={index}>
                    <div className="card">
                     <Card >
                       <div className="flex-container">
                         <div className="flex-item top">
-                          <p>Asignatura</p>
+                          <p>{asignatura.asig_nombre}</p>
+                          <p>{asignatura.prog_nombre}</p>
                           
                           
                         </div>
