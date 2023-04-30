@@ -10,6 +10,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class AssignmentDTO {
-    private String asig_nombre;
-    private String prog_nombre;
+    private int idAsignatura;
+    private String nombreAsignatura;
+    private String nombrePrograma;
 }

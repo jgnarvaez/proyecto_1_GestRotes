@@ -34,8 +34,9 @@ public class SubjectServiceImpl implements ISubjectService {
         List<AssignmentDTO> listDTO = new ArrayList<>();
         for (AssignmentEntity entity : entities) {
             AssignmentDTO objDTO = new AssignmentDTO();
-            objDTO.setAsig_nombre(entity.getId().getSubject().getName());
-            objDTO.setProg_nombre(entity.getId().getProgram().getName());
+            objDTO.setIdAsignatura(entity.getId().getSubject().getId());
+            objDTO.setNombreAsignatura(entity.getId().getSubject().getName());
+            objDTO.setNombrePrograma(entity.getId().getProgram().getName());
             listDTO.add(objDTO);
         }
         //System.out.println("Enviado");
