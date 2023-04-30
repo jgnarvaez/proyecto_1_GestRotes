@@ -40,7 +40,6 @@ public class SubjectController {
     @PostMapping("/{asigId}/estudiantes/{puId}")
     @ResponseBody
     public StuAssignmentDTO regiStudent(@RequestBody StuAssignmentDTO nuevoRegistro, @PathVariable int cooId, @PathVariable int progId,@PathVariable int asigId, @PathVariable int puId){
-        //System.out.println("Coo ID: " + cooId + " Prog ID: " + progId + " asigID" + asigId);
         return this.subjectService.registerStudent(cooId,progId,asigId, puId);
     }
 

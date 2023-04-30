@@ -47,7 +47,7 @@ public class SubjectServiceImpl implements ISubjectService {
     public StuAssignmentDTO registerStudent(int cooId, int progId,int subjId, int studId) {
 
         int count = this.assignmentRepository.existsByIds(progId,subjId,cooId);
-        if (count < 0) {
+        if (count == 0) {
             // La fila no existe
             System.out.println("NO esxiste una asignacion disponible");
             return null;

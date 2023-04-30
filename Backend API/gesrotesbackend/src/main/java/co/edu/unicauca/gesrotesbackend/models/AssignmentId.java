@@ -1,6 +1,5 @@
 package co.edu.unicauca.gesrotesbackend.models;
 
-import co.edu.unicauca.gesrotesbackend.repositories.AssignmentRepository;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
