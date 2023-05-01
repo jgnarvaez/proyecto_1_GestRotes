@@ -10,6 +10,8 @@ import fetch from 'isomorphic-fetch';
 export const GridAsignaturas = ({ toggleMostrarGridAsignaturas, onAsignaturaSeleccionada }) => {
 
   const [asignaturas, setAsignaturas] = useState([]);
+  const [filtroAsignaturas, setFiltroAsignaturas] = useState('');
+  
   useEffect(() => {
     const url = 'http://127.0.0.1:8085/1/1/asignaturas/'
 
@@ -19,18 +21,29 @@ export const GridAsignaturas = ({ toggleMostrarGridAsignaturas, onAsignaturaSele
       .catch(error => console.error(error));
   }, []);
 
+  const handleFiltroChange = (event) => {
+    setFiltroAsignaturas(event.target.value);
+  };
+
+  const asignaturasFiltradas = asignaturas.filter(
+    (asignatura) =>
+      asignatura.nombreAsignatura
+        .toLowerCase()
+        .includes(filtroAsignaturas.toLowerCase())
+  );
+
   return (
     <div className='component-container-grid'>
         <div className="card flex flex-wrap justify-content-center gap-3">
             <span className="p-input-icon-left">
                 <i className="pi pi-search" />
-                <InputText placeholder="Ingrese el nombre de la asignatura" className="input-text-custom" />
+                <InputText placeholder="Ingrese el nombre de la asignatura" className="input-text-custom" value={filtroAsignaturas} onChange={handleFiltroChange} />
             </span>
         </div>
         <div className='component-grid' style={{ maxHeight: '500px', overflowY: 'auto' }}>
           <Box sx={{ flexGrow: 1 }}>
             <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 8, md: 12 }}>
-              {asignaturas.map((asignatura, index) => {
+              {asignaturasFiltradas.map((asignatura, index) => {
                 const headerStyle = {
                   backgroundColor: '#013383',
                   color: 'white',

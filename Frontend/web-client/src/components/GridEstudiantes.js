@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { TabView, TabPanel } from 'primereact/tabview';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
@@ -6,6 +6,7 @@ import { Card } from 'primereact/card';
 import { Button } from 'primereact/button';
 import { InputText } from "primereact/inputtext";
 import PerfilEstudiante from './PerfilEstudiante';
+import { ConfirmDialog } from 'primereact/confirmdialog';
 
 export const GridEstudiantes = ({ asignatura }) => {
 
@@ -15,19 +16,27 @@ export const GridEstudiantes = ({ asignatura }) => {
     const [timer, setTimer] = useState(null);
     // CAMBIO
     const [estudiantes, setEstudiantes] = useState([]);
-    useEffect(() => {
-        const url = 'http://127.0.0.1:8085/1/1/asignaturas/8/estudiantes'
+    const [confirmDialogVisible, setConfirmDialogVisible] = useState(false);
+    const [estudianteIdEliminar, setEstudianteIdEliminar] = useState([]);
+    const [confirmDialogVisibleTodos, setConfirmDialogVisibleTodos] = useState(false);
 
+    const fetchEstudiantes = useCallback(() => {
+        const url = `http://127.0.0.1:8085/1/1/asignaturas/${asignatura.idAsignatura}/estudiantes`;
+      
         fetch(url)
-        .then(response => response.json())
-        .then(data => setEstudiantes(data))
-        .catch(error => console.error(error));
-    }, []);
+          .then(response => response.json())
+          .then(data => setEstudiantes(data))
+          .catch(error => console.error(error));
+      }, [asignatura.idAsignatura]);
+      
+      useEffect(() => {
+        fetchEstudiantes();
+      }, [fetchEstudiantes]);
 
     // CAMBIO
     const buscarEstudiantes = (val) => {
         if (val.length > 0) {
-            const url = `http://127.0.0.1:8085/1/1/asignaturas/8/estudiantes/${val}`;
+            const url = `http://127.0.0.1:8085/1/1/asignaturas/${asignatura.idAsignatura}/estudiantes/${val}`;
             fetch(url)
             .then(response => response.json())
             .then(data => setEstudiantesBusqueda(data))
@@ -36,17 +45,58 @@ export const GridEstudiantes = ({ asignatura }) => {
             setEstudiantesBusqueda([]);
         }
     };
+
+    const handleConfirmDialogAceptar = async () => {
+    try {
+        const response = await fetch(`http://127.0.0.1:8085/1/1/asignaturas/${asignatura.idAsignatura}/estudiantes/${estudianteIdEliminar}`, {
+        method: 'DELETE'
+        });
+    
+        if (response.ok) {
+        console.log(`Estudiante con ID ${estudianteIdEliminar} eliminado.`);
+        fetchEstudiantes(); //actualiza estudiantes
+        } else {
+        console.log(`No se pudo eliminar al estudiante con ID ${estudianteIdEliminar}.`);
+        }
+    } catch (error) {
+        console.error(error);
+    }
+        setConfirmDialogVisible(false);
+        setEstudianteIdEliminar(null);
+    };
+
+    const handleEliminarTodosClick = () => {
+        setConfirmDialogVisibleTodos(true);
+    };
+
+    const eliminarTodo = async () => {
+    try {
+        const response = await fetch(`http://127.0.0.1:8085/1/1/asignaturas/${asignatura.idAsignatura}/estudiantes`, {
+        method: 'DELETE'
+        });
+    
+        if (response.ok) {
+        console.log(`Todos los estudiantes han sido eliminados.`);
+        fetchEstudiantes();
+        } else {
+        console.log(`No se pudo eliminar a los estudiantes.`);
+        }
+    } catch (error) {
+        console.error(error);
+    }
+    setConfirmDialogVisibleTodos(false);
+    };
+
     // CAMBIO
 
     return (
     <div className="card">
         <TabView>
             <TabPanel header="Estudiantes">
-                <div className='component-container-grid-gestion' style={{ display: 'flex', flexDirection: 'row' }}>
+            <div className='component-container-grid-gestion' style={{ display: 'flex', flexDirection: 'row' }}>
                 <div style={{ borderRight: '2px solid #bebbbb',flex: 2 }}>
                     <div className='buscar-estudiantes'>
                         <p>Buscar Estudiantes</p>
-                        <p>{asignatura.idAsignatura}</p>
                     </div>
                     <div className="card flex flex-wrap justify-content-center gap-3">
                         <span className="p-input-icon-left">
@@ -68,7 +118,7 @@ export const GridEstudiantes = ({ asignatura }) => {
                         </span>
                     </div>
                     {/* CAMBIO */}
-                    <div className='component-grid' style={{ maxHeight: '450px', overflowY: 'auto' }}>
+                    <div className='component-grid' style={{ maxHeight: '400px', overflowY: 'auto', }}>
                         <Box sx={{ flexGrow: 1 }}>
                             <Grid container spacing={{ xs: 2, md: 3 }} columns={1}>
                                 {estudiantesBusqueda.map((estudianteBusqueda, index) => {
@@ -77,19 +127,20 @@ export const GridEstudiantes = ({ asignatura }) => {
                                         paddingTop: '2px'
                                     };
 
-                                    const handleGestionarClick = () => {
-                                        window.location.href = '/estudiantes';
+                                    const handleGestionarClickRegistrar = () => {
+                                        
+                                        //window.location.href = '/estudiantes';
                                     }
                                 
                                     const footer = (
                                         <div style={footerStyle}>
-                                            <Button label="Eliminar registro" style={{ fontSize: '0.5rem', backgroundColor: 'red' }}  onClick={handleGestionarClick} />
+                                            <Button label="Registrar" style={{ fontSize: '0.5rem', backgroundColor: 'blue' }}  onClick={handleGestionarClickRegistrar} />
                                         </div>
                                     );
 
                                     const cardStyle = {
                                         height: '160px',
-                                        width: '245px'
+                                        width: '250px'
                                     };
 
                                     return (
@@ -111,7 +162,8 @@ export const GridEstudiantes = ({ asignatura }) => {
                     <div className='navegador-estudiantes-registrados' style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                         <p></p>
                         <p style={{ textAlign: 'center', margin: 0 }}>Estudiantes Registrados</p>
-                        <Button label="Eliminar todo" style={{ fontSize: '0.5rem', backgroundColor: 'red'}} />
+                        <Button label="Eliminar todo" style={{ fontSize: '0.5rem', backgroundColor: 'red'}}  onClick={() => handleEliminarTodosClick()}/>
+                        <ConfirmDialog visible={confirmDialogVisibleTodos} onHide={() => setConfirmDialogVisibleTodos(false)} message="¿Estás seguro de que deseas eliminar todos los estudiantes?" header="Confirmar eliminación" acceptLabel="Aceptar" rejectLabel="Cancelar" icon="pi pi-exclamation-triangle" accept={() => eliminarTodo()} />
                     </div>
                     <div className='component-grid' style={{ maxHeight: '450px', overflowY: 'auto' }}>
                         <Box sx={{ flexGrow: 1 }}>
@@ -121,14 +173,17 @@ export const GridEstudiantes = ({ asignatura }) => {
                                     const footerStyle = {
                                         paddingTop: '2px'
                                     };
-
-                                    const handleGestionarClick = () => {
-                                        window.location.href = '/estudiantes';
-                                    }
+                                    //window.location.href = '/estudiantes';
+                                    const handleEliminarClick = (id) => {
+                                        setConfirmDialogVisible(true);
+                                        setEstudianteIdEliminar(id);
+                                      };
                                 
                                     const footer = (
                                         <div style={footerStyle}>
-                                            <Button label="Eliminar registro" style={{ fontSize: '0.5rem', backgroundColor: 'red' }}  onClick={handleGestionarClick} />
+                                            <Button label="Eliminar registro" style={{ fontSize: '0.5rem', backgroundColor: 'red' }}  onClick={() => handleEliminarClick(estudiante.id)} />
+                                            <ConfirmDialog visible={confirmDialogVisible} onHide={() => setConfirmDialogVisible(false)} message="¿Estás seguro de que deseas eliminar este estudiante?" header="Confirmar eliminación" acceptLabel="Aceptar" rejectLabel="Cancelar" icon="pi pi-exclamation-triangle" accept={() => handleConfirmDialogAceptar()} />
+
                                         </div>
                                     );
 
