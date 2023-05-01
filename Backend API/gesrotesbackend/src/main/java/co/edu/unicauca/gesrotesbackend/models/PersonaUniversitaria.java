@@ -24,41 +24,41 @@ import java.util.Objects;
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
 @Table(name = "tbl_persona_universitaria")
-public class CollegePersonEntity implements Serializable {
+public class PersonaUniversitaria implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "pu_id")
     private int id;
 
     @Column(name = "pu_nombres")
-    private String names;
+    private String nombres;
 
     @Column(name = "pu_apellidos")
-    private String lastnames;
+    private String apellidos;
 
     @Column(name = "pu_identificacion")
-    private Long identificationCode;
+    private Long identificacion;
 
     @Column(name = "pu_usuario")
-    private String username;
+    private String usuario;
 
     @Column(name = "pu_foto_perfil")
-    private String profilePicture;
+    private String fotoPerfil;
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof CollegePersonEntity)) return false;
-        CollegePersonEntity that = (CollegePersonEntity) o;
-        return Objects.equals(getNames(), that.getNames()) &&
-                Objects.equals(getLastnames(), that.getLastnames()) &&
-                Objects.equals(getIdentificationCode(), that.getIdentificationCode()) &&
-                Objects.equals(getUsername(), that.getUsername())&&
-                Objects.equals(getProfilePicture(), that.getProfilePicture());
+        if (!(o instanceof PersonaUniversitaria)) return false;
+        PersonaUniversitaria that = (PersonaUniversitaria) o;
+        return Objects.equals(getNombres(), that.getNombres()) &&
+                Objects.equals(getApellidos(), that.getApellidos()) &&
+                Objects.equals(getIdentificacion(), that.getIdentificacion()) &&
+                Objects.equals(getUsuario(), that.getUsuario())&&
+                Objects.equals(getFotoPerfil(), that.getFotoPerfil());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getNames(), getLastnames(), getIdentificationCode(), getUsername(), getProfilePicture());
+        return Objects.hash(getNombres(), getApellidos(), getIdentificacion(), getUsuario(), getFotoPerfil());
     }
 }

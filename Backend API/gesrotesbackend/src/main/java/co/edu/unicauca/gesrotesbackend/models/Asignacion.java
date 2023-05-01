@@ -15,7 +15,7 @@ import lombok.Setter;
 @Setter
 @Entity
 @Table(name = "tbl_asignacion")
-public class AssignmentEntity {
+public class Asignacion {
     @EmbeddedId
-    private AssignmentId id;
+    private AsignacionId id;
 }

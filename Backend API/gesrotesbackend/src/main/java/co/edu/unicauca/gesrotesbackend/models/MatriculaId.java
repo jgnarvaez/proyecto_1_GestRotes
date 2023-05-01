@@ -16,26 +16,26 @@ import java.util.Objects;
 @Getter
 @Setter
 @Embeddable
-public class EnrollmentId implements Serializable {
+public class MatriculaId implements Serializable {
     @ManyToOne
     @JoinColumn(name = "prog_id")
-    private ProgramEntity program;
+    private Programa programa;
 
     @ManyToOne
     @JoinColumn(name = "pu_id")
-    private StudentEntity student;
+    private Estudiante estudiante;
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof EnrollmentId)) return false;
-        EnrollmentId that = (EnrollmentId) o;
-        return Objects.equals(getProgram(), that.getProgram()) &&
-                Objects.equals(getStudent(), that.getStudent());
+        if (!(o instanceof MatriculaId)) return false;
+        MatriculaId that = (MatriculaId) o;
+        return Objects.equals(getPrograma(), that.getPrograma()) &&
+                Objects.equals(getEstudiante(), that.getEstudiante());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getProgram(), getStudent());
+        return Objects.hash(getPrograma(), getEstudiante());
     }
 }

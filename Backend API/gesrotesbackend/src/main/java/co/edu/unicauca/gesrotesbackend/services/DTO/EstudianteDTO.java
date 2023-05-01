@@ -9,8 +9,9 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class AssignmentDTO {
-    private int idAsignatura;
-    private String nombreAsignatura;
-    private String nombrePrograma;
+public class EstudianteDTO {
+    int id;
+    String nombreCompleto;
+    Long identificacion;
+    String usuario;
 }

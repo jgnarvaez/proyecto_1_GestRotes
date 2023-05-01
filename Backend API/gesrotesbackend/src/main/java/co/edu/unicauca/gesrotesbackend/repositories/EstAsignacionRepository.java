@@ -1,17 +1,13 @@
 package co.edu.unicauca.gesrotesbackend.repositories;
 
 import co.edu.unicauca.gesrotesbackend.models.*;
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import java.util.ArrayList;
-import java.util.List;
-
-public interface StuAssignmentRepository extends JpaRepository<StuAssignmentEntity, StuAssignmentId> {
+public interface EstAsignacionRepository extends JpaRepository<EstAsignacion, EstAsignacionId> {
 
     @Modifying
     @Transactional

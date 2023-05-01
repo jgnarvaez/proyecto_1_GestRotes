@@ -9,9 +9,10 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class StudentDTO {
-    int id;
-    String nombreCompleto;
-    Long identificacion;
-    String usuario;
+public class EstAsignacionDTO {
+    int puId;
+    int progId;
+    int asigId;
+    int cooId;
+    //StuAsgState state;
 }

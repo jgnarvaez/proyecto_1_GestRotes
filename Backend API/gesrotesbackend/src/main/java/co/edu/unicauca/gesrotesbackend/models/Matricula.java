@@ -16,10 +16,10 @@ import lombok.Setter;
 @AllArgsConstructor
 @Entity
 @Table(name = "tbl_matricula")
-public class EnrollmentEntity {
+public class Matricula {
     @EmbeddedId
-    private EnrollmentId id;
+    private MatriculaId id;
 
     @Column(name = "mat_estado")
-    private EnrState state;
+    private MatriculaEstado estado;
 }

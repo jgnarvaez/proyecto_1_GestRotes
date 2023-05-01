@@ -1,6 +1,5 @@
 package co.edu.unicauca.gesrotesbackend.models;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
@@ -16,10 +15,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @Entity
 @Table(name = "tbl_est_asignacion")
-public class StuAssignmentEntity {
+public class EstAsignacion {
     @EmbeddedId
-    private StuAssignmentId id;
-
-    @Column(name = "est_asig_estado")
-    private String state;
+    private EstAsignacionId id;
 }

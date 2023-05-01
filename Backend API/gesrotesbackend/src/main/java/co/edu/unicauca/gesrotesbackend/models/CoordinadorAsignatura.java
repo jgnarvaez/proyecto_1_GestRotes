@@ -4,6 +4,6 @@ import jakarta.persistence.*;
 
 @Entity
 @Table(name = "tbl_coordinador_asignatura")
-public class SubCoordinatorEntity extends CoordinatorEntity{
+public class CoordinadorAsignatura extends Coordinador {
 
 }

@@ -15,25 +15,25 @@ import java.util.Objects;
 @AllArgsConstructor
 @Entity
 @Table(name = "tbl_programa")
-public class ProgramEntity implements Serializable {
+public class Programa implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "prog_id")
     private int id;
 
     @Column(name = "prog_nombre")
-    private String name;
+    private String nombre;
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof ProgramEntity)) return false;
-        ProgramEntity that = (ProgramEntity) o;
-        return Objects.equals(getName(), that.getName());
+        if (!(o instanceof Programa)) return false;
+        Programa that = (Programa) o;
+        return Objects.equals(getNombre(), that.getNombre());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getName());
+        return Objects.hash(getNombre());
     }
 }

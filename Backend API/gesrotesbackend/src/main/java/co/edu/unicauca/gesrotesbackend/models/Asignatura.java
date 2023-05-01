@@ -15,7 +15,7 @@ import java.util.Objects;
 @AllArgsConstructor
 @Entity
 @Table(name = "tbl_asignatura")
-public class SubjectEntity implements Serializable {
+public class Asignatura implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "asig_id")
@@ -27,8 +27,8 @@ public class SubjectEntity implements Serializable {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof SubjectEntity)) return false;
-        SubjectEntity that = (SubjectEntity) o;
+        if (!(o instanceof Asignatura)) return false;
+        Asignatura that = (Asignatura) o;
         return Objects.equals(getName(), that.getName());
     }
 

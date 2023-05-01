@@ -5,7 +5,7 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "tbl_estudiante")
-public class StudentEntity extends CollegePersonEntity {
+public class Estudiante extends PersonaUniversitaria {
 
 
 }

@@ -15,36 +15,36 @@ import java.util.Objects;
 @Getter
 @Setter
 @Embeddable
-public class StuAssignmentId {
+public class EstAsignacionId {
     @ManyToOne
     @JoinColumn(name = "pu_id")
-    private StudentEntity student;
+    private Estudiante estudiante;
 
     @ManyToOne
     @JoinColumn(name = "prog_id")
-    private ProgramEntity program;
+    private Programa programa;
 
     @ManyToOne
     @JoinColumn(name = "asig_id")
-    private SubjectEntity subject;
+    private Asignatura asignatura;
 
     @ManyToOne
     @JoinColumn(name = "coo_id")
-    private SubCoordinatorEntity coordinator;
+    private CoordinadorAsignatura coordinator;
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof StuAssignmentId)) return false;
-        StuAssignmentId that = (StuAssignmentId) o;
-        return Objects.equals(getStudent(), that.getStudent()) &&
-                Objects.equals(getProgram(), that.getProgram()) &&
-                Objects.equals(getSubject(), that.getSubject()) &&
+        if (!(o instanceof EstAsignacionId)) return false;
+        EstAsignacionId that = (EstAsignacionId) o;
+        return Objects.equals(getEstudiante(), that.getEstudiante()) &&
+                Objects.equals(getPrograma(), that.getPrograma()) &&
+                Objects.equals(getAsignatura(), that.getAsignatura()) &&
                 Objects.equals(getCoordinator(), that.getCoordinator());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getStudent(), getProgram(), getSubject(), getCoordinator());
+        return Objects.hash(getEstudiante(), getPrograma(), getAsignatura(), getCoordinator());
     }
 }

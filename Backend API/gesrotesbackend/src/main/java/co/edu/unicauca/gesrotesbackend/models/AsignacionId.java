@@ -16,32 +16,32 @@ import java.util.Objects;
 @Getter
 @Setter
 @Embeddable
-public class AssignmentId implements Serializable {
+public class AsignacionId implements Serializable {
 
     @ManyToOne
     @JoinColumn(name = "prog_id")
-    private ProgramEntity program;
+    private Programa programa;
 
     @ManyToOne
     @JoinColumn(name = "asig_id")
-    private SubjectEntity subject;
+    private Asignatura asignatura;
 
     @ManyToOne
     @JoinColumn(name = "coo_id")
-    private SubCoordinatorEntity coordinator;
+    private CoordinadorAsignatura coordinador;
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof AssignmentId)) return false;
-        AssignmentId that = (AssignmentId) o;
-        return Objects.equals(getProgram(), that.getProgram()) &&
-                Objects.equals(getSubject(), that.getSubject()) &&
-                Objects.equals(getCoordinator(), that.getCoordinator());
+        if (!(o instanceof AsignacionId)) return false;
+        AsignacionId that = (AsignacionId) o;
+        return Objects.equals(getPrograma(), that.getPrograma()) &&
+                Objects.equals(getAsignatura(), that.getAsignatura()) &&
+                Objects.equals(getCoordinador(), that.getCoordinador());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getProgram(), getSubject(), getCoordinator());
+        return Objects.hash(getPrograma(), getAsignatura(), getCoordinador());
     }
 }
