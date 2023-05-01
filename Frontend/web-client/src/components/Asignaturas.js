@@ -29,7 +29,7 @@ export const Asignaturas = () => {
         </aside>
         <main className="App-main">
           <Navegador asignatura={asignaturaSeleccionada} opcion={opcionSeleccionada} />
-          {opcionSeleccionada === null ? (
+          {opcionSeleccionada !== 'Asignaturas' ? (
             <div></div>
           ) : mostrarGridAsignaturas ? (
             <GridAsignaturas

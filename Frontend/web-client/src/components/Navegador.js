@@ -6,10 +6,6 @@ export const Navegador = ({ asignatura, opcion }) => {
     
     const items = [];
 
-    /*if(opcion){
-        items.push({ label: opcion, url: `/${opcion}` });
-    } Pone el nombre de la opcion en el bread
-    */
     if(opcion){
         items.push({ label: opcion, url: '/' });
     }
@@ -20,9 +16,14 @@ export const Navegador = ({ asignatura, opcion }) => {
 
     const home = { icon: 'pi pi-home', url: '/' }
 
+    const handleClick = (event, item) => {
+        event.preventDefault(); // Evita la navegación predeterminada
+        window.location.href = item.url; // Navega a la URL del item
+    };
+
     return (
         <div className="nav-container">
-            <BreadCrumb model={items} home={home}/>
+            <BreadCrumb model={items} home={home} onItemClick={handleClick}/>
             <div>
                 <Perfil name="Sandra Martinez" profession="Coordinador de asignatura" src="https://primefaces.org/cdn/primereact/images/avatar/amyelsner.png"/>
             </div>

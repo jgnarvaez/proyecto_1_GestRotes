@@ -12,8 +12,8 @@ export const MenuLateral = ({ onOpcionSeleccionadaMenu }) => {
         { separator: true },
         {},
         { label: 'GESTIÓN', items: [
-            { label: 'Verificar Estudiantes', icon: 'pi pi-users' },
-            { label: 'Verificar Docentes', icon: 'pi pi-user-edit' },
+            { label: 'Verificar Estudiantes', icon: 'pi pi-users', command: () => onOpcionSeleccionadaMenu('Verificar Estudiantes') },
+            { label: 'Verificar Docentes', icon: 'pi pi-user-edit', command: () => onOpcionSeleccionadaMenu('Verificar Docentes') },
             { template: () => (<Link className="p-menuitem-link" onClick={() => onOpcionSeleccionadaMenu('Asignaturas')}><i className="pi pi-book"></i><span>&nbsp;</span><span>Asignaturas</span></Link>)},
         ],  style: { background:'#f2f2f2' } },
         {},
