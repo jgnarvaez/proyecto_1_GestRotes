@@ -2,10 +2,9 @@ import React, { useRef } from 'react';
 import { Menu } from 'primereact/menu';
 import { Toast } from 'primereact/toast';
 import Contacto from './Contacto';
-import { Link, Route, Routes } from 'react-router-dom';
-import { GridAsignaturas } from './GridAsignaturas';
+import { Link } from 'react-router-dom';
 
-export const MenuLateral = () => {
+export const MenuLateral = ({ onOpcionSeleccionadaMenu }) => {
     const toast = useRef(null);
 
     let items = [
@@ -15,7 +14,7 @@ export const MenuLateral = () => {
         { label: 'GESTIÓN', items: [
             { label: 'Verificar Estudiantes', icon: 'pi pi-users' },
             { label: 'Verificar Docentes', icon: 'pi pi-user-edit' },
-            { template: () => (<Link to="/asignaturas" className="p-menuitem-link"><i className="pi pi-book"></i><span>&nbsp;</span><span>Asignaturas</span></Link>)},
+            { template: () => (<Link className="p-menuitem-link" onClick={() => onOpcionSeleccionadaMenu('Asignaturas')}><i className="pi pi-book"></i><span>&nbsp;</span><span>Asignaturas</span></Link>)},
         ],  style: { background:'#f2f2f2' } },
         {},
         { label: 'MI PERFIL', items: [
@@ -38,13 +37,3 @@ export const MenuLateral = () => {
         </div>
     )
 };
-
-const App = () => {
-    return (
-        <Routes>
-            <Route path="/asignaturas" element={<GridAsignaturas />} />
-        </Routes>
-    )
-}
-
-export default App;

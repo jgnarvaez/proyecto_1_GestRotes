@@ -2,9 +2,21 @@ import React from 'react';
 import { BreadCrumb } from 'primereact/breadcrumb';
 import Perfil from './Perfil';
 
-export const Navegador = () => {
+export const Navegador = ({ asignatura, opcion }) => {
     
-    const items = [{ label: 'Asignaturas' }, { label: 'Prueba' }];
+    const items = [];
+
+    /*if(opcion){
+        items.push({ label: opcion, url: `/${opcion}` });
+    } Pone el nombre de la opcion en el bread
+    */
+    if(opcion){
+        items.push({ label: opcion, url: '/' });
+    }
+    
+    if (asignatura) { // Si la variable nombreAsignatura tiene un valor, agrega un nuevo elemento al breadcrumb
+        items.push({ label: asignatura.nombreAsignatura });
+      }
 
     const home = { icon: 'pi pi-home', url: '/' }
 

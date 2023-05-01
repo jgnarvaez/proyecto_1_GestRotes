@@ -7,18 +7,17 @@ import { Button } from 'primereact/button';
 import fetch from 'isomorphic-fetch';
 
 
-export const GridAsignaturas = () => {
+export const GridAsignaturas = ({ toggleMostrarGridAsignaturas, onAsignaturaSeleccionada }) => {
 
   const [asignaturas, setAsignaturas] = useState([]);
   useEffect(() => {
-    const url = 'http://127.0.0.1:8085/asignaturas/'
+    const url = 'http://127.0.0.1:8085/1/1/asignaturas/'
 
     fetch(url)
       .then(response => response.json())
       .then(data => setAsignaturas(data))
       .catch(error => console.error(error));
   }, []);
-
 
   return (
     <div className='component-container-grid'>
@@ -40,8 +39,8 @@ export const GridAsignaturas = () => {
                 
                 const header = (
                   <div style={headerStyle}>
-                    <p style={{ fontSize: '0.8rem' }}>{asignatura.asig_nombre}</p>
-                    <p style={{ fontSize: '0.6rem' }}>{asignatura.prog_nombre}</p>
+                    <p style={{ fontSize: '0.8rem' }}>{asignatura.nombreAsignatura}</p>
+                    <p style={{ fontSize: '0.6rem' }}>{asignatura.nombrePrograma}</p>
                   </div>
                 );
 
@@ -50,15 +49,17 @@ export const GridAsignaturas = () => {
                   borderTop: '2px solid #ececec'
                 };
 
-                const handleGestionarClick = () => {
-                  window.location.href = '/estudiantes';
+                const handleGestionarClick = (asignatura) => {
+                  //window.location.href = '/estudiantes';
+                  onAsignaturaSeleccionada(asignatura);
+                  toggleMostrarGridAsignaturas();
                 }
               
                 const footer = (
                     <div style={footerStyle}>
                         <Button label="ESTADO DE LA ASIGNATURA" style={{ fontSize: '0.5rem', marginRight: '10px', backgroundColor: 'green'}} />
-                        <Button label="GESTIONAR ASIGNATURA" style={{ fontSize: '0.5rem', backgroundColor: 'green' }}  onClick={handleGestionarClick} />
-                    </div>
+                        <Button label="GESTIONAR ASIGNATURA" style={{ fontSize: '0.5rem', backgroundColor: 'green' }} onClick={() => handleGestionarClick(asignatura)} />
+                   </div>
                 );
 
                 const cardStyle = {

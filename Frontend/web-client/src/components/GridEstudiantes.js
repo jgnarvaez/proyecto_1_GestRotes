@@ -7,15 +7,15 @@ import { Button } from 'primereact/button';
 import { InputText } from "primereact/inputtext";
 import PerfilEstudiante from './PerfilEstudiante';
 
-export const GridEstudiantes = () => {
+export const GridEstudiantes = ({ asignatura }) => {
 
-    const [asignaturas, setAsignaturas] = useState([]);
+    const [estudiantes, setEstudiantes] = useState([]);
     useEffect(() => {
-        const url = 'http://127.0.0.1:8085/asignaturas/'
+        const url = 'http://127.0.0.1:8085/1/1/asignaturas/8/estudiantes'
 
         fetch(url)
         .then(response => response.json())
-        .then(data => setAsignaturas(data))
+        .then(data => setEstudiantes(data))
         .catch(error => console.error(error));
     }, []);
 
@@ -27,6 +27,7 @@ export const GridEstudiantes = () => {
                 <div style={{ borderRight: '2px solid #bebbbb',flex: 2 }}>
                     <div className='buscar-estudiantes'>
                         <p>Buscar Estudiantes</p>
+                        <p>{asignatura.idAsignatura}</p>
                     </div>
                     <div className="card flex flex-wrap justify-content-center gap-3">
                         <span className="p-input-icon-left">
@@ -44,7 +45,7 @@ export const GridEstudiantes = () => {
                     <div className='component-grid' style={{ maxHeight: '450px', overflowY: 'auto' }}>
                         <Box sx={{ flexGrow: 1 }}>
                             <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 8, md: 12 }}>
-                                {asignaturas.map((asignatura, index) => {
+                                {estudiantes.map((estudiante, index) => {
 
                                     const footerStyle = {
                                         paddingTop: '2px'
@@ -69,9 +70,11 @@ export const GridEstudiantes = () => {
                                     <Grid item xs={2} sm={4} md={4} key={index}>
                                         <div className="custom-grid-item">
                                         <Card footer={footer}  style={cardStyle}>
-                                            <PerfilEstudiante name="Sandra Martinez" codigo="140619" correo="samart" src="https://primefaces.org/cdn/primereact/images/avatar/amyelsner.png"/>
+                                            <PerfilEstudiante name={estudiante.nombreCompleto} codigo={estudiante.identificacion} correo={estudiante.usuario} src="https://primefaces.org/cdn/primereact/images/avatar/amyelsner.png"/>
                                         </Card>
                                         </div>
+
+                                        
                                     </Grid>
                                     )
                                 })}
