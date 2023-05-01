@@ -103,10 +103,10 @@ INSERT INTO mydb.tbl_est_asignacion (pu_id, prog_id, asig_id, coo_id)
 VALUES
 (3,1,8,1),
 (4,1,8,1),
-(5,1,8,1),
-(6,1,8,1),
-(7,1,8,1),
-(8,1,8,1);
+(5,1,9,1),
+(6,1,9,1),
+(7,1,10,1),
+(8,1,10,1);
 
 
 -- Consultas
