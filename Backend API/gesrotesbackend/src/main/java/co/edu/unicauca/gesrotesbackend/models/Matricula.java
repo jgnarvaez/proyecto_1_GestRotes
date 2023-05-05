@@ -1,7 +1,7 @@
 package co.edu.unicauca.gesrotesbackend.models;
 
 import jakarta.persistence.EmbeddedId;
-import jakarta.persistence.Entity;;
+import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import jakarta.persistence.Column;
 
