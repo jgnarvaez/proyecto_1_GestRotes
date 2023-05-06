@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -30,5 +31,21 @@ public class Etiqueta implements Serializable {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ser_id")
     private Servicio servicio;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Etiqueta etiqueta = (Etiqueta) o;
+        return id == etiqueta.id &&
+                Objects.equals(nombre, etiqueta.nombre) &&
+                Objects.equals(escenario, etiqueta.escenario) &&
+                Objects.equals(servicio, etiqueta.servicio);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, nombre, escenario, servicio);
+    }
 
 }
