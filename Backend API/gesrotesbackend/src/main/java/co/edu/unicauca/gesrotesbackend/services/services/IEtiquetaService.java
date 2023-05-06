@@ -11,22 +11,79 @@ import co.edu.unicauca.gesrotesbackend.services.DTO.ServicioDTO;
 import java.util.List;
 
 public interface IEtiquetaService {
-    // Registrar una etiqueta
+    /**
+     *  Registra una etiqueta asociada a un escenario
+     *  
+     *  @param nuevaEtiqueta : Objeto DTO con información para crear la etiqueta.
+     *  @return Una objeto NuevaEtiquetaDTO que representa la etiqueta creada.
+     */ 
     NuevaEtiquetaDTO crearEtiqueta(NuevaEtiquetaDTO nuevaEtiqueta);
-    // Obtener lista de etiquetas creadas(solo tienen nombre y escenario)
+
+    /**
+     *  Obtiene una lista de objetos EtiquetaCreadaDTO que representan las etiquetas
+     *  existentes.
+     *  
+     *  @return Una lista de objetos EtiquetaCreadaDTO que representan las etiquetas
+     *          que han sido creadas.
+     */ 
     List<EtiquetaCreadaDTO> obtenerEtiquetasCreadas();
-    // Obtener lista de etiquetas asociadas(con servicio)
+    
+    /**
+     *  Obtiene una lista de objetos EtiquetaConServicioDTO que representan las etiquetas
+     *  que tienen un servicio asociado.
+     *  
+     *  @return Una lista de objetos EtiquetaConServicioDTO que representan las etiquetas
+     *          que tienen un servicio asociado.
+     */ 
     List<EtiquetaConServicioDTO> obtenerEtiquetasAsociadas();
-    // Obtener lista de etiquetas filtradas por un escenario
+    
+    /**
+     *  Obtiene una lista de objetos EtiquetaPorEscenarioDTO que representan las etiquetas
+     *  que tienen en común un escenario de práctica en específico.
+     *  
+     *  @param idEscenario : El ID del escenario que deben tener las etiquetas.
+     *  @return Una lista de objetos EtiquetaPorEscenarioDTO que representan las etiquetas
+     *          que tienen un mismo escenario de práctica.
+     */ 
     List<EtiquetaPorEscenarioDTO> obtenerEtiquetasPorEscenario(int idEscenario);
-    // Obtener lista de los escenarios
+
+    /**
+     *  Obtiene una lista de objetos EscenarioDTO que representan los escenarios
+     *  de práctica registrados
+     *  
+     *  @return Una lista de objetos EscenarioDTO que representan los escenarios
+     *          de práctica existentes
+     */ 
     List<EscenarioDTO> obetenerEscenarios();
-    // Obtener lista de los servicios
+
+    /**
+     *  Obtiene una lista de objetos ServicioDTO que representan los servicios registrados
+     *  
+     *  @return Una lista de objetos ServicioDTO que representan los servicios existentes
+     */ 
     List<ServicioDTO> obtenerServicios();
-    // Asociar un servicio a una etiqueta
+
+    /**
+     *  Asocia un servicio a una etiqueta
+     *  
+     *  @param idEtiqueta : El ID de la etiqueta.
+     *  @param idServicio : El ID del servicio a asociar.
+     *  @return Un objeto AsociacionEtiquetaServicioDTO que representa las asociación
+     *          entre la etiqueta y el servicio.
+     */ 
     AsociacionEtiquetaServicioDTO asociarEtiqueta(int idEtiqueta, int idServicio);
-    // Eliminar una etiqueta
+    
+    /**
+     *  Elimina una etiqueta
+     *  
+     *  @param idEtiqueta : El ID de la etiqueta a eliminar.
+     */ 
     void eliminarEtiqueta(int idEtiqueta);
-    // Eliminar servicio asociado a una etiqueta
+    
+    /**
+     *  Elimina el servicio asociado a una etiqueta
+     *  
+     *  @param idEtiqueta : El ID de la etiqueta a la que se le va a eliminar el servicio.
+     */ 
     void eliminarAsociacion(int idEtiqueta);
 }

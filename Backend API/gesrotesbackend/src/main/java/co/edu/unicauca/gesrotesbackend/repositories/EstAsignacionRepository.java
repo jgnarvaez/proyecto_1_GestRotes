@@ -9,6 +9,12 @@ import org.springframework.data.repository.query.Param;
 
 public interface EstAsignacionRepository extends JpaRepository<EstAsignacion, EstAsignacionId> {
 
+    /**
+     *  Elimina los registros de la tabla "tbl_est_asignacion" que tengan una asignación en común.
+     *  @param progId el ID del programa asociado.
+     *  @param asigId el ID de la asignatura asociada.
+     *  @param cooId el ID del coordinador de asignatura asociado.
+    */
     @Modifying
     @Transactional
     @Query(value = "DELETE FROM tbl_est_asignacion " +
@@ -17,6 +23,13 @@ public interface EstAsignacionRepository extends JpaRepository<EstAsignacion, Es
             "AND coo_id = :coordinatorId", nativeQuery = true)
     void deleteAllStudents(@Param("programId") int progId, @Param("subjectId") int asigId, @Param("coordinatorId") int cooId);
 
+    /**
+     *  Elimina un registro de la tabla "tbl_est_asignacion"
+     *  @param progId el ID del programa asociado.
+     *  @param asigId el ID de la asignatura asociada.
+     *  @param cooId el ID del coordinador de asignatura asociado.
+     *  @param studId el ID del estudiante asociado.
+    */
     @Modifying
     @Transactional
     @Query(value = "DELETE FROM tbl_est_asignacion " +
