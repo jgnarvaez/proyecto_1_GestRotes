@@ -170,3 +170,12 @@
   color: #888;
   margin-top: 5px;
 }
+
+.header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: blue;
+  color: white;
+  height: 3rem; /* Ajustar según el alto deseado */
+}
