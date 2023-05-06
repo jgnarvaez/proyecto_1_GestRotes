@@ -45,7 +45,8 @@ INSERT INTO mydb.tbl_servicio (ser_nombre)
 VALUES 
 ('Cardiología'),
 ('Salud Mental'),
-('Pediatría');
+('Pediatría'),
+('Urgencias');
 
 -- jornada
 INSERT INTO mydb.tbl_jornada (jor_franja, jor_hora_inicio, jor_hora_fin)
@@ -107,3 +108,8 @@ VALUES
 (6,1,9,1),
 (7,1,10,1),
 (8,1,10,1);
+
+-- etiqueta
+INSERT INTO mydb.tbl_etiqueta (eti_nombre, esc_id, ser_id)
+VALUES
+('Primer piso', 1, 1);
