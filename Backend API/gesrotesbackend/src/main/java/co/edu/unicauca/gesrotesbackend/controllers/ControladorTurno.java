@@ -3,6 +3,7 @@ package co.edu.unicauca.gesrotesbackend.controllers;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -18,6 +19,7 @@ import co.edu.unicauca.gesrotesbackend.services.services.ITurnoService;
 @RestController
 // @RequestMapping("{cooId}/{progId}/asignaturas/{asigId}")
 @RequestMapping("turnos")
+@CrossOrigin(origins = "*")
 public class ControladorTurno {
     @Autowired
     ITurnoService turnoService;

@@ -9,6 +9,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("{cooId}/{progId}/asignaturas")
+@CrossOrigin(origins = "*")
 public class ControladorAsignacion {
 
     @Autowired

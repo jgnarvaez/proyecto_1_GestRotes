@@ -10,6 +10,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("{cooId}/{progId}/asignaturas/{asigId}")
+@CrossOrigin(origins = "*")
 public class ControladorAsignacionEstudiantes {
     @Autowired
     private IAsignacionEstudiantesService asignacionEstudiantesService;
