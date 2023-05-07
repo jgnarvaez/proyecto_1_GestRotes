@@ -13,14 +13,16 @@ import { Dropdown } from 'primereact/dropdown';
 import { Dialog } from 'primereact/dialog';
 import { Divider } from 'primereact/divider';
 import { Badge } from 'primereact/badge';
+import axios from 'axios';
 
 export const GridEstudiantes = ({ asignatura }) => {
 
     // CAMBIO
     const [searchText, setSearchText] = useState('');
-    const [estudiantesBusqueda, setEstudiantesBusqueda] = useState([]);
     const [timer, setTimer] = useState(null);
-    // CAMBIO
+
+    // ESTUDIANTES
+    const [estudiantesBusqueda, setEstudiantesBusqueda] = useState([]);
     const [estudiantes, setEstudiantes] = useState([]);
     const [confirmDialogVisible, setConfirmDialogVisible] = useState(false);
     const [estudianteIdEliminar, setEstudianteIdEliminar] = useState([]);
@@ -57,20 +59,40 @@ export const GridEstudiantes = ({ asignatura }) => {
 
     //CREAR ETIQUETAS
     const [valueCrearEtiqueta, setValueCrearEtiqueta] = useState('');
+    const [etiquetasListarCreadas, setEtiquetasListarCreadas] = useState([]);
+    const [etiquetasListarAsociadas, setEtiquetasListarAsociadas] = useState([]);
+    const [escenarios, setEscenarios] = useState([]);
+    const [servicios, setServicios] = useState([]);
+    
 
     //SELECCION ESCENARIO
     const [selectedEscenario, setSelectedEscenario] = useState(null);
-    const escenarios = [
-        { name: 'New York', code: 'NY' },
-        { name: 'Rome', code: 'RM' },
-        { name: 'London', code: 'LDN' },
-        { name: 'Istanbul', code: 'IST' },
-        { name: 'Paris', code: 'PRS' }
-    ];
+    const [selectedEtiqueta, setSelectedEtiqueta] = useState(null);
+    const [selectedServicio, setSelectedServicio] = useState(null);
 
     //ESTADO BOTONES
     const [botonCrearEtiquetas, setBotonCrearEtiquetas] = useState(true);
     const [botonAsociarEtiquetas, setBotonAsociarEtiquetas] = useState(false);
+
+    //ELIMINAR ETIQUETAS
+    const [etiquetaIdEliminar, setEtiquetaIdEliminar] = useState([]);
+    const [confirmDialogVisibleEtiquetas, setConfirmDialogVisibleEtiquetas] = useState(false);
+    const [etiquetaIdEliminarAsociado, setEtiquetaIdEliminarAsociado] = useState([]);
+    const [confirmDialogVisibleEtiquetasAsociado, setConfirmDialogVisibleEtiquetasAsociado] = useState(false);
+
+    //POST CREAR ETIQUETA
+    const etiquetaNueva = {
+        nombreEtiqueta: valueCrearEtiqueta,
+        idEscenario: selectedEscenario
+        //idServicio: null
+    }
+
+    //POST CREAR ASOCION
+    const etiquetaAsociacionServicio ={
+        idEtiqueta: selectedEtiqueta, //puede que sea el nombreEtiqueta: selectedEtiqueta y no el id
+        idServicio: selectedServicio
+        //puede que haga falta pasarle el idEscenario
+    }
 
     const handleClickEstadoBotones = (tipo) => {
         if (tipo === 'crear') {
@@ -121,24 +143,22 @@ export const GridEstudiantes = ({ asignatura }) => {
     const fetchEstudiantes = useCallback(() => {
         const url = `http://127.0.0.1:8085/1/1/asignaturas/${asignatura.idAsignatura}/estudiantes`;
       
-        fetch(url)
-          .then(response => response.json())
-          .then(data => setEstudiantes(data))
-          .catch(error => console.error(error));
-      }, [asignatura.idAsignatura]);
+        axios.get(url)
+        .then(response => setEstudiantes(response.data))
+        .catch(error => console.error(error));
+    }, [asignatura.idAsignatura]);
       
       useEffect(() => {
         fetchEstudiantes();
       }, [fetchEstudiantes]);
 
-    const buscarEstudiantes = (val) => {
+      const buscarEstudiantes = (val) => {
         if (val.length > 0) {
             const url = `http://127.0.0.1:8085/1/1/asignaturas/${asignatura.idAsignatura}/estudiantes/${val}`;
-            fetch(url)
-            .then(response => response.json())
-            .then(data => setEstudiantesBusqueda(data))
-            .catch(error => console.error(error));
-        }else{
+            axios.get(url)
+                .then(response => setEstudiantesBusqueda(response.data))
+                .catch(error => console.error(error));
+        } else {
             setEstudiantesBusqueda([]);
         }
     };
@@ -184,6 +204,135 @@ export const GridEstudiantes = ({ asignatura }) => {
     setConfirmDialogVisibleTodos(false);
     };
 
+    //Listar etiquetas creadas 
+    const listarEtiquetasCreadas = useCallback(() => {
+        const url = `http://127.0.0.1:8085/etiquetas/`
+        axios.get(url)
+        .then(response => setEtiquetasListarCreadas(response.data))
+        .catch(error => console.error(error));
+    }, []);
+    useEffect(() => {
+        listarEtiquetasCreadas();
+    }, [listarEtiquetasCreadas]);
+
+    //Listar etiquetas asociadas 
+    const listarEtiquetasAsociadas = useCallback(() => {
+        const url = `http://127.0.0.1:8085/etiquetas/onlyService`
+        axios.get(url)
+          .then(response => setEtiquetasListarAsociadas(response.data))
+          .catch(error => console.error(error));
+      }, []);
+      useEffect(() => {
+        listarEtiquetasAsociadas();
+      }, [listarEtiquetasAsociadas]);
+    
+    //Listar escenarios
+    const listarEscenarios = useCallback(() => {
+        const url = `http://127.0.0.1:8085/etiquetas/escenarios`
+        axios.get(url)
+        .then(response => setEscenarios(response.data))
+        .catch(error => console.error(error));
+    }, []);
+    useEffect(() => {
+        listarEscenarios();
+    }, [listarEscenarios]);
+
+    //Listar servicios
+    const listarServicios=  useCallback(() => {
+        const url = `http://127.0.0.1:8085/etiquetas/servicios`
+        axios.get(url)
+        .then(response => setServicios(response.data))
+        .catch(error => console.error(error));
+    }, []);
+    useEffect(() => {
+        listarServicios();
+    }, [listarServicios]);
+    
+
+    /*/Listar etiqueta especifica TODO
+    //*const listarEtiquetaEspecifica= () => {
+        const url = `http://127.0.0.1:8085/etiquetas/escenarios/4`
+    }/*/
+
+    //Crear etiqueta
+    const handleCrearEtiqueta = (etiquetaCrear) => {
+        const url = `http://127.0.0.1:8085/etiquetas/`;
+      
+        axios.post(url, etiquetaCrear)
+          .then(response => {
+            console.log('Etiqueta registrada:', response.data);
+            // Aquí podrías actualizar el estado de tu componente para mostrar que el estudiante ha sido registrado
+          })
+          .catch(error => {
+            console.error('Error al registrar la etiqueta:', error);
+            // Aquí podrías mostrar un mensaje de error en tu interfaz de usuario
+          });
+      }
+
+    //Asociar servicio a una etiqueta
+    const asociarServicioEtiqueta = (etiquetaAsociada) => {
+        const url = `http://localhost:8085/etiquetas/asociar`
+        axios.post(url, etiquetaAsociada)
+          .then(response => {
+            console.log('Servicio asociado a la etiqueta con exito:', response.data);
+            // Aquí podrías actualizar el estado de tu componente para mostrar que el estudiante ha sido registrado
+          })
+          .catch(error => {
+            console.error('Error al asociar el servicio a la etiqueta:', error);
+            // Aquí podrías mostrar un mensaje de error en tu interfaz de usuario
+          });
+    }
+
+    //Eliminar etiqueta
+    const eliminarEtiqueta = async () => {
+        //const url = `http://127.0.0.1:8085/etiquetas/2`
+        try {
+            const response = await fetch(`http://127.0.0.1:8085/etiquetas/${etiquetaIdEliminar}`, {
+            method: 'DELETE'
+            });
+        
+            if (response.ok) {
+            console.log(`Etiqueta con ID ${etiquetaIdEliminar} eliminada.`);
+            listarEtiquetasCreadas(); //actualiza etiquetas
+            } else {
+            console.log(`No se pudo eliminar la etiqueta con ID ${etiquetaIdEliminar}.`);
+            }
+        } catch (error) {
+            console.error(error);
+        }
+            setConfirmDialogVisibleEtiquetas(false);
+            setEtiquetaIdEliminar(null);
+    }
+    const handleEliminarEtiqueta = (id) => {
+        setConfirmDialogVisibleEtiquetas(true);
+        setEtiquetaIdEliminar(id);
+    };
+
+    //Eliminar servicio asociado a una etiqueta
+    const eliminarServicioAsociadoEtiqueta = async () => {
+        //const url = `http://localhost:8085/etiquetas/2/eliminarAsosiacion`
+        try {
+            const response = await fetch(`http://localhost:8085/etiquetas/${etiquetaIdEliminarAsociado}/eliminarAsosiacion`, {
+            method: 'DELETE'
+            });
+        
+            if (response.ok) {
+            console.log(`Servicio asociado a la etiqueta con ID ${etiquetaIdEliminarAsociado} eliminado.`);
+            listarEtiquetasAsociadas(); //actualiza etiquetas
+            } else {
+            console.log(`No se pudo eliminar el servicio asociado a la etiqueta con ID ${etiquetaIdEliminarAsociado}.`);
+            }
+        } catch (error) {
+            console.error(error);
+        }
+            setConfirmDialogVisibleEtiquetasAsociado(false);
+            setEtiquetaIdEliminarAsociado(null);
+    }
+
+    const handleEliminarEtiquetaAsociado = (id) => {
+        setConfirmDialogVisibleEtiquetasAsociado(true);
+        setEtiquetaIdEliminar(id);
+    };
 
     return (
     <div className="card">
@@ -223,14 +372,23 @@ export const GridEstudiantes = ({ asignatura }) => {
                                         paddingTop: '2px'
                                     };
 
-                                    const handleGestionarClickRegistrar = () => {
-                                        
-                                        //window.location.href = '/estudiantes';
+                                    const handleGestionarClickRegistrar = (estudianteRegistrar) => {
+                                        const url = `http://127.0.0.1:8085/1/1/asignaturas/${asignatura.idAsignatura}/estudiantes/${estudianteRegistrar.id}`;
+                                      
+                                        axios.post(url, estudianteRegistrar)
+                                          .then(response => {
+                                            console.log('Estudiante registrado:', response.data);
+                                            // Aquí podrías actualizar el estado de tu componente para mostrar que el estudiante ha sido registrado
+                                          })
+                                          .catch(error => {
+                                            console.error('Error al registrar estudiante:', error);
+                                            // Aquí podrías mostrar un mensaje de error en tu interfaz de usuario
+                                          });
                                     }
                                 
                                     const footer = (
                                         <div style={footerStyle}>
-                                            <Button label="Registrar" style={{ fontSize: '0.5rem', backgroundColor: 'blue' }}  onClick={handleGestionarClickRegistrar} />
+                                            <Button label="Registrar" style={{ fontSize: '0.5rem', backgroundColor: 'blue' }}  onClick={() => handleGestionarClickRegistrar(estudianteBusqueda)} />
                                         </div>
                                     );
 
@@ -335,7 +493,7 @@ export const GridEstudiantes = ({ asignatura }) => {
                                 <InputText value={valueCrearEtiqueta} onChange={(e) => setValueCrearEtiqueta(e.target.value)} placeholder="Ingrese un nombre" />
                                 <p style={{ fontSize: '0.7rem'}}>&nbsp;</p >
                             </div>
-                        <Divider layout="vertical" />
+                            <Divider layout="vertical" />
                             <div style={{marginLeft:'30px', textAlign: 'center' }}>
                                 <p style={{fontWeight: 'bold' }}>
                                     <Badge value="2" style={{ marginRight: '20px' }}></Badge>
@@ -343,23 +501,33 @@ export const GridEstudiantes = ({ asignatura }) => {
                                 </p>
                                 <div style={{ display: 'block' }}>
                                     <p>Seleccione el hospital *</p>
-                                    <Dropdown value={selectedEscenario} onChange={(e) => setSelectedEscenario(e.value)} options={escenarios} optionLabel="name" placeholder="Seleccione el Hospital"/>
+                                    <Dropdown 
+                                        value={selectedEscenario} 
+                                        onChange={(e) => setSelectedEscenario(e.value)} 
+                                        options={escenarios.map((escenario) => ({label: escenario.nombreEscenario, value: escenario.idEscenario}))} 
+                                        placeholder="Seleccione el Hospital"
+                                    />
                                 </div>
                                 <div style={{ display: 'block', marginTop: '10px' }}>
-                                    <Button label="CREAR" style={{ fontSize: '0.5rem', backgroundColor: 'blue' }} />
+                                    <Button label="CREAR" style={{ fontSize: '0.5rem', backgroundColor: 'blue' }} onClick={() => handleCrearEtiqueta(etiquetaNueva)} />
                                 </div>
                             </div>
                         </div>
                         <Divider/>
                         <div style={{ textAlign: 'center', width:'600px' }}>
                             <p style={{fontWeight: 'bold' }}>LISTA DE ETIQUETAS CREADAS </p>
-                            <DataTable value={estudiantes} tableStyle={{ width:'500px' , margin: 'auto'}} bodyStyle={{ textAlign: 'center' }}>
-                                <Column field="usuario" header="Etiqueta"></Column>
-                                <Column field="usuario" header="Hospital"></Column>
-                                <Column header="Eliminar" body={() => 
-                                    <button style={{ border: 'none', background: 'none' }}>
-                                        <i className="pi pi-trash"></i>
-                                    </button>}>
+                            <DataTable value={etiquetasListarCreadas} tableStyle={{ width:'500px' , margin: 'auto'}} bodystyle={{ textAlign: 'center' }}>
+                                <Column field="nombreEtiqueta" header="Etiqueta"></Column>
+                                <Column field="nombreEscenario" header="Hospital"></Column>
+                                <Column header="Eliminar" body={(rowData) => (
+                                    <div>
+                                        <button style={{ border: 'none', background: 'none' }} onClick={() => handleEliminarEtiqueta(rowData.idEtiqueta)}>
+                                            <i className="pi pi-trash"></i>
+                                        </button>
+                                        <ConfirmDialog visible={confirmDialogVisibleEtiquetas} onHide={() => setConfirmDialogVisibleEtiquetas(false)} message="¿Estás seguro de que deseas eliminar esta etiqueta?" header="Confirmar eliminación" acceptLabel="Aceptar" rejectLabel="Cancelar" icon="pi pi-exclamation-triangle" accept={() => eliminarEtiqueta()} />
+                                    </div>
+                                )}>
+                                    
                                 </Column>
                             </DataTable>
                         </div>
@@ -378,10 +546,15 @@ export const GridEstudiantes = ({ asignatura }) => {
                                     Seleccion de etiqueta
                                 </p>
                                 <p>Nombre de la etiqueta del Hospital *</p>
-                                <Dropdown value={selectedEscenario} onChange={(e) => setSelectedEscenario(e.value)} options={escenarios} optionLabel="name" placeholder="Etiqueta"/>
+                                <Dropdown 
+                                        value={selectedEtiqueta} 
+                                        onChange={(e) => setSelectedEtiqueta(e.value)} 
+                                        options={etiquetasListarCreadas.map((etiqueta) => ({label: etiqueta.nombreEtiqueta, value: etiqueta.idEtiqueta}))} 
+                                        placeholder="Etiqueta"
+                                    />
                                 <p style={{ fontSize: '0.7rem'}}>&nbsp;</p >
                             </div>
-                        <Divider layout="vertical" />
+                            <Divider layout="vertical" />
                             <div style={{marginLeft:'30px', textAlign: 'center' }}>
                                 <p style={{fontWeight: 'bold' }}>
                                     <Badge value="2" style={{ marginRight: '20px' }}></Badge>
@@ -389,24 +562,33 @@ export const GridEstudiantes = ({ asignatura }) => {
                                 </p>
                                 <div style={{ display: 'block' }}>
                                     <p>Servicio del hospital *</p>
-                                    <Dropdown value={selectedEscenario} onChange={(e) => setSelectedEscenario(e.value)} options={escenarios} optionLabel="name" placeholder="Jornada"/>
+                                    <Dropdown 
+                                        value={selectedServicio} 
+                                        onChange={(e) => setSelectedServicio(e.value)} 
+                                        options={servicios.map((servicio) => ({label: servicio.nombreServicio, value: servicio.idServicio}))} 
+                                        placeholder="Servicio"
+                                    />
                                 </div>
                                 <div style={{ display: 'block', marginTop: '10px' }}>
-                                    <Button label="ASOCIAR" style={{ fontSize: '0.5rem', backgroundColor: 'blue' }} />
+                                    <Button label="ASOCIAR" style={{ fontSize: '0.5rem', backgroundColor: 'blue' }} onClick={() => asociarServicioEtiqueta(etiquetaAsociacionServicio)}/>
                                 </div>
                             </div>
                         </div>
                         <Divider/>
                         <div style={{ textAlign: 'center', width:'600px' }}>
                             <p style={{fontWeight: 'bold' }}>LISTA DE ETIQUETAS ASOCIADAS </p>
-                            <DataTable value={estudiantes} tableStyle={{ width:'500px' , margin: 'auto'}} bodyStyle={{ textAlign: 'center' }}>
-                                <Column field="usuario" header="Etiqueta"></Column>
-                                <Column field="usuario" header="Servicio"></Column>
-                                <Column field="usuario" header="Hospital"></Column>
-                                <Column header="Eliminar" body={() => 
-                                    <button style={{ border: 'none', background: 'none' }}>
-                                        <i className="pi pi-trash"></i>
-                                    </button>}>
+                            <DataTable value={etiquetasListarAsociadas} tableStyle={{ width:'500px' , margin: 'auto'}} bodystyle={{ textAlign: 'center' }}>
+                                <Column field="nombreEtiqueta" header="Etiqueta"></Column>
+                                <Column field="nombreServicio" header="Servicio"></Column>
+                                <Column field="nombreEscenario" header="Hospital"></Column>
+                                <Column header="Eliminar" body={(rowData) => (
+                                    <div>
+                                        <button style={{ border: 'none', background: 'none' }} onClick={() => handleEliminarEtiquetaAsociado(rowData.idEtiqueta)}>
+                                            <i className="pi pi-trash"></i>
+                                        </button>
+                                        <ConfirmDialog visible={confirmDialogVisibleEtiquetasAsociado} onHide={() => setConfirmDialogVisibleEtiquetasAsociado(false)} message="¿Estás seguro de que deseas eliminar la asociación de esta etiqueta?" header="Confirmar eliminación" acceptLabel="Aceptar" rejectLabel="Cancelar" icon="pi pi-exclamation-triangle" accept={() => eliminarServicioAsociadoEtiqueta()} />
+                                    </div> 
+                                )}>
                                 </Column>
                             </DataTable>
                         </div>
