@@ -13,6 +13,8 @@ import { Dropdown } from 'primereact/dropdown';
 import { Dialog } from 'primereact/dialog';
 import { Divider } from 'primereact/divider';
 import { Badge } from 'primereact/badge';
+//import { toast } from 'react-toastify';
+//import 'react-toastify/dist/ReactToastify.css';
 import axios from 'axios';
 
 export const GridEstudiantes = ({ asignatura }) => {
@@ -153,6 +155,7 @@ export const GridEstudiantes = ({ asignatura }) => {
       }, [fetchEstudiantes]);
 
       const buscarEstudiantes = (val) => {
+        fetchEstudiantes();
         if (val.length > 0) {
             const url = `http://127.0.0.1:8085/1/1/asignaturas/${asignatura.idAsignatura}/estudiantes/${val}`;
             axios.get(url)
@@ -261,6 +264,7 @@ export const GridEstudiantes = ({ asignatura }) => {
         axios.post(url, etiquetaCrear)
           .then(response => {
             console.log('Etiqueta registrada:', response.data);
+            listarEtiquetasCreadas();
             // Aquí podrías actualizar el estado de tu componente para mostrar que el estudiante ha sido registrado
           })
           .catch(error => {
@@ -272,9 +276,10 @@ export const GridEstudiantes = ({ asignatura }) => {
     //Asociar servicio a una etiqueta
     const asociarServicioEtiqueta = (etiquetaAsociada) => {
         const url = `http://localhost:8085/etiquetas/asociar`
-        axios.post(url, etiquetaAsociada)
+        axios.put(url, etiquetaAsociada)
           .then(response => {
             console.log('Servicio asociado a la etiqueta con exito:', response.data);
+            listarEtiquetasAsociadas();
             // Aquí podrías actualizar el estado de tu componente para mostrar que el estudiante ha sido registrado
           })
           .catch(error => {
@@ -313,7 +318,7 @@ export const GridEstudiantes = ({ asignatura }) => {
         //const url = `http://localhost:8085/etiquetas/2/eliminarAsosiacion`
         try {
             const response = await fetch(`http://localhost:8085/etiquetas/${etiquetaIdEliminarAsociado}/eliminarAsosiacion`, {
-            method: 'DELETE'
+            method: 'PUT'
             });
         
             if (response.ok) {
@@ -378,7 +383,9 @@ export const GridEstudiantes = ({ asignatura }) => {
                                         axios.post(url, estudianteRegistrar)
                                           .then(response => {
                                             console.log('Estudiante registrado:', response.data);
-                                            // Aquí podrías actualizar el estado de tu componente para mostrar que el estudiante ha sido registrado
+                                            fetchEstudiantes();
+                                            //<Message severity="success" text="Estudiante registrado con exito." />
+                                            // Aquí podrías mostrar un mensaje de exito en tu interfaz de usuario
                                           })
                                           .catch(error => {
                                             console.error('Error al registrar estudiante:', error);
