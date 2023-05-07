@@ -4,7 +4,7 @@ import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import { Card } from 'primereact/card';
 import { Button } from 'primereact/button';
-import fetch from 'isomorphic-fetch';
+import axios from 'axios';
 
 
 export const GridAsignaturas = ({ toggleMostrarGridAsignaturas, onAsignaturaSeleccionada }) => {
@@ -15,11 +15,10 @@ export const GridAsignaturas = ({ toggleMostrarGridAsignaturas, onAsignaturaSele
   useEffect(() => {
     const url = 'http://127.0.0.1:8085/1/1/asignaturas/'
 
-    fetch(url)
-      .then(response => response.json())
-      .then(data => setAsignaturas(data))
-      .catch(error => console.error(error));
-  }, []);
+    axios.get(url)
+        .then(response => setAsignaturas(response.data))
+        .catch(error => console.error(error));
+}, []);
 
   const handleFiltroChange = (event) => {
     setFiltroAsignaturas(event.target.value);
