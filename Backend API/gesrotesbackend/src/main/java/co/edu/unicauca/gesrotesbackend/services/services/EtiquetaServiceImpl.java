@@ -28,11 +28,11 @@ import co.edu.unicauca.gesrotesbackend.services.DTO.ServicioDTO;
 public class EtiquetaServiceImpl implements IEtiquetaService {
 
     @Autowired 
-    EtiquetaRepository etiquetaRepository;
+    private EtiquetaRepository etiquetaRepository;
     @Autowired
-    EscenarioRepository escenarioRepository;
+    private EscenarioRepository escenarioRepository;
     @Autowired
-    ServicioRepository servicioRepository;
+    private ServicioRepository servicioRepository;
     @Autowired
     private ModelMapper modelMapper;
 

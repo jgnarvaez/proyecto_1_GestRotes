@@ -2,6 +2,8 @@ package co.edu.unicauca.gesrotesbackend.services.services;
 
 import co.edu.unicauca.gesrotesbackend.models.Estudiante;
 import co.edu.unicauca.gesrotesbackend.models.Programa;
+import co.edu.unicauca.gesrotesbackend.models.Asignacion;
+import co.edu.unicauca.gesrotesbackend.models.AsignacionId;
 import co.edu.unicauca.gesrotesbackend.models.Asignatura;
 import co.edu.unicauca.gesrotesbackend.models.CoordinadorAsignatura;
 import co.edu.unicauca.gesrotesbackend.models.EstAsignacion;
@@ -24,7 +26,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class AsignacionEstudiantesImpl implements IAsignacionEstudiantesService{
+public class AsignacionEstudiantesServiceImpl implements IAsignacionEstudiantesService{
     @Autowired
     private AsignacionRepository asignacionRepository;
     @Autowired
@@ -50,14 +52,18 @@ public class AsignacionEstudiantesImpl implements IAsignacionEstudiantesService{
         }
 
         Optional<Estudiante> student = estudianteRepository.findById(studId);
-        Optional<Programa> program = programaRepository.findById(progId);
-        Optional<Asignatura> subject = asignaturaRepository.findById(subjId);
-        Optional<CoordinadorAsignatura> coordinator = this.coordinadorAsigRepository.findById(cooId);
+        
+        Optional<Programa> programa = programaRepository.findById(progId);
+        Optional<Asignatura> asignatura = asignaturaRepository.findById(subjId);
+        Optional<CoordinadorAsignatura> coordinador = this.coordinadorAsigRepository.findById(cooId);
 
-        if (student.isPresent() && program.isPresent() && subject.isPresent() && coordinator.isPresent()) {
+        AsignacionId idAsignacion = new AsignacionId(programa.get(), asignatura.get(), coordinador.get());
+        Optional<Asignacion> asignacion = asignacionRepository.findById(idAsignacion);
+
+        if (student.isPresent() && programa.isPresent() && asignatura.isPresent() && coordinador.isPresent() && asignacion.isPresent()) {
             //Asignarle los valores a la entity
             EstAsignacion entity = new EstAsignacion();
-            EstAsignacionId entityId = new EstAsignacionId(student.get(),program.get(),subject.get(),coordinator.get());
+            EstAsignacionId entityId = new EstAsignacionId(student.get(), asignacion.get());
             entity.setId(entityId);
             //entity.setEstado(StuAsgState.Registrado.toString());
             try {
@@ -74,13 +80,13 @@ public class AsignacionEstudiantesImpl implements IAsignacionEstudiantesService{
         } else if(!student.isPresent()){
             // no se encontró el estudiante
             System.out.println("No se encontro el estudiante con el id: " + studId);
-        } else if(!program.isPresent()){
+        } else if(!programa.isPresent()){
             // no se encontró el programa
             System.out.println("No se encontro el programa con el id: " + progId);
-        } else if(!subject.isPresent()){
+        } else if(!asignatura.isPresent()){
             // no se encontró la asignatura
             System.out.println("No se encontro la asignatura con el id: " + subjId);
-        } else if(!coordinator.isPresent()){
+        } else if(!coordinador.isPresent()){
             // no se encontró el coordinador
             System.out.println("No se encontro el coordinador de asignatura con el id: " + cooId);
         }
@@ -113,11 +119,13 @@ public class AsignacionEstudiantesImpl implements IAsignacionEstudiantesService{
 
     //Eliminar todos los estudiantes asociados a una asignatura
     public void deleteStudents(int cooId, int progId,int subjId){
+        estAsignacionRepository.eliminarRegistrosTurEstAsignacion(progId,subjId,cooId); //* necesario porque no está ON DELETE CASCADE
         estAsignacionRepository.deleteAllStudents(progId,subjId,cooId);
     }
 
     //Eliminar estudiante asociado a una asignatura
     public void deleteStudent(int cooId, int progId,int subjId, int studId){
+        estAsignacionRepository.eliminarRegistrosDeEstudianteEnTurEstAsignacion(studId,progId,subjId,cooId); //* necesario porque no está ON DELETE CASCADE
         estAsignacionRepository.deleteStudent(progId,subjId,cooId,studId);
     }
 }

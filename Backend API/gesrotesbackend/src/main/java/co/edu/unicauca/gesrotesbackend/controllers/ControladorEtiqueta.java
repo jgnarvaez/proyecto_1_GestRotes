@@ -61,7 +61,7 @@ public class ControladorEtiqueta {
     }
 
     // Listar etiquetas de un escenario
-    @GetMapping("/escenarios/{escId}")
+    @GetMapping("/escenarios/{escId}/etiquetas")
     @ResponseBody
     public List<EtiquetaPorEscenarioDTO> findByHospitals(@PathVariable int escId){
         return this.etiquetaService.obtenerEtiquetasPorEscenario(escId);

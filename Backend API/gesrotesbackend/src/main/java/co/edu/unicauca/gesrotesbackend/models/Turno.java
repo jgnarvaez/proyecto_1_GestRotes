@@ -15,7 +15,7 @@ import java.util.Objects;
 @Getter
 @Setter
 @Entity
-@Table(name = "tbl_truno")
+@Table(name = "tbl_turno")
 public class Turno implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
