@@ -336,7 +336,7 @@ export const GridEstudiantes = ({ asignatura }) => {
 
     const handleEliminarEtiquetaAsociado = (id) => {
         setConfirmDialogVisibleEtiquetasAsociado(true);
-        setEtiquetaIdEliminar(id);
+        setEtiquetaIdEliminarAsociado(id);
     };
 
     return (
