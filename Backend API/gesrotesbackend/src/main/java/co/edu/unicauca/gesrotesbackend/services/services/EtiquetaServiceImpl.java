@@ -67,10 +67,19 @@ public class EtiquetaServiceImpl implements IEtiquetaService {
     
     @Override
     public NuevaEtiquetaDTO crearEtiqueta(NuevaEtiquetaDTO nuevaEtiqueta) {
-        Etiqueta objEntity = this.modelMapper.map(nuevaEtiqueta,Etiqueta.class);
-        Etiqueta objEtiquetaEntity = this.etiquetaRepository.save(objEntity);
-        NuevaEtiquetaDTO EtiquetaDTO = this.modelMapper.map(objEtiquetaEntity,NuevaEtiquetaDTO.class);
-        return EtiquetaDTO;
+        // Etiqueta objEntity = this.modelMapper.map(nuevaEtiqueta,Etiqueta.class);
+        // System.out.println("ID de la etiqueta: " + objEntity.getId() +
+        //                     ". Nombre de la etiqueta: " + objEntity.getNombre() + 
+        //                     ". ID del escenario: " + objEntity.getEscenario().getId());
+        if(etiquetaRepository.existsByName(nuevaEtiqueta.getNombreEtiqueta()) != 0){
+            System.out.println("Ya existe una etiqueta con el nombre " + nuevaEtiqueta.getNombreEtiqueta());
+            return null;
+        }
+        if(etiquetaRepository.saveLabel(nuevaEtiqueta.getNombreEtiqueta(),nuevaEtiqueta.getIdEscenario()) == 0){
+            return null;
+        }
+        //NuevaEtiquetaDTO EtiquetaDTO = this.modelMapper.map(objEtiquetaEntity,NuevaEtiquetaDTO.class);
+        return nuevaEtiqueta;
     }
 
     public AsociacionEtiquetaServicioDTO asociarEtiqueta(int idEtiqueta, int idServicio) {

@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -72,13 +73,20 @@ public class ControladorEtiqueta {
     // Crear nueva etiqueta
     @PostMapping("/")
     @ResponseBody
-    public NuevaEtiquetaDTO create(@RequestBody NuevaEtiquetaDTO etiqueta){
-        return this.etiquetaService.crearEtiqueta(etiqueta);
+    public ResponseEntity<String> createLabel(@RequestBody NuevaEtiquetaDTO etiqueta){
+        if(etiquetaService.crearEtiqueta(etiqueta)!=null){
+            return ResponseEntity.ok("Etiqueta registrada correctamente");
+        }else{
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                                    .body("No se pudo crear la etiqueta con el nombre " + etiqueta.getNombreEtiqueta() +
+                                            " y con ID de escenario: " + etiqueta.getIdEscenario());
+        }
     }
 
     // Asociar servicio a una etiqueta
     @PutMapping("/asociar")
     @ResponseBody
+    @CrossOrigin(origins = "*", methods = { RequestMethod.PUT })
     public AsociacionEtiquetaServicioDTO updateLabel(@RequestBody AsociacionEtiquetaServicioDTO etiqueta){
         AsociacionEtiquetaServicioDTO objProducto = this.etiquetaService.asociarEtiqueta(etiqueta.getIdEtiqueta(),etiqueta.getIdServicio());
         return objProducto;
@@ -87,6 +95,7 @@ public class ControladorEtiqueta {
     // Eliminar una etiqueta
     @DeleteMapping("/{idEtiqueta}")
     @ResponseBody
+    @CrossOrigin(origins = "*", methods = { RequestMethod.DELETE })
     public ResponseEntity<String> delete(@PathVariable int idEtiqueta) {
         try {
             etiquetaService.eliminarEtiqueta(idEtiqueta);
@@ -99,6 +108,7 @@ public class ControladorEtiqueta {
     // Eliminar el servicio de una etiqueta
     @PutMapping("/{idEtiqueta}/eliminarAsosiacion")
     @ResponseBody
+    @CrossOrigin(origins = "*", methods = { RequestMethod.PUT })
     public ResponseEntity<String> deleteLabel(@PathVariable int idEtiqueta) {
         try {
             etiquetaService.eliminarAsociacion(idEtiqueta);

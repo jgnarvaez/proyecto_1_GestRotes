@@ -15,6 +15,29 @@ import co.edu.unicauca.gesrotesbackend.services.DTO.EtiquetaConServicioDTO;
 
 public interface EtiquetaRepository extends JpaRepository<Etiqueta, Integer> {
 
+
+    /**
+     *  TODO: Documentar
+     *  
+     *  @param nombre
+     *  @return
+    */
+    @Query(value = "SELECT COUNT(*) FROM tbl_etiqueta WHERE eti_nombre = :nombreEtiqueta", nativeQuery = true)
+    int existsByName(@Param("nombreEtiqueta") String nombre);
+
+    /**
+     *  TODO: Documentar
+     *  
+     *  @param nombre
+     *  @param idEscenario
+     *  @return
+    */
+    @Modifying
+    @Transactional
+    @Query(value = "INSERT INTO tbl_etiqueta (eti_nombre, esc_id) " +
+            "VALUE(:nombreEtiqueta, :idEscenario)", nativeQuery = true)
+    int saveLabel(@Param("nombreEtiqueta") String nombre, @Param("idEscenario") int idEscenario);
+
     /**
      *  Método que retorna una lista de objetos EtiquetaCreadaDTO que contienen la 
      *  información de las etiquetas y sus respectivos escenarios.
