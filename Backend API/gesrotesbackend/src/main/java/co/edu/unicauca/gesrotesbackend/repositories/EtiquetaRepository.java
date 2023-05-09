@@ -20,10 +20,13 @@ public interface EtiquetaRepository extends JpaRepository<Etiqueta, Integer> {
      *  Comprueba si existe una etiqueta con el nombre especificado.
      *  
      *  @param nombre : el nombre de la etiqueta a buscar
+     *  @param idEscenario : el id del escenario
      *  @return el número de etiquetas con el nombre especificado
     */
-    @Query(value = "SELECT COUNT(*) FROM tbl_etiqueta WHERE eti_nombre = :nombreEtiqueta", nativeQuery = true)
-    int existsByName(@Param("nombreEtiqueta") String nombre);
+    @Query(value = "SELECT COUNT(*) FROM tbl_etiqueta " +
+                "WHERE eti_nombre = :nombreEtiqueta " +
+                "AND esc_id = :idEscenario", nativeQuery = true)
+    int alreadyExists(@Param("nombreEtiqueta") String nombre, @Param("idEscenario") int idEscenario);
 
     /**
      *  Guarda una nueva etiqueta asociada al escenario especificado.

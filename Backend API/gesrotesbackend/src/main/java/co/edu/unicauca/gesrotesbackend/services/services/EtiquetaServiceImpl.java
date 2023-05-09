@@ -81,7 +81,7 @@ public class EtiquetaServiceImpl implements IEtiquetaService {
             throw new HTTPException(400, "El nombre de la etiqueta digitado contiene caracteres especiales!!");
         }else if(nuevaEtiqueta.getNombreEtiqueta().length()>30){
             throw new HTTPException(400, "El nombre de la etiqueta tienen una longitud mayor a 30 caracteres!!");
-        }else if(etiquetaRepository.existsByName(nuevaEtiqueta.getNombreEtiqueta()) != 0){
+        }else if(etiquetaRepository.alreadyExists(nuevaEtiqueta.getNombreEtiqueta(), nuevaEtiqueta.getIdEscenario()) != 0){
             throw new HTTPException(409, "Ya existe una etiqueta con nombre " + nuevaEtiqueta.getNombreEtiqueta() + 
                                                     " asociada al escenario con ID: " + nuevaEtiqueta.getIdEscenario());
         }else if(etiquetaRepository.saveLabel(nuevaEtiqueta.getNombreEtiqueta(),nuevaEtiqueta.getIdEscenario()) == 0){
