@@ -3,11 +3,17 @@ package co.edu.unicauca.gesrotesbackend.services.services;
 import java.util.List;
 import java.util.Optional;
 
+import org.apache.commons.lang3.StringUtils;
+
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
+
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import co.edu.unicauca.gesrotesbackend.exceptions.HTTPException;
 import co.edu.unicauca.gesrotesbackend.exceptions.ValidacionException;
 import co.edu.unicauca.gesrotesbackend.models.EscenarioPractica;
 import co.edu.unicauca.gesrotesbackend.models.Etiqueta;
@@ -67,18 +73,21 @@ public class EtiquetaServiceImpl implements IEtiquetaService {
     
     @Override
     public NuevaEtiquetaDTO crearEtiqueta(NuevaEtiquetaDTO nuevaEtiqueta) {
-        // Etiqueta objEntity = this.modelMapper.map(nuevaEtiqueta,Etiqueta.class);
-        // System.out.println("ID de la etiqueta: " + objEntity.getId() +
-        //                     ". Nombre de la etiqueta: " + objEntity.getNombre() + 
-        //                     ". ID del escenario: " + objEntity.getEscenario().getId());
-        if(etiquetaRepository.existsByName(nuevaEtiqueta.getNombreEtiqueta()) != 0){
-            System.out.println("Ya existe una etiqueta con el nombre " + nuevaEtiqueta.getNombreEtiqueta());
-            return null;
+        if(nuevaEtiqueta.getNombreEtiqueta().equals("")){
+            throw new HTTPException(400, "El nombre de la etiqueta no pude ser vacío!!");
+        }else if(StringUtils.isNumeric(nuevaEtiqueta.getNombreEtiqueta())){
+            throw new HTTPException(400, "El nombre de la etiqueta digitado solo contiene números!!");
+        }else if(hasSpecialChars(nuevaEtiqueta.getNombreEtiqueta())){
+            throw new HTTPException(400, "El nombre de la etiqueta digitado contiene caracteres especiales!!");
+        }else if(nuevaEtiqueta.getNombreEtiqueta().length()>30){
+            throw new HTTPException(400, "El nombre de la etiqueta tienen una longitud mayor a 30 caracteres!!");
+        }else if(etiquetaRepository.existsByName(nuevaEtiqueta.getNombreEtiqueta()) != 0){
+            throw new HTTPException(409, "Ya existe una etiqueta con nombre " + nuevaEtiqueta.getNombreEtiqueta() + 
+                                                    " asociada al escenario con ID: " + nuevaEtiqueta.getIdEscenario());
+        }else if(etiquetaRepository.saveLabel(nuevaEtiqueta.getNombreEtiqueta(),nuevaEtiqueta.getIdEscenario()) == 0){
+            throw new HTTPException(500, "No se pudo crear la etiqueta con el nombre " + nuevaEtiqueta.getNombreEtiqueta() +
+                                                    " y con ID de escenario: " + nuevaEtiqueta.getIdEscenario());
         }
-        if(etiquetaRepository.saveLabel(nuevaEtiqueta.getNombreEtiqueta(),nuevaEtiqueta.getIdEscenario()) == 0){
-            return null;
-        }
-        //NuevaEtiquetaDTO EtiquetaDTO = this.modelMapper.map(objEtiquetaEntity,NuevaEtiquetaDTO.class);
         return nuevaEtiqueta;
     }
 
@@ -115,4 +124,15 @@ public class EtiquetaServiceImpl implements IEtiquetaService {
         }
     }
 
+    /**
+     *  Verifica si una cadena contiene caracteres especiales
+     *  
+     *  @param str cadena a evaluar
+     *  @return true si la cadena contiene caracteres especiales
+     */
+    private static boolean hasSpecialChars(String str) {
+        Pattern pattern = Pattern.compile("[^a-zA-Z0-9 ]");
+        Matcher matcher = pattern.matcher(str);
+        return matcher.find();
+    }
 }

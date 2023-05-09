@@ -35,6 +35,8 @@ public class ControladorTurno {
     @PostMapping("/")
     @ResponseBody
     public TurnoCreadoDTO create(@RequestBody NuevoTurnoDTO nuevoTurno){
+        // TODO: Validar que los ID's no sean nulos
+        // TODO: Validar que la fecha no sea nula
         return turnoService.crearTurno(nuevoTurno);
     }
 

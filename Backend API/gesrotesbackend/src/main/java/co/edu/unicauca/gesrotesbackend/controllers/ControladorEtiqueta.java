@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import co.edu.unicauca.gesrotesbackend.services.DTO.EscenarioDTO;
 import co.edu.unicauca.gesrotesbackend.services.DTO.EtiquetaCreadaDTO;
 import co.edu.unicauca.gesrotesbackend.services.DTO.EtiquetaPorEscenarioDTO;
+import co.edu.unicauca.gesrotesbackend.exceptions.HTTPException;
 import co.edu.unicauca.gesrotesbackend.exceptions.ValidacionException;
 import co.edu.unicauca.gesrotesbackend.services.DTO.AsociacionEtiquetaServicioDTO;
 import co.edu.unicauca.gesrotesbackend.services.DTO.EtiquetaConServicioDTO;
@@ -74,13 +75,18 @@ public class ControladorEtiqueta {
     @PostMapping("/")
     @ResponseBody
     public ResponseEntity<String> createLabel(@RequestBody NuevaEtiquetaDTO etiqueta){
-        if(etiquetaService.crearEtiqueta(etiqueta)!=null){
-            return ResponseEntity.ok("Etiqueta registrada correctamente");
-        }else{
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                                    .body("No se pudo crear la etiqueta con el nombre " + etiqueta.getNombreEtiqueta() +
-                                            " y con ID de escenario: " + etiqueta.getIdEscenario());
+        try {
+            etiquetaService.crearEtiqueta(etiqueta);
+        } catch (HTTPException e) {
+            if(e.getStatusCode()==400){
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+            }else if(e.getStatusCode()==409){
+                return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+            }else if(e.getStatusCode()==500){
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+            }
         }
+        return ResponseEntity.ok("Etiqueta registrada correctamente");
     }
 
     // Asociar servicio a una etiqueta
