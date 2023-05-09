@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { TabView, TabPanel } from 'primereact/tabview';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
@@ -13,12 +13,12 @@ import { Dropdown } from 'primereact/dropdown';
 import { Dialog } from 'primereact/dialog';
 import { Divider } from 'primereact/divider';
 import { Badge } from 'primereact/badge';
-//import { toast } from 'react-toastify';
-//import 'react-toastify/dist/ReactToastify.css';
+import { Toast } from 'primereact/toast';
 import axios from 'axios';
 
 export const GridEstudiantes = ({ asignatura }) => {
-
+    
+    const toast = useRef(null);
     // CAMBIO
     const [searchText, setSearchText] = useState('');
     const [timer, setTimer] = useState(null);
@@ -89,11 +89,50 @@ export const GridEstudiantes = ({ asignatura }) => {
         //idServicio: null
     }
 
-    //POST CREAR ASOCION
+    //PUT CREAR ASOCION
     const etiquetaAsociacionServicio ={
-        idEtiqueta: selectedEtiqueta, //puede que sea el nombreEtiqueta: selectedEtiqueta y no el id
+        idEtiqueta: selectedEtiqueta, 
         idServicio: selectedServicio
-        //puede que haga falta pasarle el idEscenario
+    }
+
+    const showSuccessRegistrarEstudiante = () => {
+        toast.current.show({severity:'success', summary: 'Registrado!', detail:'El estudiante se registro exitosamente.', life: 8000});
+    }
+
+    const showSuccessCrearEtiqueta = () => {
+        toast.current.show({severity:'success', summary: 'Creada!', detail:'Se ha creado una nueva etiqueta.', life: 8000});
+    }
+
+    const showSuccessEtiquetaAsociado = () => {
+        toast.current.show({severity:'success', summary: 'Asociado!', detail:'El servicio se ha asociado exitosamente a la etiqueta.', life: 8000});
+    }
+
+    const showInfoEliminarEstudiante = () => {
+        toast.current.show({severity:'info', summary: 'Eliminado!', detail:'Se ha eliminado el registro del estudiante.', life: 8000});
+    }
+
+    const showInfoEliminarTodo = () => {
+        toast.current.show({severity:'info', summary: 'Eliminado!', detail:'Se ha eliminado todos los registros de estudiantes.', life: 8000});
+    }
+
+    const showInfoEliminarEtiquetaCreada = () => {
+        toast.current.show({severity:'info', summary: 'Eliminado!', detail:'Se ha eliminado la etiqueta correctamente.', life: 8000});
+    }
+
+    const showInfoEliminarEtiquetaAsociado = () => {
+        toast.current.show({severity:'info', summary: 'Eliminado!', detail:'Se ha eliminado el servicio asociado a la etiqueta correctamente.', life: 8000});
+    }
+
+    const showErrorRegistrarEstudiante = () => {
+        toast.current.show({severity:'error', summary: 'Error', detail:'Error al intentar registrar el estudiante.', life: 8000});
+    }
+
+    const showErrorCrearEtiqueta = () => {
+        toast.current.show({severity:'error', summary: 'Error', detail:'Error al intentar crear la etiqueta.', life: 8000});
+    }
+
+    const showErrorEtiquetaAsociado = () => {
+        toast.current.show({severity:'error', summary: 'Error', detail:'Error al intentar asociar el servicio a la etiqueta.', life: 8000});
     }
 
     const handleClickEstadoBotones = (tipo) => {
@@ -174,7 +213,9 @@ export const GridEstudiantes = ({ asignatura }) => {
     
         if (response.ok) {
         console.log(`Estudiante con ID ${estudianteIdEliminar} eliminado.`);
+        showInfoEliminarEstudiante();
         fetchEstudiantes(); //actualiza estudiantes
+        
         } else {
         console.log(`No se pudo eliminar al estudiante con ID ${estudianteIdEliminar}.`);
         }
@@ -197,7 +238,9 @@ export const GridEstudiantes = ({ asignatura }) => {
     
         if (response.ok) {
         console.log(`Todos los estudiantes han sido eliminados.`);
+        showInfoEliminarTodo();
         fetchEstudiantes();
+        
         } else {
         console.log(`No se pudo eliminar a los estudiantes.`);
         }
@@ -265,11 +308,11 @@ export const GridEstudiantes = ({ asignatura }) => {
           .then(response => {
             console.log('Etiqueta registrada:', response.data);
             listarEtiquetasCreadas();
-            // Aquí podrías actualizar el estado de tu componente para mostrar que el estudiante ha sido registrado
+            showSuccessCrearEtiqueta();
           })
           .catch(error => {
             console.error('Error al registrar la etiqueta:', error);
-            // Aquí podrías mostrar un mensaje de error en tu interfaz de usuario
+            showErrorCrearEtiqueta();
           });
       }
 
@@ -280,11 +323,11 @@ export const GridEstudiantes = ({ asignatura }) => {
           .then(response => {
             console.log('Servicio asociado a la etiqueta con exito:', response.data);
             listarEtiquetasAsociadas();
-            // Aquí podrías actualizar el estado de tu componente para mostrar que el estudiante ha sido registrado
+            showSuccessEtiquetaAsociado();
           })
           .catch(error => {
             console.error('Error al asociar el servicio a la etiqueta:', error);
-            // Aquí podrías mostrar un mensaje de error en tu interfaz de usuario
+            showErrorEtiquetaAsociado();
           });
     }
 
@@ -297,8 +340,9 @@ export const GridEstudiantes = ({ asignatura }) => {
             });
         
             if (response.ok) {
-            console.log(`Etiqueta con ID ${etiquetaIdEliminar} eliminada.`);
-            listarEtiquetasCreadas(); //actualiza etiquetas
+                console.log(`Etiqueta con ID ${etiquetaIdEliminar} eliminada.`);
+                listarEtiquetasCreadas(); //actualiza etiquetas
+                showInfoEliminarEtiquetaCreada();
             } else {
             console.log(`No se pudo eliminar la etiqueta con ID ${etiquetaIdEliminar}.`);
             }
@@ -322,10 +366,11 @@ export const GridEstudiantes = ({ asignatura }) => {
             });
         
             if (response.ok) {
-            console.log(`Servicio asociado a la etiqueta con ID ${etiquetaIdEliminarAsociado} eliminado.`);
-            listarEtiquetasAsociadas(); //actualiza etiquetas
+                console.log(`Servicio asociado a la etiqueta con ID ${etiquetaIdEliminarAsociado} eliminado.`);
+                listarEtiquetasAsociadas(); //actualiza etiquetas
+                showInfoEliminarEtiquetaAsociado();
             } else {
-            console.log(`No se pudo eliminar el servicio asociado a la etiqueta con ID ${etiquetaIdEliminarAsociado}.`);
+                console.log(`No se pudo eliminar el servicio asociado a la etiqueta con ID ${etiquetaIdEliminarAsociado}.`);
             }
         } catch (error) {
             console.error(error);
@@ -349,6 +394,7 @@ export const GridEstudiantes = ({ asignatura }) => {
                         <p>Buscar Estudiantes</p>
                     </div>
                     <div className="card flex flex-wrap justify-content-center gap-3">
+                        <Toast ref={toast} />
                         <span className="p-input-icon-left">
                             <i className="pi pi-search" />
                             {/* CAMBIO */}
@@ -383,18 +429,21 @@ export const GridEstudiantes = ({ asignatura }) => {
                                         axios.post(url, estudianteRegistrar)
                                           .then(response => {
                                             console.log('Estudiante registrado:', response.data);
+                                            showSuccessRegistrarEstudiante();
+                                            setEstudiantesBusqueda([]);
+                                            setSearchText('');
                                             fetchEstudiantes();
-                                            //<Message severity="success" text="Estudiante registrado con exito." />
-                                            // Aquí podrías mostrar un mensaje de exito en tu interfaz de usuario
+                                            
                                           })
                                           .catch(error => {
                                             console.error('Error al registrar estudiante:', error);
-                                            // Aquí podrías mostrar un mensaje de error en tu interfaz de usuario
+                                            showErrorRegistrarEstudiante();
                                           });
                                     }
                                 
                                     const footer = (
                                         <div style={footerStyle}>
+                                            
                                             <Button label="Registrar" style={{ fontSize: '0.5rem', backgroundColor: 'blue' }}  onClick={() => handleGestionarClickRegistrar(estudianteBusqueda)} />
                                         </div>
                                     );
@@ -420,6 +469,7 @@ export const GridEstudiantes = ({ asignatura }) => {
                     {/* CAMBIO */}
                 </div>
                 <div style={{ paddingLeft: '10px',flex: 7 }}> 
+                <Toast ref={toast} />
                     <div className='navegador-estudiantes-registrados' style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                         <p></p>
                         <p style={{ textAlign: 'center', margin: 0 }}>Estudiantes Registrados</p>
@@ -473,6 +523,7 @@ export const GridEstudiantes = ({ asignatura }) => {
             </TabPanel>
             <TabPanel header="Profesores">
                 <h1>En construcción</h1>
+
             </TabPanel>
             <TabPanel header="Rotes">
                 <h1>En construcción</h1>
@@ -516,6 +567,7 @@ export const GridEstudiantes = ({ asignatura }) => {
                                     />
                                 </div>
                                 <div style={{ display: 'block', marginTop: '10px' }}>
+                                    <Toast ref={toast} />
                                     <Button label="CREAR" style={{ fontSize: '0.5rem', backgroundColor: 'blue' }} onClick={() => handleCrearEtiqueta(etiquetaNueva)} />
                                 </div>
                             </div>
@@ -523,6 +575,7 @@ export const GridEstudiantes = ({ asignatura }) => {
                         <Divider/>
                         <div style={{ textAlign: 'center', width:'600px' }}>
                             <p style={{fontWeight: 'bold' }}>LISTA DE ETIQUETAS CREADAS </p>
+                            <Toast ref={toast} />
                             <DataTable value={etiquetasListarCreadas} tableStyle={{ width:'500px' , margin: 'auto'}} bodystyle={{ textAlign: 'center' }}>
                                 <Column field="nombreEtiqueta" header="Etiqueta"></Column>
                                 <Column field="nombreEscenario" header="Hospital"></Column>
@@ -577,6 +630,7 @@ export const GridEstudiantes = ({ asignatura }) => {
                                     />
                                 </div>
                                 <div style={{ display: 'block', marginTop: '10px' }}>
+                                    <Toast ref={toast} />
                                     <Button label="ASOCIAR" style={{ fontSize: '0.5rem', backgroundColor: 'blue' }} onClick={() => asociarServicioEtiqueta(etiquetaAsociacionServicio)}/>
                                 </div>
                             </div>
@@ -584,6 +638,7 @@ export const GridEstudiantes = ({ asignatura }) => {
                         <Divider/>
                         <div style={{ textAlign: 'center', width:'600px' }}>
                             <p style={{fontWeight: 'bold' }}>LISTA DE ETIQUETAS ASOCIADAS </p>
+                            <Toast ref={toast} />
                             <DataTable value={etiquetasListarAsociadas} tableStyle={{ width:'500px' , margin: 'auto'}} bodystyle={{ textAlign: 'center' }}>
                                 <Column field="nombreEtiqueta" header="Etiqueta"></Column>
                                 <Column field="nombreServicio" header="Servicio"></Column>
