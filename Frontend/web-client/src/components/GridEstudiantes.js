@@ -618,7 +618,7 @@ export const GridEstudiantes = ({ asignatura }) => {
                                 <Dropdown 
                                         value={selectedEtiqueta} 
                                         onChange={(e) => setSelectedEtiqueta(e.value)} 
-                                        options={etiquetasListarCreadas.map((etiqueta) => ({label: etiqueta.nombreEtiqueta, value: etiqueta.idEtiqueta}))} 
+                                        options={etiquetasListarCreadas.map((etiqueta) => ({label: etiqueta.nombreEtiqueta +" - "+ etiqueta.nombreEscenario, value: etiqueta.idEtiqueta}))} 
                                         placeholder="Etiqueta"
                                     />
                                 <p style={{ fontSize: '0.7rem'}}>&nbsp;</p >
