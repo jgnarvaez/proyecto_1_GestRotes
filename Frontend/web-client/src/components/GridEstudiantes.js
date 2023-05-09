@@ -82,6 +82,10 @@ export const GridEstudiantes = ({ asignatura }) => {
     const [etiquetaIdEliminarAsociado, setEtiquetaIdEliminarAsociado] = useState([]);
     const [confirmDialogVisibleEtiquetasAsociado, setConfirmDialogVisibleEtiquetasAsociado] = useState(false);
 
+    // Validar si ambos campos tienen información
+    const isFormValid = valueCrearEtiqueta.trim() !== '' && selectedEscenario !== null;
+    const isFormValidAsociado = selectedEtiqueta != null && selectedServicio != null;
+
     //POST CREAR ETIQUETA
     const etiquetaNueva = {
         nombreEtiqueta: valueCrearEtiqueta,
@@ -127,8 +131,8 @@ export const GridEstudiantes = ({ asignatura }) => {
         toast.current.show({severity:'error', summary: 'Error', detail:'Error al intentar registrar el estudiante.', life: 8000});
     }
 
-    const showErrorCrearEtiqueta = () => {
-        toast.current.show({severity:'error', summary: 'Error', detail:'Error al intentar crear la etiqueta.', life: 8000});
+    const showErrorCrearEtiqueta = (response) => {
+        toast.current.show({severity:'error', summary: 'Error', detail:'Error al intentar crear la etiqueta: \n' + response, life: 8000});
     }
 
     const showErrorEtiquetaAsociado = () => {
@@ -215,7 +219,8 @@ export const GridEstudiantes = ({ asignatura }) => {
         console.log(`Estudiante con ID ${estudianteIdEliminar} eliminado.`);
         showInfoEliminarEstudiante();
         fetchEstudiantes(); //actualiza estudiantes
-        
+        setEstudiantesBusqueda([]);
+        setSearchText('');
         } else {
         console.log(`No se pudo eliminar al estudiante con ID ${estudianteIdEliminar}.`);
         }
@@ -240,6 +245,8 @@ export const GridEstudiantes = ({ asignatura }) => {
         console.log(`Todos los estudiantes han sido eliminados.`);
         showInfoEliminarTodo();
         fetchEstudiantes();
+        setEstudiantesBusqueda([]);
+        setSearchText('');
         
         } else {
         console.log(`No se pudo eliminar a los estudiantes.`);
@@ -309,10 +316,12 @@ export const GridEstudiantes = ({ asignatura }) => {
             console.log('Etiqueta registrada:', response.data);
             listarEtiquetasCreadas();
             showSuccessCrearEtiqueta();
+            setValueCrearEtiqueta('');
+            setSelectedEscenario(null);
           })
           .catch(error => {
             console.error('Error al registrar la etiqueta:', error);
-            showErrorCrearEtiqueta();
+            showErrorCrearEtiqueta(error.response.data);
           });
       }
 
@@ -568,7 +577,7 @@ export const GridEstudiantes = ({ asignatura }) => {
                                 </div>
                                 <div style={{ display: 'block', marginTop: '10px' }}>
                                     <Toast ref={toast} />
-                                    <Button label="CREAR" style={{ fontSize: '0.5rem', backgroundColor: 'blue' }} onClick={() => handleCrearEtiqueta(etiquetaNueva)} />
+                                    <Button label="CREAR" style={{ fontSize: '0.5rem', backgroundColor: 'blue' }} onClick={() => handleCrearEtiqueta(etiquetaNueva)}  disabled={!isFormValid} />
                                 </div>
                             </div>
                         </div>
@@ -631,7 +640,7 @@ export const GridEstudiantes = ({ asignatura }) => {
                                 </div>
                                 <div style={{ display: 'block', marginTop: '10px' }}>
                                     <Toast ref={toast} />
-                                    <Button label="ASOCIAR" style={{ fontSize: '0.5rem', backgroundColor: 'blue' }} onClick={() => asociarServicioEtiqueta(etiquetaAsociacionServicio)}/>
+                                    <Button label="ASOCIAR" style={{ fontSize: '0.5rem', backgroundColor: 'blue' }} onClick={() => asociarServicioEtiqueta(etiquetaAsociacionServicio)} disabled={!isFormValidAsociado}/>
                                 </div>
                             </div>
                         </div>
