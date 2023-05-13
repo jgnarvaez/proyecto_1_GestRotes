@@ -3,7 +3,6 @@ package co.edu.unicauca.gesrotesbackend.controllers;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.repository.query.Param;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,7 +16,6 @@ import org.springframework.web.bind.annotation.RestController;
 import co.edu.unicauca.gesrotesbackend.services.DTO.ConsultaTurnoEstudianteDTO;
 import co.edu.unicauca.gesrotesbackend.services.DTO.EstudianteSeleccionadoDTO;
 import co.edu.unicauca.gesrotesbackend.services.DTO.InformacionHorarioTurnoDTO;
-import co.edu.unicauca.gesrotesbackend.services.DTO.InformacionTurnoAsociadoDTO;
 import co.edu.unicauca.gesrotesbackend.services.DTO.JornadaDTO;
 import co.edu.unicauca.gesrotesbackend.services.DTO.NuevoTurnoDTO;
 import co.edu.unicauca.gesrotesbackend.services.DTO.SeleccionEstudianteDTO;

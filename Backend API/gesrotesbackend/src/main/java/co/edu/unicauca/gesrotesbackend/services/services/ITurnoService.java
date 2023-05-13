@@ -5,7 +5,6 @@ import java.util.List;
 import co.edu.unicauca.gesrotesbackend.services.DTO.ConsultaTurnoEstudianteDTO;
 import co.edu.unicauca.gesrotesbackend.services.DTO.EstudianteSeleccionadoDTO;
 import co.edu.unicauca.gesrotesbackend.services.DTO.InformacionHorarioTurnoDTO;
-import co.edu.unicauca.gesrotesbackend.services.DTO.InformacionTurnoAsociadoDTO;
 import co.edu.unicauca.gesrotesbackend.services.DTO.JornadaDTO;
 import co.edu.unicauca.gesrotesbackend.services.DTO.NuevoTurnoDTO;
 import co.edu.unicauca.gesrotesbackend.services.DTO.SeleccionEstudianteDTO;

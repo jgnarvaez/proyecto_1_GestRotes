@@ -1,6 +1,5 @@
 package co.edu.unicauca.gesrotesbackend.services.DTO;
 
-import co.edu.unicauca.gesrotesbackend.models.Mes;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
