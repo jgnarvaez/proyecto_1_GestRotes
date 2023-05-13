@@ -21,4 +21,14 @@ AND e.pu_id NOT IN (
       AND ea.coo_id = 1
 )
 
--- eliminar todos los estudiantes 
+-- 
+use mydb;
+SELECT pu.pu_id AS id, pu.pu_nombres AS nombres, pu.pu_apellidos AS apellidos 
+            FROM tbl_est_asignacion ea 
+            INNER JOIN tbl_estudiante e ON ea.pu_id = e.pu_id 
+            INNER JOIN tbl_persona_universitaria pu ON e.pu_id = pu.pu_id 
+            WHERE ea.est_asig_seleccionado = 0 
+            AND ea.prog_id = 1 
+            AND ea.asig_id = 3 
+            AND ea.coo_id = 1
+
