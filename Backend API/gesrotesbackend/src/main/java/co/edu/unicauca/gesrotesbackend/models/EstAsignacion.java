@@ -1,7 +1,10 @@
 package co.edu.unicauca.gesrotesbackend.models;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.Table;
 
 import lombok.AllArgsConstructor;
@@ -18,4 +21,14 @@ import lombok.Setter;
 public class EstAsignacion {
     @EmbeddedId
     private EstAsignacionId id;
+
+    @Column(name = "est_asig_seleccionado")
+    private Boolean seleccionado;
+
+    // @Enumerated(EnumType.STRING)
+    // @Column(name = "est_asig_mes")
+    // private Mes mes;
+
+    // @Column(name = "est_asig_anio")
+    // private int anio;
 }

@@ -2,11 +2,45 @@ package co.edu.unicauca.gesrotesbackend.services.services;
 
 import java.util.List;
 
+import co.edu.unicauca.gesrotesbackend.services.DTO.EstudianteSeleccionadoDTO;
 import co.edu.unicauca.gesrotesbackend.services.DTO.JornadaDTO;
 import co.edu.unicauca.gesrotesbackend.services.DTO.NuevoTurnoDTO;
+import co.edu.unicauca.gesrotesbackend.services.DTO.SeleccionEstudianteDTO;
+import co.edu.unicauca.gesrotesbackend.services.DTO.SeleccionEstudiantesDTO;
 import co.edu.unicauca.gesrotesbackend.services.DTO.TurnoCreadoDTO;
 
 public interface ITurnoService {
+
+    //* GESTION ESTUDIANTES */
+    /**
+     *  TODO: Documentar
+     *  @param seleccionEstudiante
+     *  @return
+     */
+    void cambiarEstadoSeleccionado(SeleccionEstudianteDTO seleccionEstudiante);
+    
+    /**
+     *  TODO: Documentar
+     *  @param seleccionEstudiante
+     *  @return
+     */
+    // void deseleccionarEstudiante(SeleccionEstudianteDTO seleccionEstudiante);
+
+    /**
+     *  TODO: Documentar
+     *  @param seleccionEstudiantes
+     *  @return
+     */
+    List<EstudianteSeleccionadoDTO> obtenerEstudiantesSeleccionados(SeleccionEstudiantesDTO seleccionEstudiantes);
+
+    /**
+     *  TODO: Documentar
+     *  @param seleccionEstudiantes
+     *  @return
+     */
+    void deseleccionarEstudiantes(SeleccionEstudiantesDTO seleccionEstudiantes);
+
+    //* GESTION TURNOS */
     /**
      *  Obtiene una lista de objetos JornadaDTO que representan las jornadas registradas.
      *  

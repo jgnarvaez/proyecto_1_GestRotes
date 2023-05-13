@@ -17,22 +17,15 @@ import java.util.Objects;
 @Entity
 @Table(name = "tbl_turno")
 public class Turno implements Serializable {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "tur_id")
-    private int id;
+    @EmbeddedId
+    private TurnoId id;
 
     @Column(name = "tur_fecha")
     private Date fecha;
 
-    @Column(name = "tur_desayuno")
-    private Boolean desayuno;
-
-    @Column(name = "tur_almuerzo")
-    private Boolean almuerzo;
-
-    @Column(name = "tur_comida")
-    private Boolean comida;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "tur_alimentacion")
+    private TipoAlimentacion alimentacion;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "jor_id")
@@ -48,15 +41,13 @@ public class Turno implements Serializable {
         if (!(o instanceof Turno)) return false;
         Turno that = (Turno) o;
         return Objects.equals(getFecha(), that.getFecha()) &&
-                Objects.equals(getDesayuno(), that.getDesayuno()) &&
-                Objects.equals(getAlmuerzo(), that.getAlmuerzo())&&
-                Objects.equals(getComida(), that.getComida()) &&
+                Objects.equals(getAlimentacion(), that.getAlimentacion()) &&
                 Objects.equals(getJornada(), that.getJornada())&&
                 Objects.equals(getEtiqueta(), that.getEtiqueta());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getFecha(), getDesayuno(), getAlmuerzo(), getComida(), getJornada(), getEtiqueta());
+        return Objects.hash(getFecha(), getAlimentacion(), getJornada(), getEtiqueta());
     }
 }

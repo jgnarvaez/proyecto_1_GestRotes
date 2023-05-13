@@ -6,13 +6,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import co.edu.unicauca.gesrotesbackend.services.DTO.EstudianteSeleccionadoDTO;
 import co.edu.unicauca.gesrotesbackend.services.DTO.JornadaDTO;
 import co.edu.unicauca.gesrotesbackend.services.DTO.NuevoTurnoDTO;
+import co.edu.unicauca.gesrotesbackend.services.DTO.SeleccionEstudianteDTO;
+import co.edu.unicauca.gesrotesbackend.services.DTO.SeleccionEstudiantesDTO;
 import co.edu.unicauca.gesrotesbackend.services.DTO.TurnoCreadoDTO;
 import co.edu.unicauca.gesrotesbackend.services.services.ITurnoService;
 
@@ -23,6 +28,37 @@ import co.edu.unicauca.gesrotesbackend.services.services.ITurnoService;
 public class ControladorTurno {
     @Autowired
     ITurnoService turnoService;
+
+    // * Seleccionar o deseleccionar un estudiante
+    @PutMapping("/seleccion")
+    @ResponseBody
+    @CrossOrigin(origins = "*", methods = { RequestMethod.PUT })
+    public void changeSelectState(@RequestBody SeleccionEstudianteDTO seleccionEstudiante){
+        turnoService.cambiarEstadoSeleccionado(seleccionEstudiante);
+    }
+
+    // * Deseleccionar un estudiante
+    // @PutMapping("/deseleccionar")
+    // @ResponseBody
+    // @CrossOrigin(origins = "*", methods = { RequestMethod.PUT })
+    // public void deselectStudent(@RequestBody SeleccionEstudianteDTO seleccionEstudiante){
+    //     turnoService.deseleccionarEstudiante(seleccionEstudiante);
+    // }
+
+    // * Listar los estudiantes seleccionados
+    @GetMapping("/estudiantesSeleccionados")
+    @ResponseBody
+    public List<EstudianteSeleccionadoDTO> findSelectedStudents(@RequestBody SeleccionEstudiantesDTO seleccionEstudiantes){
+        return turnoService.obtenerEstudiantesSeleccionados(seleccionEstudiantes);
+    }
+
+    // * Deseleccionar todos los estudiantes
+    @PutMapping("/deseleccionarTodos")
+    @ResponseBody
+    @CrossOrigin(origins = "*", methods = { RequestMethod.PUT })
+    public void deselectStudents(@RequestBody SeleccionEstudiantesDTO seleccionEstudiantes){
+        turnoService.deseleccionarEstudiantes(seleccionEstudiantes);
+    }
 
     // * Listar las jornadas
     @GetMapping("/jornadas")

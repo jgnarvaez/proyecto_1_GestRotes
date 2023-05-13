@@ -119,13 +119,13 @@ public class AsignacionEstudiantesServiceImpl implements IAsignacionEstudiantesS
 
     //Eliminar todos los estudiantes asociados a una asignatura
     public void deleteStudents(int cooId, int progId,int subjId){
-        estAsignacionRepository.eliminarRegistrosTurEstAsignacion(progId,subjId,cooId); //* necesario porque no está ON DELETE CASCADE
+        // estAsignacionRepository.eliminarRegistrosTurEstAsignacion(progId,subjId,cooId); //! Deprecated. necesario porque no está ON DELETE CASCADE
         estAsignacionRepository.deleteAllStudents(progId,subjId,cooId);
     }
 
     //Eliminar estudiante asociado a una asignatura
     public void deleteStudent(int cooId, int progId,int subjId, int studId){
-        estAsignacionRepository.eliminarRegistrosDeEstudianteEnTurEstAsignacion(studId,progId,subjId,cooId); //* necesario porque no está ON DELETE CASCADE
+        // estAsignacionRepository.eliminarRegistrosDeEstudianteEnTurEstAsignacion(studId,progId,subjId,cooId); //! Deprecated. necesario porque no está ON DELETE CASCADE
         estAsignacionRepository.deleteStudent(progId,subjId,cooId,studId);
     }
 }
