@@ -2,7 +2,10 @@ package co.edu.unicauca.gesrotesbackend.services.services;
 
 import java.util.List;
 
+import co.edu.unicauca.gesrotesbackend.services.DTO.ConsultaTurnoEstudianteDTO;
 import co.edu.unicauca.gesrotesbackend.services.DTO.EstudianteSeleccionadoDTO;
+import co.edu.unicauca.gesrotesbackend.services.DTO.InformacionHorarioTurnoDTO;
+import co.edu.unicauca.gesrotesbackend.services.DTO.InformacionTurnoAsociadoDTO;
 import co.edu.unicauca.gesrotesbackend.services.DTO.JornadaDTO;
 import co.edu.unicauca.gesrotesbackend.services.DTO.NuevoTurnoDTO;
 import co.edu.unicauca.gesrotesbackend.services.DTO.SeleccionEstudianteDTO;
@@ -19,11 +22,6 @@ public interface ITurnoService {
      */
     void cambiarEstadoSeleccionado(SeleccionEstudianteDTO seleccionEstudiante);
     
-    /**
-     *  TODO: Documentar
-     *  @param seleccionEstudiante
-     *  @return
-     */
     // void deseleccionarEstudiante(SeleccionEstudianteDTO seleccionEstudiante);
 
     /**
@@ -56,4 +54,11 @@ public interface ITurnoService {
      *  @return Un objeto TurnoCreadoDTO que representa el turno asociado al estudiante.
      */ 
     TurnoCreadoDTO crearTurno(NuevoTurnoDTO nuevoTurno);
+
+    /**
+     *  TODO: Documentar
+     *  @param idEstudiante
+     *  @return
+     */
+    InformacionHorarioTurnoDTO obetenerTurnosEstPorFecha(ConsultaTurnoEstudianteDTO turnoEstudiante);
 }

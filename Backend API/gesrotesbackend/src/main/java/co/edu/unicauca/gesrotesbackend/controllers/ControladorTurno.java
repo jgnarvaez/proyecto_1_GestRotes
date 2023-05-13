@@ -3,6 +3,7 @@ package co.edu.unicauca.gesrotesbackend.controllers;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.query.Param;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -13,7 +14,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import co.edu.unicauca.gesrotesbackend.services.DTO.ConsultaTurnoEstudianteDTO;
 import co.edu.unicauca.gesrotesbackend.services.DTO.EstudianteSeleccionadoDTO;
+import co.edu.unicauca.gesrotesbackend.services.DTO.InformacionHorarioTurnoDTO;
+import co.edu.unicauca.gesrotesbackend.services.DTO.InformacionTurnoAsociadoDTO;
 import co.edu.unicauca.gesrotesbackend.services.DTO.JornadaDTO;
 import co.edu.unicauca.gesrotesbackend.services.DTO.NuevoTurnoDTO;
 import co.edu.unicauca.gesrotesbackend.services.DTO.SeleccionEstudianteDTO;
@@ -73,8 +77,14 @@ public class ControladorTurno {
     public TurnoCreadoDTO create(@RequestBody NuevoTurnoDTO nuevoTurno){
         // TODO: Validar que los ID's no sean nulos
         // TODO: Validar que la fecha no sea nula
+        System.out.println("Fecha a asignar: " + nuevoTurno.getFechaTurno());
         return turnoService.crearTurno(nuevoTurno);
     }
 
-    // TODO: 
+    // * Listar turnos asociados a un estudiante
+    @GetMapping("/turnosPorFechaEstudiante")
+    @ResponseBody
+    public InformacionHorarioTurnoDTO findShifts(@RequestBody ConsultaTurnoEstudianteDTO turnoEstudiante){
+        return turnoService.obetenerTurnosEstPorFecha(turnoEstudiante);
+    }
 }

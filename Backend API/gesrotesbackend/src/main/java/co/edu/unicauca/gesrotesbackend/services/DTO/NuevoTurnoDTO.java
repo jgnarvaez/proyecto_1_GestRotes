@@ -20,10 +20,10 @@ import lombok.Setter;
 @AllArgsConstructor
 public class NuevoTurnoDTO {
     Date fechaTurno;
-    int idJornada;
-    int idEtiqueta;
     int idEstudiante;
     int idPrograma;
     int idAsignatura;
     int idCoordinador;
+    int idJornada;
+    int idEtiqueta;
 }

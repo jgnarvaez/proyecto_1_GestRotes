@@ -2,6 +2,7 @@ package co.edu.unicauca.gesrotesbackend.services.DTO;
 
 import java.sql.Time;
 
+import co.edu.unicauca.gesrotesbackend.models.TipoAlimentacion;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,11 +19,14 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class InformacionTurnoDTO {
+public class InformacionTurnoAsociadoDTO {
+    // * Información en la matriz
+    String nombreEscenario;
+    String nombreEtiqueta;
+    String franjaJornada;
+    // * Información pop up
     String nombreEstudiante;
     Time horaInicio;
     Time horaFin;
-    Boolean desayuno;
-    Boolean almuerzo;
-    Boolean comida;
+    TipoAlimentacion alimentacion;
 }
