@@ -14,18 +14,21 @@ import { Dialog } from 'primereact/dialog';
 import { Divider } from 'primereact/divider';
 import { Badge } from 'primereact/badge';
 import { Toast } from 'primereact/toast';
+import { Checkbox } from "primereact/checkbox";
 import axios from 'axios';
 
 export const GridEstudiantes = ({ asignatura }) => {
-    
+
     const toast = useRef(null);
     // CAMBIO
     const [searchText, setSearchText] = useState('');
     const [timer, setTimer] = useState(null);
+    const [searchTextEstudiantes, setSearchTextEstudiantes] = useState('');
 
     // ESTUDIANTES
     const [estudiantesBusqueda, setEstudiantesBusqueda] = useState([]);
     const [estudiantes, setEstudiantes] = useState([]);
+    const [estudiantesSeleccionados, setEstudiantesSeleccionados] = useState([]);
     const [confirmDialogVisible, setConfirmDialogVisible] = useState(false);
     const [estudianteIdEliminar, setEstudianteIdEliminar] = useState([]);
     const [confirmDialogVisibleTodos, setConfirmDialogVisibleTodos] = useState(false);
@@ -34,6 +37,7 @@ export const GridEstudiantes = ({ asignatura }) => {
     const [fechaActual, setFechaActual] = useState(new Date());
     const [month, setMonth] = useState(new Date().getMonth());
     const [year, setYear] = useState(new Date().getFullYear());
+    
 
     const months = [
         {label: 'Enero', value: 0},
@@ -58,6 +62,12 @@ export const GridEstudiantes = ({ asignatura }) => {
     //GESTION ETIQUETAS
     const [visibleEtiqueta, setVisibleEtiqueta] = useState(false);
     const [visibleAsociacion, setVisibleAsociacion] = useState(false);
+    const [visibleEstudiantes, setVisibleEstudiantes] = useState(false);
+
+    //TURNOS
+    const [visibleTurnos, setVisibleTurnos] = useState(false);
+    const [selectedDate, setSelectedDate] = useState(null);
+    const [selectedEstudiante, setSelectedEstudiante] = useState(null);
 
     //CREAR ETIQUETAS
     const [valueCrearEtiqueta, setValueCrearEtiqueta] = useState('');
@@ -75,6 +85,9 @@ export const GridEstudiantes = ({ asignatura }) => {
     //ESTADO BOTONES
     const [botonCrearEtiquetas, setBotonCrearEtiquetas] = useState(true);
     const [botonAsociarEtiquetas, setBotonAsociarEtiquetas] = useState(false);
+    const [botonEstudiantesTodos, setBotonEstudiantesTodos] = useState(true);
+    const [botonEstudiantesSeleccionados, setBotonEstudiantesSeleccionados] = useState(false);
+    const [botonEstudiantesNoSeleccionados, setBotonEstudiantesNoSeleccionados] = useState(false);
 
     //ELIMINAR ETIQUETAS
     const [etiquetaIdEliminar, setEtiquetaIdEliminar] = useState([]);
@@ -148,6 +161,25 @@ export const GridEstudiantes = ({ asignatura }) => {
             setBotonCrearEtiquetas(false);
             setBotonAsociarEtiquetas(true);
             setVisibleAsociacion(true);
+          }
+    }
+
+    const handleClickEstadoBotonesEstudiantes = (tipo) => {
+        if (tipo === 'todos') {
+            setBotonEstudiantesTodos(true);
+            setBotonEstudiantesSeleccionados(false);
+            setBotonEstudiantesNoSeleccionados(false);
+            //setVisibleEstudiantesTodos(true)
+          } else if (tipo === 'seleccionados'){
+            setBotonEstudiantesTodos(false);
+            setBotonEstudiantesSeleccionados(true);
+            setBotonEstudiantesNoSeleccionados(false);
+            //setVisibleEstudiantesTodosSeleccionados(true);
+          } else if (tipo === 'noSeleccionados'){
+            setBotonEstudiantesTodos(false);
+            setBotonEstudiantesSeleccionados(false);
+            setBotonEstudiantesNoSeleccionados(true);
+            //setVisibleEstudiantesTodosNoSeleccionados(true);
           }
     }
 
@@ -393,6 +425,24 @@ export const GridEstudiantes = ({ asignatura }) => {
         setEtiquetaIdEliminarAsociado(id);
     };
 
+    const handleEstudianteSeleccionado = (estudiante) => {
+        const isSelected = estudiantesSeleccionados.some((est) => est.id === estudiante.id);
+      
+        if (isSelected) {
+          // Si el estudiante ya está seleccionado, eliminarlo del arreglo de estudiantes seleccionados
+          const updatedEstudiantes = estudiantesSeleccionados.filter((est) => est.id !== estudiante.id);
+          setEstudiantesSeleccionados(updatedEstudiantes);
+        } else {
+          // Si el estudiante no está seleccionado, agregarlo al arreglo de estudiantes seleccionados
+          const updatedEstudiantes = [...estudiantesSeleccionados, estudiante];
+          setEstudiantesSeleccionados(updatedEstudiantes);
+        }
+    };
+
+    const estudiantesNoSeleccionados = estudiantes.filter((estudiante) => {
+        return !estudiantesSeleccionados.some((est) => est.id === estudiante.id);
+      });
+
     return (
     <div className="card">
         <TabView>
@@ -540,7 +590,85 @@ export const GridEstudiantes = ({ asignatura }) => {
             <TabPanel header="Turnos">
             <div className='component-container-grid-gestion'>
                 <div style={{marginBottom: '10px'}}>
-                    <Button label="Gestión estudiantes" style={{ fontSize: '0.8rem', backgroundColor: 'blue', marginRight: '5px' }} />
+                    <Button label="Gestión estudiantes" style={{ fontSize: '0.8rem', backgroundColor: 'blue', marginRight: '5px' }} onClick={() => setVisibleEstudiantes(true)} />
+                    <Dialog header="GESTIÓN ESTUDIANTES" visible={visibleEstudiantes} style={{ width: '55vw' }} onHide={() => setVisibleEstudiantes(false)}>
+                        <div>
+                            <span className="p-input-icon-left" style={{ marginRight: '15px' }}>
+                                <i className="pi pi-search" />
+                                <InputText placeholder="Buscar estudiante por nombre" style={{fontSize: '0.8rem', width: '230px', height: '30px'}} value={searchTextEstudiantes} onChange={(e) => {setSearchTextEstudiantes(e.target.value); clearTimeout(timer); setTimer(setTimeout(() => {buscarEstudiantes(e.target.value);}, 500));}}/>
+                            </span>
+                            <Button label="TODOS" style={{ fontSize: '0.8rem',marginLeft: '10px', backgroundColor: botonEstudiantesTodos ? 'red' : 'grey' }} onClick={() => handleClickEstadoBotonesEstudiantes('todos')}/>
+                            <Button label="SELECCIONADOS" style={{ fontSize: '0.8rem', backgroundColor: botonEstudiantesSeleccionados ? 'red' : 'grey' }} onClick={() => handleClickEstadoBotonesEstudiantes('seleccionados')} />
+                            <Button label="NO SELECCIONADOS" style={{ fontSize: '0.8rem', backgroundColor: botonEstudiantesNoSeleccionados ? 'red' : 'grey' }} onClick={() => handleClickEstadoBotonesEstudiantes('noSeleccionados')} />
+                            <Button label="DESMARCAR TODOS" style={{ fontSize: '0.8rem', backgroundColor: 'red', marginLeft: '25px' }} onClick={() => setEstudiantesSeleccionados([])} />
+                            {botonEstudiantesTodos ? (
+                                <div>
+                                    <div className='component-grid' style={{ maxHeight: '450px', overflowY: 'auto' }}>
+                                    <Box sx={{ flexGrow: 1 }}>
+                                        <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 8, md: 12 }}>
+                                            {estudiantes.map((estudiante, index) => {
+                                            const isSelected = estudiantesSeleccionados.some((est) => est.id === estudiante.id);
+
+                                            return (
+                                                <Grid item xs={2} sm={4} md={4} key={index}>
+                                                <div style={{ border: '1px solid grey', padding: '5px', display: 'flex', alignItems: 'center', width: '240px', justifyContent: 'center', borderRadius: '10px' }}>
+                                                    <InputText value={estudiante.nombreCompleto} readOnly style={{ border: "none", boxShadow: "none" }} />
+                                                    <Checkbox onChange={() => handleEstudianteSeleccionado(estudiante)} checked={isSelected} />
+                                                </div>
+                                                </Grid>
+                                            );
+                                            })}
+                                        </Grid>
+                                    </Box>
+                                    </div>
+                                </div>
+                            ) : botonEstudiantesSeleccionados ? (
+                                <div>
+                                    <div className='component-grid' style={{ maxHeight: '450px', overflowY: 'auto' }}>
+                                    <Box sx={{ flexGrow: 1 }}>
+                                        <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 8, md: 12 }}>
+                                            {estudiantesSeleccionados.map((estudiante, index) => {
+                                            const isSelected = estudiantesSeleccionados.some((est) => est.id === estudiante.id);
+
+                                            return (
+                                                <Grid item xs={2} sm={4} md={4} key={index}>
+                                                <div style={{ border: '1px solid grey', padding: '5px', display: 'flex', alignItems: 'center', width: '240px', justifyContent: 'center', borderRadius: '10px' }}>
+                                                    <InputText value={estudiante.nombreCompleto} readOnly style={{ border: "none", boxShadow: "none" }} />
+                                                    <Checkbox onChange={() => handleEstudianteSeleccionado(estudiante)} checked={isSelected} />
+                                                </div>
+                                                </Grid>
+                                            );
+                                            })}
+                                        </Grid>
+                                    </Box>
+                                    </div>
+                                </div>
+                                
+                            ) : (
+                                <div>
+                                    <div className='component-grid' style={{ maxHeight: '450px', overflowY: 'auto' }}>
+                                    <Box sx={{ flexGrow: 1 }}>
+                                        <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 8, md: 12 }}>
+                                            
+                                            {estudiantesNoSeleccionados.map((estudiante, index) => {
+                                            const isSelected = estudiantesSeleccionados.some((est) => est.id === estudiante.id);
+                                                
+                                            return (
+                                                <Grid item xs={2} sm={4} md={4} key={index}>
+                                                <div style={{ border: '1px solid grey', padding: '5px', display: 'flex', alignItems: 'center', width: '240px', justifyContent: 'center', borderRadius: '10px' }}>
+                                                    <InputText value={estudiante.nombreCompleto} readOnly style={{ border: "none", boxShadow: "none" }} />
+                                                    <Checkbox onChange={() => handleEstudianteSeleccionado(estudiante)} checked={isSelected} />
+                                                </div>
+                                                </Grid>
+                                            );
+                                            })}
+                                        </Grid>
+                                    </Box>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    </Dialog>
                     <Button label="Gestión etiquetas" style={{ fontSize: '0.8rem', backgroundColor: 'blue', marginRight: '5px' }} onClick={() => {setVisibleEtiqueta(true); setVisibleAsociacion(true)}} /> 
                     {botonCrearEtiquetas ?
                         <Dialog header="GESTIONAR ETIQUETAS" visible={visibleEtiqueta} onHide={() => {setVisibleEtiqueta(false); setVisibleAsociacion(false)}}>
@@ -692,38 +820,143 @@ export const GridEstudiantes = ({ asignatura }) => {
                     <Button label="Validación de turnos" style={{ fontSize: '0.8rem', backgroundColor: 'red', marginRight: '5px' }} />
                 </div>
 
-                <DataTable value={estudiantes} tableStyle={{ minWidth: '50rem' }}>
-                    <Column header={<div><div>Fecha</div><div>Estudiante</div></div>}
+                <DataTable value={estudiantesSeleccionados} tableStyle={{ minWidth: '50rem' }}>
+                    <Column
+                        header={
+                        <div>
+                            <div>Fecha</div>
+                            <div>Estudiante</div>
+                        </div>
+                        }
                         body={(rowData) => (
-                            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                                    <PerfilEstudiante src="https://primefaces.org/cdn/primereact/images/avatar/amyelsner.png" style={{marginBottom: '0.5rem'}} />
-                                    <p style={{ fontSize: '0.6rem', margin: 0, fontWeight: 'bold' }}>{rowData.nombreCompleto}</p>
-                                </div>
+                        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                            <PerfilEstudiante src="https://primefaces.org/cdn/primereact/images/avatar/amyelsner.png" style={{marginBottom: '0.5rem'}} />
+                            <p style={{ fontSize: '0.6rem', margin: 0, fontWeight: 'bold' }}>{rowData.nombreCompleto}</p>
                             </div>
+                        </div>
                         )}
                     />
 
                     {[0, 1, 2, 3, 4, 5, 6].map((dayOfWeek) => {
-                    const daysToAdd = dayOfWeek - fechaActual.getDay();
-                    const dateColumn = new Date(year, month, fechaActual.getDate() + daysToAdd);
+                        const daysToAdd = dayOfWeek - fechaActual.getDay();
+                        const dateColumn = new Date(year, month, fechaActual.getDate() + daysToAdd);
 
-                    return (
-                        <Column header={dateColumn.toLocaleDateString("es-ES", { weekday: "short" }) + " " + dateColumn.getDate()} key={dayOfWeek}
-                        body={() => 
-                            <Card style={{ display: "flex", flexDirection: "column",height: '100px', width: '100px' }}>
-                                <div style={{ display: "flex", justifyContent: "center", alignItems: "center", flexDirection: "column" }}>
-                                    <Button style={{ width: "30px", height: "30px", borderRadius: "15px", backgroundColor: '#bebbbb', display: "flex", justifyContent: "center", alignItems: "center" }}>
-                                        <i className="pi pi-plus" style={{ margin: 0 }} /> {/*El button es para hacer el OnClick de eliminar*/}
-                                    </Button>
-                                    <p style={{ fontSize: '0.5rem', margin: '4px 0 0 0' }}>Sin asignar</p>
+                        return (
+                        <Column
+                            header={dateColumn.toLocaleDateString('es-ES', { weekday: 'short' }) + ' ' + dateColumn.getDate()}
+                            key={dayOfWeek}
+                            body={(rowData) => (
+                            <Card style={{ display: 'flex', flexDirection: 'column', height: '100px', width: '100px' }}>
+                                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column' }}>
+                                <Button
+                                    onClick={() => {
+                                    setSelectedDate(dateColumn);
+                                    setSelectedEstudiante(rowData.nombreCompleto);
+                                    setVisibleTurnos(true);
+                                    }}
+                                    style={{ width: '30px', height: '30px', borderRadius: '15px', backgroundColor: '#bebbbb', display: 'flex', justifyContent: 'center', alignItems: 'center' }}
+                                >
+                                    <i className="pi pi-plus" style={{ margin: 0 }} />
+                                </Button>
+                                <p style={{ fontSize: '0.5rem', margin: '4px 0 0 0' }}>Sin asignar</p>
                                 </div>
                             </Card>
-                            }
+                            )}
                         />
-                    );
+                        );
                     })}
                 </DataTable>
+
+                <Dialog header="GESTIONAR TURNO" visible={visibleTurnos} onHide={() => setVisibleTurnos(false)}>
+                {selectedDate && selectedEstudiante && (
+                    <div>
+                        <div>
+                            <div style={{ display: 'flex', alignItems: 'center' }}>
+                                <p style={{marginLeft:'30px' ,marginRight: '25px', fontSize: '0.8rem' }}><span style={{ fontWeight: 'bold' }}>Estudiante:</span> {selectedEstudiante}</p>
+                                <p style={{marginLeft:'30px', fontSize: '0.8rem'}}><span style={{ fontWeight: 'bold' }}>Fecha seleccionada:</span>: {selectedDate.toLocaleDateString('es-ES')}</p>
+                            </div>
+                            <p style={{ marginLeft:'30px', fontSize: '0.8rem', fontWeight: 'bold', color: 'red' }}>Nota: El número máximo de horas asociadas a los turnos es de 12.</p>
+                        </div>
+                        <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', height: '200px', width: '100%'}}>
+                            <div style={{ marginLeft:'30px', textAlign: 'center' ,marginRight: '20px'}}>
+                                <p style={{ fontWeight: 'bold' }}>
+                                    <Badge value="1" style={{ marginRight: '20px' }}></Badge>
+                                    Selección de escenario
+                                </p>
+                                <div style={{ display: 'block' }}>
+                                    <p>Nombre del escenario *</p>
+                                    <Dropdown 
+                                        value={selectedEscenario} 
+                                        onChange={(e) => setSelectedEscenario(e.value)} 
+                                        options={escenarios.map((escenario) => ({label: escenario.nombreEscenario, value: escenario.idEscenario}))} 
+                                        placeholder="Escenario"
+                                    />
+                                    <p style={{ fontSize: '0.7rem'}}>&nbsp;</p >
+                                </div>
+                            </div>
+                            <Divider layout="vertical" />
+                            <div style={{marginLeft:'30px', textAlign: 'center',marginRight: '20px' }}>
+                                <p style={{fontWeight: 'bold' }}>
+                                    <Badge value="2" style={{ marginRight: '20px' }}></Badge>
+                                    Selección de jornada
+                                </p>
+                                <div style={{ display: 'block' }}>
+                                    <p>Tipo de jornada *</p>
+                                    <Dropdown 
+                                        value={selectedEscenario} 
+                                        onChange={(e) => setSelectedEscenario(e.value)} 
+                                        options={escenarios.map((escenario) => ({label: escenario.nombreEscenario, value: escenario.idEscenario}))} 
+                                        placeholder="Jornada"
+                                    />
+                                    <p style={{ fontSize: '0.7rem'}}>&nbsp;</p >
+                                </div>
+                            </div>
+                            <Divider layout="vertical" />
+                            <div style={{marginLeft:'30px', textAlign: 'center', marginRight: '30px' }}>
+                                <p style={{fontWeight: 'bold' }}>
+                                    <Badge value="3" style={{ marginRight: '20px' }}></Badge>
+                                    Selección de etiqueta
+                                </p>
+                                <div style={{ display: 'block' }}>
+                                    <p>Etiqueta *</p>
+                                    <Dropdown 
+                                       value={selectedEtiqueta} 
+                                       onChange={(e) => setSelectedEtiqueta(e.value)} 
+                                       options={etiquetasListarCreadas.map((etiqueta) => ({label: etiqueta.nombreEtiqueta +" - "+ etiqueta.nombreEscenario, value: etiqueta.idEtiqueta}))} 
+                                       placeholder="Etiqueta"
+                                    />
+                                </div>
+                                <div style={{ display: 'block', marginTop: '10px' }}>
+                                    <Toast ref={toast} />
+                                    <Button label="ASOCIAR" style={{ fontSize: '0.5rem', backgroundColor: 'blue' }} onClick={() => asociarServicioEtiqueta(etiquetaAsociacionServicio)} disabled={!isFormValidAsociado}/>
+                                </div>
+                            </div>
+
+                        </div>
+                        <Divider/>
+                        <div style={{ textAlign: 'center', width: '600px', margin: 'auto' }}>
+                            <p style={{fontWeight: 'bold' }}>LISTA DE TURNOS CREADOS </p>
+                            <Toast ref={toast} />
+                            <DataTable value={etiquetasListarCreadas} tableStyle={{ width:'500px' , margin: 'auto'}} bodystyle={{ textAlign: 'center' }}>
+                                <Column field="nombreEtiqueta" header="Etiqueta"></Column>
+                                <Column field="nombreEscenario" header="Hospital"></Column>
+                                <Column header="Eliminar" body={(rowData) => (
+                                    <div>
+                                        <button style={{ border: 'none', background: 'none' }} onClick={() => handleEliminarEtiqueta(rowData.idEtiqueta)}>
+                                            <i className="pi pi-trash"></i>
+                                        </button>
+                                        <ConfirmDialog visible={confirmDialogVisibleEtiquetas} onHide={() => setConfirmDialogVisibleEtiquetas(false)} message="¿Estás seguro de que deseas eliminar esta etiqueta?" header="Confirmar eliminación" acceptLabel="Aceptar" rejectLabel="Cancelar" icon="pi pi-exclamation-triangle" accept={() => eliminarEtiqueta()} />
+                                    </div>
+                                )}>
+                                    
+                                </Column>
+                            </DataTable>
+                        </div>
+
+                    </div>
+                )}
+                </Dialog>
             </div>   
             </TabPanel>
             <TabPanel header="Documentos">
