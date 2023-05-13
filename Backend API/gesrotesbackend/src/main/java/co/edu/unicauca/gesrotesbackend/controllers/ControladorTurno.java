@@ -3,7 +3,10 @@ package co.edu.unicauca.gesrotesbackend.controllers;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -13,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import co.edu.unicauca.gesrotesbackend.exceptions.ValidacionException;
 import co.edu.unicauca.gesrotesbackend.services.DTO.ConsultaTurnoEstudianteDTO;
 import co.edu.unicauca.gesrotesbackend.services.DTO.EstudianteSeleccionadoDTO;
 import co.edu.unicauca.gesrotesbackend.services.DTO.InformacionHorarioTurnoDTO;
@@ -20,6 +24,7 @@ import co.edu.unicauca.gesrotesbackend.services.DTO.JornadaDTO;
 import co.edu.unicauca.gesrotesbackend.services.DTO.NuevoTurnoDTO;
 import co.edu.unicauca.gesrotesbackend.services.DTO.SeleccionEstudianteDTO;
 import co.edu.unicauca.gesrotesbackend.services.DTO.SeleccionEstudiantesDTO;
+import co.edu.unicauca.gesrotesbackend.services.DTO.TurnoAEliminarDTO;
 import co.edu.unicauca.gesrotesbackend.services.DTO.TurnoCreadoDTO;
 import co.edu.unicauca.gesrotesbackend.services.services.ITurnoService;
 
@@ -84,5 +89,18 @@ public class ControladorTurno {
     @ResponseBody
     public InformacionHorarioTurnoDTO findShifts(@RequestBody ConsultaTurnoEstudianteDTO turnoEstudiante){
         return turnoService.obetenerTurnosEstPorFecha(turnoEstudiante);
+    }
+
+    // * Eliminar turno asociado a un estudiante
+    @DeleteMapping("/eliminarTurno")
+    @ResponseBody
+    @CrossOrigin(origins = "*", methods = { RequestMethod.DELETE })
+    public ResponseEntity<String> delete(@RequestBody TurnoAEliminarDTO turno) {
+        try {
+            turnoService.eliminarTurnoAsociado(turno);
+            return ResponseEntity.ok("Turno asociado eliminado correctamente");
+        } catch (ValidacionException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No se ha encontrado el turno.");
+        }
     }
 }

@@ -9,6 +9,7 @@ import co.edu.unicauca.gesrotesbackend.services.DTO.JornadaDTO;
 import co.edu.unicauca.gesrotesbackend.services.DTO.NuevoTurnoDTO;
 import co.edu.unicauca.gesrotesbackend.services.DTO.SeleccionEstudianteDTO;
 import co.edu.unicauca.gesrotesbackend.services.DTO.SeleccionEstudiantesDTO;
+import co.edu.unicauca.gesrotesbackend.services.DTO.TurnoAEliminarDTO;
 import co.edu.unicauca.gesrotesbackend.services.DTO.TurnoCreadoDTO;
 
 public interface ITurnoService {
@@ -60,4 +61,10 @@ public interface ITurnoService {
      *  @return
      */
     InformacionHorarioTurnoDTO obetenerTurnosEstPorFecha(ConsultaTurnoEstudianteDTO turnoEstudiante);
+
+    /**
+     *  TODO: Documentar
+     *  @param turno
+     */
+    void eliminarTurnoAsociado(TurnoAEliminarDTO turno);
 }

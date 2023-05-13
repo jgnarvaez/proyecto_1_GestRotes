@@ -4,12 +4,15 @@ import java.sql.Date;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import co.edu.unicauca.gesrotesbackend.models.Turno;
 import co.edu.unicauca.gesrotesbackend.models.TurnoId;
 import co.edu.unicauca.gesrotesbackend.services.DTO.InformacionTurnoAsociadoDTO;
+
+import jakarta.transaction.Transactional;
 
 public interface TurnoRepository extends JpaRepository<Turno, TurnoId> {
 
@@ -32,4 +35,30 @@ public interface TurnoRepository extends JpaRepository<Turno, TurnoId> {
             "WHERE t.id.estAsignacion.id.estudiante.id = :estudianteId " +
             "AND t.fecha = :fecha ")
     List<InformacionTurnoAsociadoDTO> findShiftsAssociationsByDate(@Param("estudianteId") int estudianteId, @Param("fecha") Date fecha);
+
+    /**
+     *  TODO: Documentar
+     *  
+     *  @param fecha
+     *  @param estudianteId
+     *  @param programaId
+     *  @param asignaturaId
+     *  @param coordinadorId
+     *  @param jornadaId
+     *  @param etiquetaId
+     *  @return 
+    */
+    @Modifying
+    @Transactional
+    @Query("DELETE FROM Turno t " +
+            "WHERE t.fecha = :fecha " +
+            "AND t.id.estAsignacion.id.estudiante.id = :estudianteId " +
+            "AND t.id.estAsignacion.id.asignacion.id.programa.id = :programaId " +
+            "AND t.id.estAsignacion.id.asignacion.id.asignatura.id = :asignaturaId " +
+            "AND t.id.estAsignacion.id.asignacion.id.coordinador.id = :coordinadorId " +
+            "AND t.jornada.id = :jornadaId " +
+            "AND t.etiqueta.id = :etiquetaId")
+    void deleteRowByIdsAndOthers(@Param("fecha") Date fecha, @Param("estudianteId") int estudianteId, @Param("programaId") int programaId, 
+                                        @Param("asignaturaId") int asignaturaId, @Param("coordinadorId") int coordinadorId,
+                                        @Param("jornadaId") int jornadaId, @Param("etiquetaId") int etiquetaId);
 }

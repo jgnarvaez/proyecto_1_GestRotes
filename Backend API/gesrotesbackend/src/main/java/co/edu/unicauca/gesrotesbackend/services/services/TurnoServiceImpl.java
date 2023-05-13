@@ -29,6 +29,7 @@ import co.edu.unicauca.gesrotesbackend.services.DTO.JornadaDTO;
 import co.edu.unicauca.gesrotesbackend.services.DTO.NuevoTurnoDTO;
 import co.edu.unicauca.gesrotesbackend.services.DTO.SeleccionEstudianteDTO;
 import co.edu.unicauca.gesrotesbackend.services.DTO.SeleccionEstudiantesDTO;
+import co.edu.unicauca.gesrotesbackend.services.DTO.TurnoAEliminarDTO;
 import co.edu.unicauca.gesrotesbackend.services.DTO.TurnoCreadoDTO;
 import co.edu.unicauca.gesrotesbackend.services.DTO.Horario;
 import co.edu.unicauca.gesrotesbackend.services.DTO.Intervalo;
@@ -171,6 +172,12 @@ public class TurnoServiceImpl implements ITurnoService{
                                                                                     alimentacion[2]);
         
         return horarioTurnoDTO;
+    }
+
+    @Override
+    public void eliminarTurnoAsociado(TurnoAEliminarDTO turno){
+        turnoRepository.deleteRowByIdsAndOthers(turno.getFecha(), turno.getIdEstudiante(), turno.getIdPrograma(), turno.getIdAsignatura(), 
+                                                turno.getIdCoordinador(), turno.getIdJornada(), turno.getIdEtiqueta());
     }
 
     /**
