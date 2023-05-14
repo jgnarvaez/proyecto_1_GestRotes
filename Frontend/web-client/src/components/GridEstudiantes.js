@@ -112,6 +112,9 @@ export const GridEstudiantes = ({ asignatura }) => {
         idServicio: selectedServicio
     }
 
+    
+
+
     const showSuccessRegistrarEstudiante = () => {
         toast.current.show({severity:'success', summary: 'Registrado!', detail:'El estudiante se registro exitosamente.', life: 8000});
     }
@@ -425,19 +428,66 @@ export const GridEstudiantes = ({ asignatura }) => {
         setEtiquetaIdEliminarAsociado(id);
     };
 
+    const listarEstudiantesSeleccionados = useCallback(() => {
+        const url = `http://127.0.0.1:8085/turnos/estudiantesSeleccionados/1/${asignatura.idAsignatura}/1`
+
+        axios.get(url)
+            .then(response => {
+            console.log('Estudiantes listados:');
+            setEstudiantesSeleccionados(response.data);
+            })
+            .catch(error => console.error(error));
+        }, [asignatura.idAsignatura]);
+
+        useEffect(() => {
+        listarEstudiantesSeleccionados();
+        }, [listarEstudiantesSeleccionados]);
+
     const handleEstudianteSeleccionado = (estudiante) => {
-        const isSelected = estudiantesSeleccionados.some((est) => est.id === estudiante.id);
-      
-        if (isSelected) {
-          // Si el estudiante ya está seleccionado, eliminarlo del arreglo de estudiantes seleccionados
-          const updatedEstudiantes = estudiantesSeleccionados.filter((est) => est.id !== estudiante.id);
-          setEstudiantesSeleccionados(updatedEstudiantes);
-        } else {
-          // Si el estudiante no está seleccionado, agregarlo al arreglo de estudiantes seleccionados
-          const updatedEstudiantes = [...estudiantesSeleccionados, estudiante];
-          setEstudiantesSeleccionados(updatedEstudiantes);
-        }
+
+        //PUT CAMBIAR ESTADO
+        const estadoEstudiante = {
+            puId: estudiante.id,
+            progId: 1,
+            asigId: asignatura.idAsignatura,
+            cooId: 1,
+            estado: estudiantesSeleccionados.some(e => e.id === estudiante.id) ? false : true
+        };
+
+        const url = `http://127.0.0.1:8085/turnos/seleccion`
+        
+        axios.put(url, estadoEstudiante)
+          .then(response => {
+            console.log('Estado cambiado:', response.data);
+            listarEstudiantesSeleccionados();
+            //showSuccessEtiquetaAsociado();
+          })
+          .catch(error => {
+            console.error('Error :', error);
+            //showErrorEtiquetaAsociado();
+          });
     };
+
+    const handleDesSeleccionarEstudiantes = () => {
+        const estudiantesDesSeleccionados ={
+            progId: 1,
+            asigId: asignatura.idAsignatura,
+            cooId: 1
+        };
+      
+        const url = `http://127.0.0.1:8085/turnos/deseleccionarTodos`;
+              
+        axios.put(url, estudiantesDesSeleccionados)
+          .then(response => {
+            console.log('Estudiantes deseleccionados:', response.data);
+            listarEstudiantesSeleccionados();
+            //showSuccessEtiquetaAsociado();
+          })
+          .catch(error => {
+            console.error('Error:', error);
+            //showErrorEtiquetaAsociado();
+          });
+      };
 
     const estudiantesNoSeleccionados = estudiantes.filter((estudiante) => {
         return !estudiantesSeleccionados.some((est) => est.id === estudiante.id);
@@ -600,7 +650,7 @@ export const GridEstudiantes = ({ asignatura }) => {
                             <Button label="TODOS" style={{ fontSize: '0.8rem',marginLeft: '10px', backgroundColor: botonEstudiantesTodos ? 'red' : 'grey' }} onClick={() => handleClickEstadoBotonesEstudiantes('todos')}/>
                             <Button label="SELECCIONADOS" style={{ fontSize: '0.8rem', backgroundColor: botonEstudiantesSeleccionados ? 'red' : 'grey' }} onClick={() => handleClickEstadoBotonesEstudiantes('seleccionados')} />
                             <Button label="NO SELECCIONADOS" style={{ fontSize: '0.8rem', backgroundColor: botonEstudiantesNoSeleccionados ? 'red' : 'grey' }} onClick={() => handleClickEstadoBotonesEstudiantes('noSeleccionados')} />
-                            <Button label="DESMARCAR TODOS" style={{ fontSize: '0.8rem', backgroundColor: 'red', marginLeft: '25px' }} onClick={() => setEstudiantesSeleccionados([])} />
+                            <Button label="DESMARCAR TODOS" style={{ fontSize: '0.8rem', backgroundColor: 'red', marginLeft: '25px' }}  onClick={() => handleDesSeleccionarEstudiantes()} />
                             {botonEstudiantesTodos ? (
                                 <div>
                                     <div className='component-grid' style={{ maxHeight: '450px', overflowY: 'auto' }}>
@@ -662,6 +712,7 @@ export const GridEstudiantes = ({ asignatura }) => {
                                                 </Grid>
                                             );
                                             })}
+                                        
                                         </Grid>
                                     </Box>
                                     </div>
@@ -817,7 +868,7 @@ export const GridEstudiantes = ({ asignatura }) => {
                     />
                     <button onClick={irSemanaAnterior} style={{ marginRight: '2px' }}>&lt;</button>
                     <button onClick={irSemanaSiguiente} style={{ marginRight: '10px' }}>&gt;</button>
-                    <Button label="Validación de turnos" style={{ fontSize: '0.8rem', backgroundColor: 'red', marginRight: '5px' }} />
+                    <Button label="Validación de turnos" style={{ fontSize: '0.8rem', backgroundColor: 'red', marginRight: '5px' }}  />
                 </div>
 
                 <DataTable value={estudiantesSeleccionados} tableStyle={{ minWidth: '50rem' }}>
@@ -828,14 +879,17 @@ export const GridEstudiantes = ({ asignatura }) => {
                             <div>Estudiante</div>
                         </div>
                         }
-                        body={(rowData) => (
-                        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                            <PerfilEstudiante src="https://primefaces.org/cdn/primereact/images/avatar/amyelsner.png" style={{marginBottom: '0.5rem'}} />
-                            <p style={{ fontSize: '0.6rem', margin: 0, fontWeight: 'bold' }}>{rowData.nombreCompleto}</p>
-                            </div>
-                        </div>
-                        )}
+                        body={(rowData) => {
+                            console.log(rowData); // Muestra la información del estudiante en la consola del navegador
+                            return (
+                              <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                                  <PerfilEstudiante src="https://primefaces.org/cdn/primereact/images/avatar/amyelsner.png" style={{ marginBottom: '0.5rem' }} />
+                                  <p style={{ fontSize: '0.6rem', margin: 0, fontWeight: 'bold' }}>{rowData.nombreCompleto}</p>
+                                </div>
+                              </div>
+                            );
+                          }}
                     />
 
                     {[0, 1, 2, 3, 4, 5, 6].map((dayOfWeek) => {
@@ -843,6 +897,7 @@ export const GridEstudiantes = ({ asignatura }) => {
                         const dateColumn = new Date(year, month, fechaActual.getDate() + daysToAdd);
 
                         return (
+                            
                         <Column
                             header={dateColumn.toLocaleDateString('es-ES', { weekday: 'short' }) + ' ' + dateColumn.getDate()}
                             key={dayOfWeek}
