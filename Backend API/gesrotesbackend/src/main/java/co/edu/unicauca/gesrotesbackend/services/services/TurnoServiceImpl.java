@@ -166,7 +166,8 @@ public class TurnoServiceImpl implements ITurnoService{
                                                                                     rango, 
                                                                                     alimentacion[0], 
                                                                                     alimentacion[1],
-                                                                                    alimentacion[2]);
+                                                                                    alimentacion[2],
+                                                                                    turnosAsociadosDTO.get(0).getFecha());
         
         return horarioTurnoDTO;
     }

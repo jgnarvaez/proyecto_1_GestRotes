@@ -23,7 +23,7 @@ public interface TurnoRepository extends JpaRepository<Turno, TurnoId> {
     List<Turno> findShiftsByStudentId(@Param("estudianteId") int estudianteId, @Param("fecha") Date fecha);
 
     //TODO: Documentar
-    @Query("SELECT new co.edu.unicauca.gesrotesbackend.services.DTO.InformacionTurnoAsociadoDTO(es.nombre, et.nombre, j.franja, CONCAT(e.nombres, ' ', e.apellidos), j.horaInicio, j.horaFin, t.alimentacion) " +
+    @Query("SELECT new co.edu.unicauca.gesrotesbackend.services.DTO.InformacionTurnoAsociadoDTO(es.nombre, et.nombre, j.franja, CONCAT(e.nombres, ' ', e.apellidos), j.horaInicio, j.horaFin, t.alimentacion, t.fecha) " +
             "FROM Turno t " +
             "INNER JOIN Jornada j ON t.jornada.id = j.id " +
             "INNER JOIN Etiqueta et ON t.etiqueta.id = et.id " +
