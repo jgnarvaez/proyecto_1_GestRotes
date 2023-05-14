@@ -3,14 +3,13 @@ package co.edu.unicauca.gesrotesbackend.services.services;
 import java.sql.Date;
 import java.util.List;
 
-import co.edu.unicauca.gesrotesbackend.services.DTO.ConsultaTurnoEstudianteDTO;
 import co.edu.unicauca.gesrotesbackend.services.DTO.EstudianteSeleccionadoDTO;
 import co.edu.unicauca.gesrotesbackend.services.DTO.InformacionHorarioTurnoDTO;
 import co.edu.unicauca.gesrotesbackend.services.DTO.JornadaDTO;
 import co.edu.unicauca.gesrotesbackend.services.DTO.NuevoTurnoDTO;
 import co.edu.unicauca.gesrotesbackend.services.DTO.SeleccionEstudianteDTO;
 import co.edu.unicauca.gesrotesbackend.services.DTO.SeleccionEstudiantesDTO;
-import co.edu.unicauca.gesrotesbackend.services.DTO.TurnoAEliminarDTO;
+import co.edu.unicauca.gesrotesbackend.services.DTO.TurnoAsociadoDTO;
 import co.edu.unicauca.gesrotesbackend.services.DTO.TurnoCreadoDTO;
 
 public interface ITurnoService {
@@ -61,11 +60,18 @@ public interface ITurnoService {
      *  @param idEstudiante
      *  @return
      */
-    InformacionHorarioTurnoDTO obetenerTurnosEstPorFecha(int idEstudiante, Date fechaTurno);
+    InformacionHorarioTurnoDTO obetenerHorarioTurnoPorFecha(int idEstudiante, Date fechaTurno);
+
+    /**
+     *  TODO: Documentar
+     *  @param idEstudiante
+     *  @return
+     */
+    List<TurnoAsociadoDTO> obetenerTurnosPorFecha(int idEstudiante, Date fechaTurno);
 
     /**
      *  TODO: Documentar
      *  @param turno
      */
-    void eliminarTurnoAsociado(TurnoAEliminarDTO turno);
+    void eliminarTurnoAsociado(int idTurno);
 }

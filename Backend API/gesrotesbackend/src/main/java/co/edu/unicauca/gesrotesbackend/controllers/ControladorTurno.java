@@ -4,7 +4,6 @@ import java.sql.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -20,14 +19,13 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import co.edu.unicauca.gesrotesbackend.exceptions.ValidacionException;
-import co.edu.unicauca.gesrotesbackend.services.DTO.ConsultaTurnoEstudianteDTO;
 import co.edu.unicauca.gesrotesbackend.services.DTO.EstudianteSeleccionadoDTO;
 import co.edu.unicauca.gesrotesbackend.services.DTO.InformacionHorarioTurnoDTO;
 import co.edu.unicauca.gesrotesbackend.services.DTO.JornadaDTO;
 import co.edu.unicauca.gesrotesbackend.services.DTO.NuevoTurnoDTO;
 import co.edu.unicauca.gesrotesbackend.services.DTO.SeleccionEstudianteDTO;
 import co.edu.unicauca.gesrotesbackend.services.DTO.SeleccionEstudiantesDTO;
-import co.edu.unicauca.gesrotesbackend.services.DTO.TurnoAEliminarDTO;
+import co.edu.unicauca.gesrotesbackend.services.DTO.TurnoAsociadoDTO;
 import co.edu.unicauca.gesrotesbackend.services.DTO.TurnoCreadoDTO;
 import co.edu.unicauca.gesrotesbackend.services.services.ITurnoService;
 
@@ -87,20 +85,27 @@ public class ControladorTurno {
         return turnoService.crearTurno(nuevoTurno);
     }
 
+    // * Listar horario turno de un estudiante
+    @GetMapping("/horarioTurno/{idEstudiante}/{fechaTurno}")
+    @ResponseBody
+    public InformacionHorarioTurnoDTO findSchedule(@PathVariable int idEstudiante, @PathVariable Date fechaTurno){
+        return turnoService.obetenerHorarioTurnoPorFecha(idEstudiante, fechaTurno);
+    }
+
     // * Listar turnos asociados a un estudiante
     @GetMapping("/turnosPorFechaEstudiante/{idEstudiante}/{fechaTurno}")
     @ResponseBody
-    public InformacionHorarioTurnoDTO findShifts(@PathVariable int idEstudiante, @PathVariable Date fechaTurno){
-        return turnoService.obetenerTurnosEstPorFecha(idEstudiante, fechaTurno);
+    public List<TurnoAsociadoDTO> findShifts(@PathVariable int idEstudiante, @PathVariable Date fechaTurno){
+        return turnoService.obetenerTurnosPorFecha(idEstudiante, fechaTurno);
     }
 
     // * Eliminar turno asociado a un estudiante
-    @DeleteMapping("/eliminarTurno")
+    @DeleteMapping("/{idTurno}")
     @ResponseBody
     @CrossOrigin(origins = "*", methods = { RequestMethod.DELETE })
-    public ResponseEntity<String> delete(@RequestBody TurnoAEliminarDTO turno) {
+    public ResponseEntity<String> delete(@PathVariable int idTurno) {
         try {
-            turnoService.eliminarTurnoAsociado(turno);
+            turnoService.eliminarTurnoAsociado(idTurno);
             return ResponseEntity.ok("Turno asociado eliminado correctamente");
         } catch (ValidacionException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No se ha encontrado el turno.");

@@ -23,14 +23,13 @@ import co.edu.unicauca.gesrotesbackend.repositories.EstAsignacionRepository;
 import co.edu.unicauca.gesrotesbackend.repositories.EtiquetaRepository;
 import co.edu.unicauca.gesrotesbackend.repositories.JornadaRepository;
 import co.edu.unicauca.gesrotesbackend.repositories.TurnoRepository;
-import co.edu.unicauca.gesrotesbackend.services.DTO.ConsultaTurnoEstudianteDTO;
 import co.edu.unicauca.gesrotesbackend.services.DTO.EstudianteSeleccionadoDTO;
 import co.edu.unicauca.gesrotesbackend.services.DTO.InformacionTurnoAsociadoDTO;
 import co.edu.unicauca.gesrotesbackend.services.DTO.JornadaDTO;
 import co.edu.unicauca.gesrotesbackend.services.DTO.NuevoTurnoDTO;
 import co.edu.unicauca.gesrotesbackend.services.DTO.SeleccionEstudianteDTO;
 import co.edu.unicauca.gesrotesbackend.services.DTO.SeleccionEstudiantesDTO;
-import co.edu.unicauca.gesrotesbackend.services.DTO.TurnoAEliminarDTO;
+import co.edu.unicauca.gesrotesbackend.services.DTO.TurnoAsociadoDTO;
 import co.edu.unicauca.gesrotesbackend.services.DTO.TurnoCreadoDTO;
 import co.edu.unicauca.gesrotesbackend.services.DTO.Horario;
 import co.edu.unicauca.gesrotesbackend.services.DTO.Intervalo;
@@ -143,7 +142,7 @@ public class TurnoServiceImpl implements ITurnoService{
     }
 
     @Override
-    public InformacionHorarioTurnoDTO obetenerTurnosEstPorFecha(int idEstudiante, Date fechaTurno){
+    public InformacionHorarioTurnoDTO obetenerHorarioTurnoPorFecha(int idEstudiante, Date fechaTurno){
         List<InformacionTurnoAsociadoDTO> turnosAsociadosDTO = turnoRepository.findShiftsAssociationsByDate(idEstudiante, fechaTurno);
         
         List<Horario> horarios = new ArrayList<>();
@@ -173,9 +172,15 @@ public class TurnoServiceImpl implements ITurnoService{
     }
 
     @Override
-    public void eliminarTurnoAsociado(TurnoAEliminarDTO turno){
-        turnoRepository.deleteRowByIdsAndOthers(turno.getFecha(), turno.getIdEstudiante(), turno.getIdPrograma(), turno.getIdAsignatura(), 
-                                                turno.getIdCoordinador(), turno.getIdJornada(), turno.getIdEtiqueta());
+    public List<TurnoAsociadoDTO> obetenerTurnosPorFecha(int idEstudiante, Date fechaTurno){
+        return turnoRepository.findShiftsAssociationsByDate2(idEstudiante, fechaTurno);
+    }
+
+    @Override
+    public void eliminarTurnoAsociado(int idTurno){
+        // turnoRepository.deleteRowByIdsAndOthers(turno.getFecha(), turno.getIdEstudiante(), turno.getIdPrograma(), turno.getIdAsignatura(), 
+        //                                         turno.getIdCoordinador(), turno.getIdJornada(), turno.getIdEtiqueta());
+        turnoRepository.myDeletebyid(idTurno);
     }
 
     /**

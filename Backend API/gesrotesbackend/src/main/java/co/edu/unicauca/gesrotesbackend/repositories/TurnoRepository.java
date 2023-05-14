@@ -11,7 +11,7 @@ import org.springframework.data.repository.query.Param;
 import co.edu.unicauca.gesrotesbackend.models.Turno;
 import co.edu.unicauca.gesrotesbackend.models.TurnoId;
 import co.edu.unicauca.gesrotesbackend.services.DTO.InformacionTurnoAsociadoDTO;
-
+import co.edu.unicauca.gesrotesbackend.services.DTO.TurnoAsociadoDTO;
 import jakarta.transaction.Transactional;
 
 public interface TurnoRepository extends JpaRepository<Turno, TurnoId> {
@@ -35,6 +35,20 @@ public interface TurnoRepository extends JpaRepository<Turno, TurnoId> {
             "WHERE t.id.estAsignacion.id.estudiante.id = :estudianteId " +
             "AND t.fecha = :fecha ")
     List<InformacionTurnoAsociadoDTO> findShiftsAssociationsByDate(@Param("estudianteId") int estudianteId, @Param("fecha") Date fecha);
+
+    //TODO: Documentar
+    @Query("SELECT new co.edu.unicauca.gesrotesbackend.services.DTO.TurnoAsociadoDTO(t.id.id, es.nombre, j.franja, j.horaInicio, j.horaFin, et.nombre) " +
+            "FROM Turno t " +
+            "INNER JOIN Jornada j ON t.jornada.id = j.id " +
+            "INNER JOIN Etiqueta et ON t.etiqueta.id = et.id " +
+            "INNER JOIN EscenarioPractica es ON et.escenario.id = es.id " +
+            "INNER JOIN Asignacion a ON t.id.estAsignacion.id.asignacion.id = a.id " +
+            "INNER JOIN CoordinadorAsignatura c ON a.id.coordinador.id = c.id " +
+            "INNER JOIN Asignatura asi ON a.id.asignatura.id = asi.id " +
+            "INNER JOIN Estudiante e ON t.id.estAsignacion.id.estudiante.id = e.id " +
+            "WHERE t.id.estAsignacion.id.estudiante.id = :estudianteId " +
+            "AND t.fecha = :fecha ")
+    List<TurnoAsociadoDTO> findShiftsAssociationsByDate2(@Param("estudianteId") int estudianteId, @Param("fecha") Date fecha);
 
     /**
      *  TODO: Documentar
@@ -61,4 +75,10 @@ public interface TurnoRepository extends JpaRepository<Turno, TurnoId> {
     void deleteRowByIdsAndOthers(@Param("fecha") Date fecha, @Param("estudianteId") int estudianteId, @Param("programaId") int programaId, 
                                         @Param("asignaturaId") int asignaturaId, @Param("coordinadorId") int coordinadorId,
                                         @Param("jornadaId") int jornadaId, @Param("etiquetaId") int etiquetaId);
+
+    @Modifying
+    @Transactional
+    @Query("DELETE FROM Turno t " +
+            "WHERE t.id.id = :idTurno ")
+    void myDeletebyid(@Param("idTurno") int idTurno);
 }
