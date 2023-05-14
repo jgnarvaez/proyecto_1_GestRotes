@@ -1,13 +1,16 @@
 package co.edu.unicauca.gesrotesbackend.controllers;
 
+import java.sql.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -53,10 +56,10 @@ public class ControladorTurno {
     // }
 
     // * Listar los estudiantes seleccionados
-    @GetMapping("/estudiantesSeleccionados")
+    @GetMapping("/estudiantesSeleccionados/{progId}/{asigId}/{cooId}")
     @ResponseBody
-    public List<EstudianteSeleccionadoDTO> findSelectedStudents(@RequestBody SeleccionEstudiantesDTO seleccionEstudiantes){
-        return turnoService.obtenerEstudiantesSeleccionados(seleccionEstudiantes);
+    public List<EstudianteSeleccionadoDTO> findSelectedStudents(@PathVariable int progId, @PathVariable int asigId, @PathVariable int cooId){
+        return turnoService.obtenerEstudiantesSeleccionados(progId, asigId, cooId);
     }
 
     // * Deseleccionar todos los estudiantes
@@ -85,10 +88,10 @@ public class ControladorTurno {
     }
 
     // * Listar turnos asociados a un estudiante
-    @GetMapping("/turnosPorFechaEstudiante")
+    @GetMapping("/turnosPorFechaEstudiante/{idEstudiante}/{fechaTurno}")
     @ResponseBody
-    public InformacionHorarioTurnoDTO findShifts(@RequestBody ConsultaTurnoEstudianteDTO turnoEstudiante){
-        return turnoService.obetenerTurnosEstPorFecha(turnoEstudiante);
+    public InformacionHorarioTurnoDTO findShifts(@PathVariable int idEstudiante, @PathVariable Date fechaTurno){
+        return turnoService.obetenerTurnosEstPorFecha(idEstudiante, fechaTurno);
     }
 
     // * Eliminar turno asociado a un estudiante

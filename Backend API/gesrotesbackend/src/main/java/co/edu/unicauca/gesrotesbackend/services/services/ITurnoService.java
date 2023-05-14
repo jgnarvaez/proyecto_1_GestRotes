@@ -1,5 +1,6 @@
 package co.edu.unicauca.gesrotesbackend.services.services;
 
+import java.sql.Date;
 import java.util.List;
 
 import co.edu.unicauca.gesrotesbackend.services.DTO.ConsultaTurnoEstudianteDTO;
@@ -29,7 +30,7 @@ public interface ITurnoService {
      *  @param seleccionEstudiantes
      *  @return
      */
-    List<EstudianteSeleccionadoDTO> obtenerEstudiantesSeleccionados(SeleccionEstudiantesDTO seleccionEstudiantes);
+    List<EstudianteSeleccionadoDTO> obtenerEstudiantesSeleccionados(int progId, int asigId, int cooId);
 
     /**
      *  TODO: Documentar
@@ -60,7 +61,7 @@ public interface ITurnoService {
      *  @param idEstudiante
      *  @return
      */
-    InformacionHorarioTurnoDTO obetenerTurnosEstPorFecha(ConsultaTurnoEstudianteDTO turnoEstudiante);
+    InformacionHorarioTurnoDTO obetenerTurnosEstPorFecha(int idEstudiante, Date fechaTurno);
 
     /**
      *  TODO: Documentar

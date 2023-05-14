@@ -1,5 +1,6 @@
 package co.edu.unicauca.gesrotesbackend.services.services;
 
+import java.sql.Date;
 import java.text.SimpleDateFormat;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -68,10 +69,8 @@ public class TurnoServiceImpl implements ITurnoService{
     // }
 
     @Override
-    public List<EstudianteSeleccionadoDTO> obtenerEstudiantesSeleccionados(SeleccionEstudiantesDTO seleccionEstudiantes){
-        List<EstudianteSeleccionadoDTO> listDTO = estAsignacionRepository.getSelectedStudents(seleccionEstudiantes.getProgId(), 
-                                                                                            seleccionEstudiantes.getAsigId(), 
-                                                                                            seleccionEstudiantes.getCooId());
+    public List<EstudianteSeleccionadoDTO> obtenerEstudiantesSeleccionados(int progId, int asigId, int cooId){
+        List<EstudianteSeleccionadoDTO> listDTO = estAsignacionRepository.getSelectedStudents(progId, asigId, cooId);
         return listDTO;
     }
 
@@ -144,9 +143,8 @@ public class TurnoServiceImpl implements ITurnoService{
     }
 
     @Override
-    public InformacionHorarioTurnoDTO obetenerTurnosEstPorFecha(ConsultaTurnoEstudianteDTO turnoEstudiante){
-        List<InformacionTurnoAsociadoDTO> turnosAsociadosDTO = turnoRepository.findShiftsAssociationsByDate(turnoEstudiante.getIdEstudiante(), 
-                                                                                                            turnoEstudiante.getFechaTurno());
+    public InformacionHorarioTurnoDTO obetenerTurnosEstPorFecha(int idEstudiante, Date fechaTurno){
+        List<InformacionTurnoAsociadoDTO> turnosAsociadosDTO = turnoRepository.findShiftsAssociationsByDate(idEstudiante, fechaTurno);
         
         List<Horario> horarios = new ArrayList<>();
         String franjas = "";
