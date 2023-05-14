@@ -17,6 +17,5 @@ import lombok.Setter;
 @NoArgsConstructor
 public class EstudianteSeleccionadoDTO {
     int id;
-    String nombres;
-    String apellidos;
+    String nombreCompleto;
 }

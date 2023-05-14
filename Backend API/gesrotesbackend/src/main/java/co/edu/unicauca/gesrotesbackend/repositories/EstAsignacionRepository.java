@@ -114,7 +114,7 @@ public interface EstAsignacionRepository extends JpaRepository<EstAsignacion, Es
      *  @param coordinadorId : id del coordinador asociado
      *  @return lista de objetos EstudianteSeleccionadoDTO
      */
-    @Query("SELECT new co.edu.unicauca.gesrotesbackend.services.DTO.EstudianteSeleccionadoDTO(e.id, e.nombres, e.apellidos) " +
+    @Query("SELECT new co.edu.unicauca.gesrotesbackend.services.DTO.EstudianteSeleccionadoDTO(e.id, CONCAT(e.nombres, ' ', e.apellidos)) " +
             "FROM EstAsignacion ea " +
             "INNER JOIN Estudiante e ON ea.id.estudiante.id = e.id " +
         //     "INNER JOIN PersonaUniversitaria pu ON e.id = pu.id " +
