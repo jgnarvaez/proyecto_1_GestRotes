@@ -15,9 +15,27 @@ import { Divider } from 'primereact/divider';
 import { Badge } from 'primereact/badge';
 import { Toast } from 'primereact/toast';
 import { Checkbox } from "primereact/checkbox";
+import { Tag } from 'primereact/tag';
 import axios from 'axios';
 
 export const GridEstudiantes = ({ asignatura }) => {
+
+    const CustomCard = ({ children }) => (
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            textAlign: 'left',
+            height: '100px',
+            width: '100px',
+            border: '1px solid #ccc',
+            borderRadius: '4px',
+            padding: '8px',
+          }}
+        >
+          {children}
+        </div>
+      );
 
     const toast = useRef(null);
     // CAMBIO
@@ -37,7 +55,6 @@ export const GridEstudiantes = ({ asignatura }) => {
     const [fechaActual, setFechaActual] = useState(new Date());
     const [month, setMonth] = useState(new Date().getMonth());
     const [year, setYear] = useState(new Date().getFullYear());
-   // const [idEstudianteTurno, setIdEstudianteTurno] = useState(null);
     
 
     const months = [
@@ -70,12 +87,14 @@ export const GridEstudiantes = ({ asignatura }) => {
     const [selectedDate, setSelectedDate] = useState(null);
     const [selectedEstudiante, setSelectedEstudiante] = useState(null);
     const [turnosEstudiante, setTurnosEstudiante] = useState([]);
-    //const [horarioEstudiante, setHorarioEstudiante] = useState([]);
+    const [visibleMasInformacion, setVisibleMasInformacion] = useState(false);
+    const [infoHorarioTurno, setInfoHorarioTurno] = useState([]);
 
     //CREAR ETIQUETAS
     const [valueCrearEtiqueta, setValueCrearEtiqueta] = useState('');
     const [etiquetasListarCreadas, setEtiquetasListarCreadas] = useState([]);
     const [etiquetasListarAsociadas, setEtiquetasListarAsociadas] = useState([]);
+    const [etiquetasListarPorEscenerio, setEtiquetasListarPorEscenario] = useState([]);
     const [escenarios, setEscenarios] = useState([]);
     const [servicios, setServicios] = useState([]);
     const [jornadas, setJornadas] = useState([]);
@@ -335,6 +354,17 @@ export const GridEstudiantes = ({ asignatura }) => {
         listarEtiquetasAsociadas();
       }, [listarEtiquetasAsociadas]);
     
+    //Listar etiquetas por escenario 
+    const listarEtiquetasPorEscenario = useCallback(() => {
+        const url = `http://127.0.0.1:8085/etiquetas/escenarios/${selectedEscenario}/etiquetas`
+        axios.get(url)
+        .then(response => setEtiquetasListarPorEscenario(response.data))
+        .catch(error => console.error(error));
+    }, [selectedEscenario]);
+    useEffect(() => {
+        listarEtiquetasPorEscenario();
+    }, [listarEtiquetasPorEscenario]);
+
     //Listar escenarios
     const listarEscenarios = useCallback(() => {
         const url = `http://127.0.0.1:8085/etiquetas/escenarios`
@@ -370,11 +400,12 @@ export const GridEstudiantes = ({ asignatura }) => {
 
     //Listar horarios
     const listarHorarios = useCallback(() => {
-        const url = `` //cambiar
+        const url = `http://127.0.0.1:8085/turnos/1/1/${asignatura.idAsignatura}` //cambiar
         axios.get(url)
+        
         .then(response => setHorarios(response.data))
         .catch(error => console.error(error));
-    }, []);
+    }, [asignatura.idAsignatura]);
     useEffect(() => {
         listarHorarios();
     }, [listarHorarios]);
@@ -494,21 +525,20 @@ export const GridEstudiantes = ({ asignatura }) => {
             .catch(error => console.error(error));
     }
 
-    //LISTAR TURNOS ESTUDIANTE
-    /*
-    const listarHorarioTurno = (estudiante,fecha) => {
+    //INFORMACION HORARIO-TURNO
+    
+    const informacionHorarioTurno = (estudiante,fecha) => {
         const fechaR = `${fecha.getFullYear()}-${String(fecha.getMonth() + 1).padStart(2, '0')}-${String(fecha.getDate()).padStart(2, '0')}`;
 
         const url = `http://127.0.0.1:8085/turnos/horarioTurno/${estudiante.id}/${fechaR}`
 
         axios.get(url)
             .then(response => {
-            console.log('Horario listado:');
-            setHorarioEstudiante(response.data);
+            setInfoHorarioTurno(response.data);
             })
             .catch(error => console.error(error));
     }
-*/
+
     
 
     const listarEstudiantesSeleccionados = useCallback(() => {
@@ -986,32 +1016,97 @@ export const GridEstudiantes = ({ asignatura }) => {
                         body={(rowData) => {
                             
                             const formattedDateColumn = `${dateColumn.getFullYear()}-${String(dateColumn.getMonth() + 1).padStart(2, '0')}-${String(dateColumn.getDate()).padStart(2, '0')}`;
-                            if (horarios.idEstudiante === rowData.id && horarios.fechaTurno === formattedDateColumn) {
+                            const hasMatchingHorario = horarios.find((horario) => horario.idEstudiante === rowData.id && horario.fechaTurno === formattedDateColumn);
+                            
+                            if (hasMatchingHorario) {
                             return (
-                                <Card style={{ display: 'flex', flexDirection: 'column', height: '100px', width: '100px' }}>
-                                {/* Contenido del Card cuando se cumple la condición */}
-                                </Card>
+                                <CustomCard>
+                                <div style={{ display: 'flex', flexDirection: 'column', textAlign: 'left', alignItems: 'flex-start' }}>
+                                        <p style={{fontSize: '0.5rem', margin: 0, fontWeight: 'bold', color: 'red' }}>Información de turno</p>
+                                        <p style={{fontSize: '0.5rem', margin: 0}}>{hasMatchingHorario.nombreEscenario}</p>
+                                        <p style={{fontSize: '0.5rem', margin: 0}}>{hasMatchingHorario.nombreEtiqueta}</p>
+                                        <p style={{fontSize: '0.5rem', margin: 0}}>{hasMatchingHorario.franjasJornada}</p>
+                                        <Button
+                                            label='Ver más información'
+                                            style={{ fontSize: '0.5rem', textDecoration: 'underline', background: 'none', border: 'none', color: 'blue', padding: 0, margin: 0 }}
+                                            onClick={() => {
+                                                setSelectedDate(dateColumn);
+                                                setSelectedEstudiante(rowData);
+                                                setVisibleMasInformacion(true);
+                                                informacionHorarioTurno(rowData, dateColumn);
+                                                }}
+                                        />
+                                        <Button
+                                            label='Gestionar Turno'
+                                            style={{ fontSize: '0.5rem', textDecoration: 'underline', background: 'none', border: 'none', color: 'blue', padding: 0, margin: 0 }}
+                                            onClick={() => {
+                                            setSelectedDate(dateColumn);
+                                            setSelectedEstudiante(rowData);
+                                            setVisibleTurnos(true);
+                                            listarTurnosEstudiante(rowData, dateColumn);
+                                            }}
+                                        />
+                                    </div>
+                                    {visibleMasInformacion && (
+                                    <Dialog header="INFORMACIÓN TURNO" visible={visibleMasInformacion} onHide={() => setVisibleMasInformacion(false)}>
+                                        <div>
+                                            <p style={{marginLeft:'30px' ,marginRight: '25px' }}><span style={{ fontWeight: 'bold' }}>Estudiante:</span> {infoHorarioTurno.nombreEstudiante}</p>
+                                            <p style={{marginLeft:'30px' ,marginRight: '25px' }}><span style={{ fontWeight: 'bold' }}>Horario:</span> {selectedDate.toLocaleDateString('es-ES', { weekday: 'long' })} {infoHorarioTurno.rangoHorario}</p>
+                                            <div style={{ display: 'flex', alignItems: 'center' }}>
+                                                <p style={{ marginLeft: '30px', marginRight: '25px' }}>
+                                                    <span style={{ fontWeight: 'bold' }}>Desayuno:</span>
+                                                </p>
+                                                {infoHorarioTurno.desayuno ? (
+                                                    <Tag icon="pi pi-check" severity="success" rounded>Apto</Tag>
+                                                    ) : (
+                                                    <Tag icon="pi pi-times" severity="danger" rounded>No Apto</Tag>
+                                                )}
+                                                
+                                                </div>
+                                                <div style={{ display: 'flex', alignItems: 'center' }}>
+                                                <p style={{ marginLeft: '30px', marginRight: '25px' }}>
+                                                    <span style={{ fontWeight: 'bold' }}>Almuerzo:</span>
+                                                </p>
+                                                {infoHorarioTurno.almuerzo ? (
+                                                    <Tag icon="pi pi-check" severity="success" rounded>Apto</Tag> 
+                                                    ) : (
+                                                    <Tag icon="pi pi-times" severity="danger" rounded>No Apto</Tag>
+                                                )}
+                                                </div>
+                                                <div style={{ display: 'flex', alignItems: 'center' }}>
+                                                <p style={{ marginLeft: '30px', marginRight: '25px' }}>
+                                                    <span style={{ fontWeight: 'bold' }}>Comida:</span>
+                                                </p>
+                                                {infoHorarioTurno.comida ? (
+                                                    <Tag icon="pi pi-check" severity="success" rounded>Apto</Tag>
+                                                    ) : (
+                                                    <Tag icon="pi pi-times" severity="danger" rounded>No Apto</Tag>
+                                                )}
+                                            </div>
+                                        </div>
+                                    </Dialog>
+                                    )}
+                                    </CustomCard>
                             );
                             } else {
-                            return (
-                                <Card style={{ display: 'flex', flexDirection: 'column', height: '100px', width: '100px' }}>
-                                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column' }}>   
-                                    <Button
-                                    onClick={() => {
-                                        setSelectedDate(dateColumn);
-                                        setSelectedEstudiante(rowData);
-                                        setVisibleTurnos(true);
-                                        listarTurnosEstudiante(rowData, dateColumn);
-                                        
-                                    }}
-                                    style={{ width: '30px', height: '30px', borderRadius: '15px', backgroundColor: '#bebbbb', display: 'flex', justifyContent: 'center', alignItems: 'center' }}
-                                    >
-                                    <i className="pi pi-plus" style={{ margin: 0 }} />
-                                    </Button>
-                                    <p style={{ fontSize: '0.5rem', margin: '4px 0 0 0' }}>Sin asignar</p>
-                                </div>
-                                </Card>
-                            );
+                                return (
+                                    <CustomCard>
+                                      <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column', height: '100%'}}>
+                                        <Button
+                                          onClick={() => {
+                                            setSelectedDate(dateColumn);
+                                            setSelectedEstudiante(rowData);
+                                            setVisibleTurnos(true);
+                                            listarTurnosEstudiante(rowData, dateColumn);
+                                          }}
+                                          style={{width: '30px', height: '30px', borderRadius: '15px', backgroundColor: '#bebbbb', display: 'flex', justifyContent: 'center', alignItems: 'center'}}
+                                        >
+                                          <i className="pi pi-plus" style={{ margin: 0 }} />
+                                        </Button>
+                                        <p style={{ fontSize: '0.5rem', margin: '4px 0 0 0' }}>Sin asignar</p>
+                                      </div>
+                                    </CustomCard>
+                                  );
                             }
                         }}
                         />
@@ -1074,7 +1169,7 @@ export const GridEstudiantes = ({ asignatura }) => {
                                     <Dropdown 
                                        value={selectedEtiqueta} 
                                        onChange={(e) => setSelectedEtiqueta(e.value)} 
-                                       options={etiquetasListarCreadas.map((etiqueta) => ({label: etiqueta.nombreEtiqueta +" - "+ etiqueta.nombreEscenario, value: etiqueta.idEtiqueta}))} 
+                                       options={etiquetasListarPorEscenerio.map((etiqueta) => ({label: etiqueta.nombreEtiqueta , value: etiqueta.idEtiqueta}))} 
                                        placeholder="Etiqueta"
                                     />
                                 </div>
