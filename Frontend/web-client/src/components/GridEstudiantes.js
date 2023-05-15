@@ -415,7 +415,7 @@ export const GridEstudiantes = ({ asignatura }) => {
     //Crear Turno
     const crearTurno = (params) => {
         const url = `http://127.0.0.1:8085/turnos/`
-        axios.put(url, params)
+        axios.post(url, params)
           .then(response => {
             console.log('Turno creado:', response.data);
             listarTurnosEstudiante(selectedEstudiante,selectedDate);
