@@ -4,6 +4,7 @@ import java.sql.Date;
 import java.util.List;
 
 import co.edu.unicauca.gesrotesbackend.services.DTO.EstudianteSeleccionadoDTO;
+import co.edu.unicauca.gesrotesbackend.services.DTO.HorarioDTO;
 import co.edu.unicauca.gesrotesbackend.services.DTO.InformacionHorarioTurnoDTO;
 import co.edu.unicauca.gesrotesbackend.services.DTO.JornadaDTO;
 import co.edu.unicauca.gesrotesbackend.services.DTO.NuevoTurnoDTO;
@@ -60,7 +61,13 @@ public interface ITurnoService {
      *  @param idEstudiante
      *  @return
      */
-    InformacionHorarioTurnoDTO obetenerHorarioTurnoPorFecha(int idEstudiante, Date fechaTurno);
+    InformacionHorarioTurnoDTO obetenerInfoHorarioTurnoPorFecha(int idEstudiante, Date fechaTurno);
+
+    /**
+     *  TODO: Documentar
+     * @return
+     */
+    List<HorarioDTO> obetenerHorariosTurno(int idPrograma, int idCoordinador, int idAsignatura);
 
     /**
      *  TODO: Documentar

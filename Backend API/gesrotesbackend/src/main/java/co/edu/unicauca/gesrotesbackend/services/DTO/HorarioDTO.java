@@ -20,16 +20,12 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class InformacionTurnoAsociadoDTO {
+public class HorarioDTO {
     // * Información en la matriz
     String nombreEscenario;
     String nombreEtiqueta;
-    String franjaJornada;
-    // * Información pop up
-    String nombreEstudiante;
-    Time horaInicio;
-    Time horaFin;
-    TipoAlimentacion alimentacion;
+    String franjasJornada;
     // * para el front
-    Date fecha;
+    Date fechaTurno;
+    int idEstudiante;
 }

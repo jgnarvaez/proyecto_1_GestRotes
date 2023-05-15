@@ -32,3 +32,9 @@ SELECT pu.pu_id AS id, pu.pu_nombres AS nombres, pu.pu_apellidos AS apellidos
             AND ea.asig_id = 3 
             AND ea.coo_id = 1
 
+--
+use mydb;
+SELECT pu_id, tur_fecha
+FROM tbl_turno
+GROUP BY pu_id, prog_id, asig_id, coo_id, tur_fecha
+HAVING COUNT(*) > 0;
