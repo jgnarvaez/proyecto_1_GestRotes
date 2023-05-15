@@ -37,6 +37,7 @@ export const GridEstudiantes = ({ asignatura }) => {
     const [fechaActual, setFechaActual] = useState(new Date());
     const [month, setMonth] = useState(new Date().getMonth());
     const [year, setYear] = useState(new Date().getFullYear());
+   // const [idEstudianteTurno, setIdEstudianteTurno] = useState(null);
     
 
     const months = [
@@ -68,6 +69,8 @@ export const GridEstudiantes = ({ asignatura }) => {
     const [visibleTurnos, setVisibleTurnos] = useState(false);
     const [selectedDate, setSelectedDate] = useState(null);
     const [selectedEstudiante, setSelectedEstudiante] = useState(null);
+    const [turnosEstudiante, setTurnosEstudiante] = useState([]);
+    //const [horarioEstudiante, setHorarioEstudiante] = useState([]);
 
     //CREAR ETIQUETAS
     const [valueCrearEtiqueta, setValueCrearEtiqueta] = useState('');
@@ -75,12 +78,15 @@ export const GridEstudiantes = ({ asignatura }) => {
     const [etiquetasListarAsociadas, setEtiquetasListarAsociadas] = useState([]);
     const [escenarios, setEscenarios] = useState([]);
     const [servicios, setServicios] = useState([]);
+    const [jornadas, setJornadas] = useState([]);
+    const [horarios, setHorarios] = useState([]);
     
 
     //SELECCION ESCENARIO
     const [selectedEscenario, setSelectedEscenario] = useState(null);
     const [selectedEtiqueta, setSelectedEtiqueta] = useState(null);
     const [selectedServicio, setSelectedServicio] = useState(null);
+    const [selectedJornada, setSelectedJornada] = useState(null);
 
     //ESTADO BOTONES
     const [botonCrearEtiquetas, setBotonCrearEtiquetas] = useState(true);
@@ -98,6 +104,8 @@ export const GridEstudiantes = ({ asignatura }) => {
     // Validar si ambos campos tienen información
     const isFormValid = valueCrearEtiqueta.trim() !== '' && selectedEscenario !== null;
     const isFormValidAsociado = selectedEtiqueta != null && selectedServicio != null;
+    const isFormValidTurno = selectedEscenario != null && selectedJornada != null && selectedEtiqueta != null ;
+
 
     //POST CREAR ETIQUETA
     const etiquetaNueva = {
@@ -111,6 +119,19 @@ export const GridEstudiantes = ({ asignatura }) => {
         idEtiqueta: selectedEtiqueta, 
         idServicio: selectedServicio
     }
+
+    //PUT CREAR TURNO
+    const turnoCrear = {
+        fechaTurno: selectedDate
+        ? `${selectedDate.getFullYear()}-${String(selectedDate.getMonth() + 1).padStart(2, '0')}-${String(selectedDate.getDate()).padStart(2, '0')}`
+        : null,
+        idEstudiante: selectedEstudiante ? selectedEstudiante.id : null,
+        idPrograma: 1,
+        idAsignatura: asignatura.idAsignatura,
+        idCoordinador: 1,
+        idJornada: selectedJornada,
+        idEtiqueta: selectedEtiqueta
+    };
 
     
 
@@ -336,11 +357,27 @@ export const GridEstudiantes = ({ asignatura }) => {
         listarServicios();
     }, [listarServicios]);
     
+    //Listar jornadas
+    const listarJornadas=  useCallback(() => {
+        const url = `http://127.0.0.1:8085/turnos/jornadas`
+        axios.get(url)
+        .then(response => setJornadas(response.data))
+        .catch(error => console.error(error));
+    }, []);
+    useEffect(() => {
+        listarJornadas();
+    }, [listarJornadas]);
 
-    /*/Listar etiqueta especifica TODO
-    //*const listarEtiquetaEspecifica= () => {
-        const url = `http://127.0.0.1:8085/etiquetas/escenarios/4`
-    }/*/
+    //Listar horarios
+    const listarHorarios = useCallback(() => {
+        const url = `http://127.0.0.1:8085/turnos/` //cambiar
+        axios.get(url)
+        .then(response => setHorarios(response.data))
+        .catch(error => console.error(error));
+    }, []);
+    useEffect(() => {
+        listarHorarios();
+    }, [listarHorarios]);
 
     //Crear etiqueta
     const handleCrearEtiqueta = (etiquetaCrear) => {
@@ -372,6 +409,21 @@ export const GridEstudiantes = ({ asignatura }) => {
           .catch(error => {
             console.error('Error al asociar el servicio a la etiqueta:', error);
             showErrorEtiquetaAsociado();
+          });
+    }
+
+    //Crear Turno
+    const crearTurno = (params) => {
+        const url = `http://127.0.0.1:8085/turnos/`
+        axios.put(url, params)
+          .then(response => {
+            console.log('Turno creado:', response.data);
+            listarTurnosEstudiante(selectedEstudiante,selectedDate);
+            //showSuccessEtiquetaAsociado();
+          })
+          .catch(error => {
+            console.error('Error al crear turno:', error);
+            //showErrorEtiquetaAsociado();
           });
     }
 
@@ -427,6 +479,37 @@ export const GridEstudiantes = ({ asignatura }) => {
         setConfirmDialogVisibleEtiquetasAsociado(true);
         setEtiquetaIdEliminarAsociado(id);
     };
+
+    //LISTAR TURNOS ESTUDIANTE
+    const listarTurnosEstudiante = (estudiante,fecha) => {
+        const fechaR = `${fecha.getFullYear()}-${String(fecha.getMonth() + 1).padStart(2, '0')}-${String(fecha.getDate()).padStart(2, '0')}`;
+
+        const url = `http://127.0.0.1:8085/turnos/turnosPorFechaEstudiante/${estudiante.id}/${fechaR}`
+
+        axios.get(url)
+            .then(response => {
+            console.log('Turnos listados:');
+            setTurnosEstudiante(response.data);
+            })
+            .catch(error => console.error(error));
+    }
+
+    //LISTAR TURNOS ESTUDIANTE
+    /*
+    const listarHorarioTurno = (estudiante,fecha) => {
+        const fechaR = `${fecha.getFullYear()}-${String(fecha.getMonth() + 1).padStart(2, '0')}-${String(fecha.getDate()).padStart(2, '0')}`;
+
+        const url = `http://127.0.0.1:8085/turnos/horarioTurno/${estudiante.id}/${fechaR}`
+
+        axios.get(url)
+            .then(response => {
+            console.log('Horario listado:');
+            setHorarioEstudiante(response.data);
+            })
+            .catch(error => console.error(error));
+    }
+*/
+    
 
     const listarEstudiantesSeleccionados = useCallback(() => {
         const url = `http://127.0.0.1:8085/turnos/estudiantesSeleccionados/1/${asignatura.idAsignatura}/1`
@@ -880,7 +963,7 @@ export const GridEstudiantes = ({ asignatura }) => {
                         </div>
                         }
                         body={(rowData) => {
-                            console.log(rowData); // Muestra la información del estudiante en la consola del navegador
+                            
                             return (
                               <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
@@ -893,33 +976,46 @@ export const GridEstudiantes = ({ asignatura }) => {
                     />
 
                     {[0, 1, 2, 3, 4, 5, 6].map((dayOfWeek) => {
-                        const daysToAdd = dayOfWeek - fechaActual.getDay();
-                        const dateColumn = new Date(year, month, fechaActual.getDate() + daysToAdd);
+                    const daysToAdd = dayOfWeek - fechaActual.getDay();
+                    const dateColumn = new Date(year, month, fechaActual.getDate() + daysToAdd);
 
-                        return (
-                            
+                    return (
                         <Column
-                            header={dateColumn.toLocaleDateString('es-ES', { weekday: 'short' }) + ' ' + dateColumn.getDate()}
-                            key={dayOfWeek}
-                            body={(rowData) => (
-                            <Card style={{ display: 'flex', flexDirection: 'column', height: '100px', width: '100px' }}>
-                                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column' }}>
-                                <Button
+                        header={dateColumn.toLocaleDateString('es-ES', { weekday: 'short' }) + ' ' + dateColumn.getDate()}
+                        key={dayOfWeek}
+                        body={(rowData) => {
+                            
+                            const formattedDateColumn = `${dateColumn.getFullYear()}-${String(dateColumn.getMonth() + 1).padStart(2, '0')}-${String(dateColumn.getDate()).padStart(2, '0')}`;
+                            if (horarios.nombreCompleto === rowData.nombreCompleto && horarios.fecha === formattedDateColumn) {
+                            return (
+                                <Card style={{ display: 'flex', flexDirection: 'column', height: '100px', width: '100px' }}>
+                                {/* Contenido del Card cuando se cumple la condición */}
+                                </Card>
+                            );
+                            } else {
+                            return (
+                                <Card style={{ display: 'flex', flexDirection: 'column', height: '100px', width: '100px' }}>
+                                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column' }}>   
+                                    <Button
                                     onClick={() => {
-                                    setSelectedDate(dateColumn);
-                                    setSelectedEstudiante(rowData.nombreCompleto);
-                                    setVisibleTurnos(true);
+                                        setSelectedDate(dateColumn);
+                                        setSelectedEstudiante(rowData);
+                                        setVisibleTurnos(true);
+                                        listarTurnosEstudiante(rowData, dateColumn);
+                                        
                                     }}
                                     style={{ width: '30px', height: '30px', borderRadius: '15px', backgroundColor: '#bebbbb', display: 'flex', justifyContent: 'center', alignItems: 'center' }}
-                                >
+                                    >
                                     <i className="pi pi-plus" style={{ margin: 0 }} />
-                                </Button>
-                                <p style={{ fontSize: '0.5rem', margin: '4px 0 0 0' }}>Sin asignar</p>
+                                    </Button>
+                                    <p style={{ fontSize: '0.5rem', margin: '4px 0 0 0' }}>Sin asignar</p>
                                 </div>
-                            </Card>
-                            )}
+                                </Card>
+                            );
+                            }
+                        }}
                         />
-                        );
+                    );
                     })}
                 </DataTable>
 
@@ -928,7 +1024,7 @@ export const GridEstudiantes = ({ asignatura }) => {
                     <div>
                         <div>
                             <div style={{ display: 'flex', alignItems: 'center' }}>
-                                <p style={{marginLeft:'30px' ,marginRight: '25px', fontSize: '0.8rem' }}><span style={{ fontWeight: 'bold' }}>Estudiante:</span> {selectedEstudiante}</p>
+                                <p style={{marginLeft:'30px' ,marginRight: '25px', fontSize: '0.8rem' }}><span style={{ fontWeight: 'bold' }}>Estudiante:</span> {selectedEstudiante.nombreCompleto}</p>
                                 <p style={{marginLeft:'30px', fontSize: '0.8rem'}}><span style={{ fontWeight: 'bold' }}>Fecha seleccionada:</span>: {selectedDate.toLocaleDateString('es-ES')}</p>
                             </div>
                             <p style={{ marginLeft:'30px', fontSize: '0.8rem', fontWeight: 'bold', color: 'red' }}>Nota: El número máximo de horas asociadas a los turnos es de 12.</p>
@@ -959,9 +1055,9 @@ export const GridEstudiantes = ({ asignatura }) => {
                                 <div style={{ display: 'block' }}>
                                     <p>Tipo de jornada *</p>
                                     <Dropdown 
-                                        value={selectedEscenario} 
-                                        onChange={(e) => setSelectedEscenario(e.value)} 
-                                        options={escenarios.map((escenario) => ({label: escenario.nombreEscenario, value: escenario.idEscenario}))} 
+                                        value={selectedJornada}
+                                        onChange={(e) => setSelectedJornada(e.value)} 
+                                        options={jornadas.map((jornada) => ({label: jornada.franja +" , "+ jornada.horaInicio+" - "+ jornada.horaFin , value: jornada.idJornada}))} 
                                         placeholder="Jornada"
                                     />
                                     <p style={{ fontSize: '0.7rem'}}>&nbsp;</p >
@@ -982,9 +1078,10 @@ export const GridEstudiantes = ({ asignatura }) => {
                                        placeholder="Etiqueta"
                                     />
                                 </div>
+                                
                                 <div style={{ display: 'block', marginTop: '10px' }}>
                                     <Toast ref={toast} />
-                                    <Button label="ASOCIAR" style={{ fontSize: '0.5rem', backgroundColor: 'blue' }} onClick={() => asociarServicioEtiqueta(etiquetaAsociacionServicio)} disabled={!isFormValidAsociado}/>
+                                    <Button label="ASOCIAR" style={{ fontSize: '0.5rem', backgroundColor: 'blue' }} onClick={() => crearTurno(turnoCrear)} disabled={!isFormValidTurno}/>
                                 </div>
                             </div>
 
@@ -993,9 +1090,13 @@ export const GridEstudiantes = ({ asignatura }) => {
                         <div style={{ textAlign: 'center', width: '600px', margin: 'auto' }}>
                             <p style={{fontWeight: 'bold' }}>LISTA DE TURNOS CREADOS </p>
                             <Toast ref={toast} />
-                            <DataTable value={etiquetasListarCreadas} tableStyle={{ width:'500px' , margin: 'auto'}} bodystyle={{ textAlign: 'center' }}>
+                            <DataTable value={turnosEstudiante} tableStyle={{ width:'500px' , margin: 'auto'}} bodystyle={{ textAlign: 'center' }}>
+                                <Column field="nombreEscenario" header="Escenario"></Column>
+                                <Column field="franjaJornada" header="Jornada" body={(rowData) => (
+                                <span>{rowData.franjaJornada} ({rowData.horaInicio} - {rowData.horaFin})</span>
+                                )}></Column>
                                 <Column field="nombreEtiqueta" header="Etiqueta"></Column>
-                                <Column field="nombreEscenario" header="Hospital"></Column>
+                                
                                 <Column header="Eliminar" body={(rowData) => (
                                     <div>
                                         <button style={{ border: 'none', background: 'none' }} onClick={() => handleEliminarEtiqueta(rowData.idEtiqueta)}>
@@ -1008,7 +1109,6 @@ export const GridEstudiantes = ({ asignatura }) => {
                                 </Column>
                             </DataTable>
                         </div>
-
                     </div>
                 )}
                 </Dialog>
