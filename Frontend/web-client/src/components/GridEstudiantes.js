@@ -370,7 +370,7 @@ export const GridEstudiantes = ({ asignatura }) => {
 
     //Listar horarios
     const listarHorarios = useCallback(() => {
-        const url = `http://127.0.0.1:8085/turnos/` //cambiar
+        const url = `` //cambiar
         axios.get(url)
         .then(response => setHorarios(response.data))
         .catch(error => console.error(error));
@@ -415,7 +415,7 @@ export const GridEstudiantes = ({ asignatura }) => {
     //Crear Turno
     const crearTurno = (params) => {
         const url = `http://127.0.0.1:8085/turnos/`
-        axios.put(url, params)
+        axios.post(url, params)
           .then(response => {
             console.log('Turno creado:', response.data);
             listarTurnosEstudiante(selectedEstudiante,selectedDate);
@@ -986,7 +986,7 @@ export const GridEstudiantes = ({ asignatura }) => {
                         body={(rowData) => {
                             
                             const formattedDateColumn = `${dateColumn.getFullYear()}-${String(dateColumn.getMonth() + 1).padStart(2, '0')}-${String(dateColumn.getDate()).padStart(2, '0')}`;
-                            if (horarios.nombreCompleto === rowData.nombreCompleto && horarios.fecha === formattedDateColumn) {
+                            if (horarios.idEstudiante === rowData.id && horarios.fechaTurno === formattedDateColumn) {
                             return (
                                 <Card style={{ display: 'flex', flexDirection: 'column', height: '100px', width: '100px' }}>
                                 {/* Contenido del Card cuando se cumple la condición */}
