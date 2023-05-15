@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import co.edu.unicauca.gesrotesbackend.exceptions.ValidacionException;
 import co.edu.unicauca.gesrotesbackend.services.DTO.EstudianteSeleccionadoDTO;
+import co.edu.unicauca.gesrotesbackend.services.DTO.HorarioDTO;
 import co.edu.unicauca.gesrotesbackend.services.DTO.InformacionHorarioTurnoDTO;
 import co.edu.unicauca.gesrotesbackend.services.DTO.JornadaDTO;
 import co.edu.unicauca.gesrotesbackend.services.DTO.NuevoTurnoDTO;
@@ -85,11 +86,18 @@ public class ControladorTurno {
         return turnoService.crearTurno(nuevoTurno);
     }
 
-    // * Listar horario turno de un estudiante
+    // * Listar informacion de un horario en determinada fecha
     @GetMapping("/horarioTurno/{idEstudiante}/{fechaTurno}")
     @ResponseBody
     public InformacionHorarioTurnoDTO findSchedule(@PathVariable int idEstudiante, @PathVariable Date fechaTurno){
-        return turnoService.obetenerHorarioTurnoPorFecha(idEstudiante, fechaTurno);
+        return turnoService.obetenerInfoHorarioTurnoPorFecha(idEstudiante, fechaTurno);
+    }
+
+    // * Listar horarios para una asignacion
+    @GetMapping("/{idPrograma}/{idCoordinador}/{idAsignatura}")
+    @ResponseBody
+    public List<HorarioDTO> findSchedules(@PathVariable int idPrograma, @PathVariable int idCoordinador, @PathVariable int idAsignatura){
+        return turnoService.obetenerHorariosTurno(idPrograma, idCoordinador, idAsignatura);
     }
 
     // * Listar turnos asociados a un estudiante

@@ -10,7 +10,8 @@ import org.springframework.data.repository.query.Param;
 
 import co.edu.unicauca.gesrotesbackend.models.Turno;
 import co.edu.unicauca.gesrotesbackend.models.TurnoId;
-import co.edu.unicauca.gesrotesbackend.services.DTO.InformacionTurnoAsociadoDTO;
+import co.edu.unicauca.gesrotesbackend.services.DTO.EstudianteFechaDTO;
+import co.edu.unicauca.gesrotesbackend.services.DTO.HorarioDTO;
 import co.edu.unicauca.gesrotesbackend.services.DTO.TurnoAsociadoDTO;
 import jakarta.transaction.Transactional;
 
@@ -22,8 +23,9 @@ public interface TurnoRepository extends JpaRepository<Turno, TurnoId> {
             "AND tur_fecha = :fecha ", nativeQuery=true)
     List<Turno> findShiftsByStudentId(@Param("estudianteId") int estudianteId, @Param("fecha") Date fecha);
 
-    //TODO: Documentar
-    @Query("SELECT new co.edu.unicauca.gesrotesbackend.services.DTO.InformacionTurnoAsociadoDTO(es.nombre, et.nombre, j.franja, CONCAT(e.nombres, ' ', e.apellidos), j.horaInicio, j.horaFin, t.alimentacion, t.fecha) " +
+    //  Para mostrar la informacion cuando de click en Ver mas infomacion
+    //? CONCAT(e.nombres, ' ', e.apellidos),
+    @Query("SELECT new co.edu.unicauca.gesrotesbackend.services.DTO.TurnoAsociadoDTO(t.id.id, es.nombre, j.franja, j.horaInicio, j.horaFin, et.nombre, t.fecha, e.id, t.alimentacion, CONCAT(e.nombres, ' ', e.apellidos)) " +
             "FROM Turno t " +
             "INNER JOIN Jornada j ON t.jornada.id = j.id " +
             "INNER JOIN Etiqueta et ON t.etiqueta.id = et.id " +
@@ -34,10 +36,35 @@ public interface TurnoRepository extends JpaRepository<Turno, TurnoId> {
             "INNER JOIN Estudiante e ON t.id.estAsignacion.id.estudiante.id = e.id " +
             "WHERE t.id.estAsignacion.id.estudiante.id = :estudianteId " +
             "AND t.fecha = :fecha ")
-    List<InformacionTurnoAsociadoDTO> findShiftsAssociationsByDate(@Param("estudianteId") int estudianteId, @Param("fecha") Date fecha);
+    List<TurnoAsociadoDTO> findShiftsAssociationsByDate(@Param("estudianteId") int estudianteId, @Param("fecha") Date fecha);
+
+    /**
+     * Para listar los horarios en la grilla
+     * @return
+     */
+//     @Query("SELECT new co.edu.unicauca.gesrotesbackend.services.DTO.TurnoAsociadoDTO(t.id, es.nombre, j.franja, j.horaInicio, j.horaFin, et.nombre, t.fecha, e.id, t.alimentacion, CONCAT(e.nombres, ' ', e.apellidos)) " +
+//             "FROM Turno t " +
+//             "INNER JOIN Jornada j ON t.jornada.id = j.id " +
+//             "INNER JOIN Etiqueta et ON t.etiqueta.id = et.id " +
+//             "INNER JOIN EscenarioPractica es ON et.escenario.id = es.id " +
+//             "INNER JOIN Asignacion a ON t.id.estAsignacion.id.asignacion.id = a.id " +
+//             "INNER JOIN CoordinadorAsignatura c ON a.id.coordinador.id = c.id " +
+//             "INNER JOIN Asignatura asi ON a.id.asignatura.id = asi.id " +
+//             "INNER JOIN Estudiante e ON t.id.estAsignacion.id.estudiante.id = e.id ")
+//     List<TurnoAsociadoDTO> findSchedules();
+
+    @Query("SELECT new co.edu.unicauca.gesrotesbackend.services.DTO.EstudianteFechaDTO(t.id.estAsignacion.id.estudiante.id, t.fecha) " +
+                "FROM Turno t " +
+                "WHERE t.id.estAsignacion.id.asignacion.id.programa.id = :programaId " +
+                "AND t.id.estAsignacion.id.asignacion.id.asignatura.id = :asignaturaId " +
+                "AND t.id.estAsignacion.id.asignacion.id.coordinador.id = :coordinadorId " +
+                "GROUP BY t.id.estAsignacion.id.estudiante.id, t.id.estAsignacion.id.asignacion.id.programa.id, t.id.estAsignacion.id.asignacion.id.asignatura.id, t.id.estAsignacion.id.asignacion.id.coordinador.id, t.fecha " +
+                "HAVING COUNT(*) > 0")
+    List<EstudianteFechaDTO> findDifferentSchedules(@Param("programaId") int programaId, @Param("asignaturaId") int asignaturaId, 
+                                                        @Param("coordinadorId") int coordinadorId);
 
     //TODO: Documentar
-    @Query("SELECT new co.edu.unicauca.gesrotesbackend.services.DTO.TurnoAsociadoDTO(t.id.id, es.nombre, j.franja, j.horaInicio, j.horaFin, et.nombre) " +
+    @Query("SELECT new co.edu.unicauca.gesrotesbackend.services.DTO.TurnoAsociadoDTO(t.id.id, es.nombre, j.franja, j.horaInicio, j.horaFin, et.nombre, t.fecha, e.id, t.alimentacion, CONCAT(e.nombres, ' ', e.apellidos)) " +
             "FROM Turno t " +
             "INNER JOIN Jornada j ON t.jornada.id = j.id " +
             "INNER JOIN Etiqueta et ON t.etiqueta.id = et.id " +

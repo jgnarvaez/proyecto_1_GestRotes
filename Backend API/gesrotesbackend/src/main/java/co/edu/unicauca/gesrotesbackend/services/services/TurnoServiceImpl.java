@@ -23,8 +23,9 @@ import co.edu.unicauca.gesrotesbackend.repositories.EstAsignacionRepository;
 import co.edu.unicauca.gesrotesbackend.repositories.EtiquetaRepository;
 import co.edu.unicauca.gesrotesbackend.repositories.JornadaRepository;
 import co.edu.unicauca.gesrotesbackend.repositories.TurnoRepository;
+import co.edu.unicauca.gesrotesbackend.services.DTO.EstudianteFechaDTO;
 import co.edu.unicauca.gesrotesbackend.services.DTO.EstudianteSeleccionadoDTO;
-import co.edu.unicauca.gesrotesbackend.services.DTO.InformacionTurnoAsociadoDTO;
+import co.edu.unicauca.gesrotesbackend.services.DTO.HorarioDTO;
 import co.edu.unicauca.gesrotesbackend.services.DTO.JornadaDTO;
 import co.edu.unicauca.gesrotesbackend.services.DTO.NuevoTurnoDTO;
 import co.edu.unicauca.gesrotesbackend.services.DTO.SeleccionEstudianteDTO;
@@ -142,34 +143,55 @@ public class TurnoServiceImpl implements ITurnoService{
     }
 
     @Override
-    public InformacionHorarioTurnoDTO obetenerHorarioTurnoPorFecha(int idEstudiante, Date fechaTurno){
-        List<InformacionTurnoAsociadoDTO> turnosAsociadosDTO = turnoRepository.findShiftsAssociationsByDate(idEstudiante, fechaTurno);
-        
+    public InformacionHorarioTurnoDTO obetenerInfoHorarioTurnoPorFecha(int idEstudiante, Date fechaTurno){
+        // * Obtengo la lista de turnos que tiene un estudiante en determinada fecha
+        List<TurnoAsociadoDTO> turnosAsociadosDTO = turnoRepository.findShiftsAssociationsByDate(idEstudiante, fechaTurno);
+        // * Realizo las operacoines necesarias para obtener el horario para el estudiante en esa fecha
         List<Horario> horarios = new ArrayList<>();
-        String franjas = "";
-        for (InformacionTurnoAsociadoDTO turnoAsociado : turnosAsociadosDTO) {
+        for (TurnoAsociadoDTO turnoAsociado : turnosAsociadosDTO) {
             horarios.add(new Horario(turnoAsociado.getHoraInicio().toString(), turnoAsociado.getHoraFin().toString()));
-            franjas += turnoAsociado.getFranjaJornada() + " y ";
         }
-        // Elimino el "y " al final
-        franjas = franjas.substring(0, franjas.length() - 2);
-        
         String rango = establecerHorario(horarios);
         // System.out.println("El horario es de: " + rango);
-
-        Boolean[] alimentacion = aptoParaAlimentacion(turnosAsociadosDTO);
-        
-        InformacionHorarioTurnoDTO horarioTurnoDTO = new InformacionHorarioTurnoDTO(turnosAsociadosDTO.get(0).getNombreEscenario(),
-                                                                                    turnosAsociadosDTO.get(0).getNombreEtiqueta(),
-                                                                                    franjas, 
-                                                                                    turnosAsociadosDTO.get(0).getNombreEstudiante(), 
+        // * Realizo las operaciones necesarias para obtenter los booleanos de desayuno, almuerzo y comida para el horario en esa fecha
+        Boolean[] alimentacion = aptoParaAlimentacion(turnosAsociadosDTO);        
+        // * Agrego los datos a un objeto InformacionHorarioTurnoDTO
+        InformacionHorarioTurnoDTO horarioTurnoDTO = new InformacionHorarioTurnoDTO(turnosAsociadosDTO.get(0).getNombreEstudiante(), 
                                                                                     rango, 
                                                                                     alimentacion[0], 
                                                                                     alimentacion[1],
-                                                                                    alimentacion[2],
-                                                                                    turnosAsociadosDTO.get(0).getFecha());
-        
+                                                                                    alimentacion[2]);
+        // * Retorno el objeto InformacionHorarioTurnoDTO con la información a mostrar al usuario final
         return horarioTurnoDTO;
+    }
+    
+    @Override
+    public List<HorarioDTO> obetenerHorariosTurno(int idPrograma, int idCoordinador, int idAsignatura){
+        List<HorarioDTO> horariosDTO = new ArrayList<>();
+        // * Obtengo una lista donde cada objeto tiene un idEstudiante y fechaTurno, para poder sacar las franjas y el horario de Turno en esa fecha
+        List<EstudianteFechaDTO> estFechaDTOList = turnoRepository.findDifferentSchedules(idPrograma, idAsignatura, idCoordinador);
+        // * Recorro la lista para sacar las franjas y el horario de Turno a cada estudiante en determinada fecha
+        for (EstudianteFechaDTO estudianteFechaDTO : estFechaDTOList) {
+            // * Obtengo la los turnos asociados a un estudiante en determinada fecha
+            List<TurnoAsociadoDTO> turnosAsociadosDTO = turnoRepository.findShiftsAssociationsByDate2(estudianteFechaDTO.getIdEstudiante(), estudianteFechaDTO.getFechaTurno());
+            // * Operaciones para obtener las franjas de los turnos asociados al estudiante en esa fecha
+            String franjas = "";
+            for (TurnoAsociadoDTO turnoAsociado : turnosAsociadosDTO) {
+                franjas += turnoAsociado.getFranjaJornada() + " y ";
+            }
+            // Elimino el "y " al final
+            franjas = franjas.substring(0, franjas.length() - 2);
+            // * Asigno el nombre del escenario, nombre de la etiqueta, franjas, fecha turno e id del estudiante a un objeto HorarioDTO
+            HorarioDTO horarioEst = new HorarioDTO();
+            horarioEst.setNombreEscenario(turnosAsociadosDTO.get(0).getNombreEscenario());
+            horarioEst.setNombreEtiqueta(turnosAsociadosDTO.get(0).getNombreEtiqueta());
+            horarioEst.setFranjasJornada(franjas);
+            horarioEst.setFechaTurno(estudianteFechaDTO.getFechaTurno());
+            horarioEst.setIdEstudiante(estudianteFechaDTO.getIdEstudiante());
+            // * Añado el objeto a la lista a retornar
+            horariosDTO.add(horarioEst);
+        }
+        return horariosDTO;
     }
 
     @Override
@@ -221,9 +243,9 @@ public class TurnoServiceImpl implements ITurnoService{
      *  @param turnosAsociadosDTO
      *  @return
      */
-    public Boolean[] aptoParaAlimentacion(List<InformacionTurnoAsociadoDTO> turnosAsociadosDTO){
+    public Boolean[] aptoParaAlimentacion(List<TurnoAsociadoDTO> turnosAsociadosDTO){
         Boolean[] alimentacion = new Boolean[3];
-        for (InformacionTurnoAsociadoDTO turnoAsociado : turnosAsociadosDTO) {
+        for (TurnoAsociadoDTO turnoAsociado : turnosAsociadosDTO) {
             TipoAlimentacion tipoAlimentacion = turnoAsociado.getAlimentacion();
             if (tipoAlimentacion == TipoAlimentacion.Desayuno) {
                 alimentacion[0] = true;
