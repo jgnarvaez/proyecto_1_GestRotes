@@ -41,7 +41,7 @@ export const GridEstudiantes = ({ asignatura }) => {
     // CAMBIO
     const [searchText, setSearchText] = useState('');
     const [timer, setTimer] = useState(null);
-    const [searchTextEstudiantes, setSearchTextEstudiantes] = useState('');
+    //const [searchTextEstudiantes, setSearchTextEstudiantes] = useState('');
 
     // ESTUDIANTES
     const [estudiantesBusqueda, setEstudiantesBusqueda] = useState([]);
@@ -89,6 +89,8 @@ export const GridEstudiantes = ({ asignatura }) => {
     const [turnosEstudiante, setTurnosEstudiante] = useState([]);
     const [visibleMasInformacion, setVisibleMasInformacion] = useState(false);
     const [infoHorarioTurno, setInfoHorarioTurno] = useState([]);
+    const [confirmDialogVisibleTurnosEliminar, setConfirmDialogVisibleTurnosEliminar] = useState(false);
+    const [turnoIdEliminar, setTurnoIdEliminar] = useState([]);
 
     //CREAR ETIQUETAS
     const [valueCrearEtiqueta, setValueCrearEtiqueta] = useState('');
@@ -125,7 +127,6 @@ export const GridEstudiantes = ({ asignatura }) => {
     const isFormValidAsociado = selectedEtiqueta != null && selectedServicio != null;
     const isFormValidTurno = selectedEscenario != null && selectedJornada != null && selectedEtiqueta != null ;
 
-
     //POST CREAR ETIQUETA
     const etiquetaNueva = {
         nombreEtiqueta: valueCrearEtiqueta,
@@ -152,15 +153,16 @@ export const GridEstudiantes = ({ asignatura }) => {
         idEtiqueta: selectedEtiqueta
     };
 
-    
-
-
     const showSuccessRegistrarEstudiante = () => {
         toast.current.show({severity:'success', summary: 'Registrado!', detail:'El estudiante se registro exitosamente.', life: 8000});
     }
 
     const showSuccessCrearEtiqueta = () => {
         toast.current.show({severity:'success', summary: 'Creada!', detail:'Se ha creado una nueva etiqueta.', life: 8000});
+    }
+
+    const showSuccessCrearTurno = () => {
+        toast.current.show({severity:'success', summary: 'Creada!', detail:'Se ha creado un nuevo turno.', life: 8000});
     }
 
     const showSuccessEtiquetaAsociado = () => {
@@ -181,6 +183,10 @@ export const GridEstudiantes = ({ asignatura }) => {
 
     const showInfoEliminarEtiquetaAsociado = () => {
         toast.current.show({severity:'info', summary: 'Eliminado!', detail:'Se ha eliminado el servicio asociado a la etiqueta correctamente.', life: 8000});
+    }
+
+    const showInfoEliminarTurno = () => {
+        toast.current.show({severity:'info', summary: 'Eliminado!', detail:'Se ha eliminado el turno correctamente.', life: 8000});
     }
 
     const showErrorRegistrarEstudiante = () => {
@@ -356,10 +362,12 @@ export const GridEstudiantes = ({ asignatura }) => {
     
     //Listar etiquetas por escenario 
     const listarEtiquetasPorEscenario = useCallback(() => {
-        const url = `http://127.0.0.1:8085/etiquetas/escenarios/${selectedEscenario}/etiquetas`
-        axios.get(url)
-        .then(response => setEtiquetasListarPorEscenario(response.data))
-        .catch(error => console.error(error));
+        if (selectedEscenario !== null) {
+            const url = `http://127.0.0.1:8085/etiquetas/escenarios/${selectedEscenario}/etiquetas`;
+            axios.get(url)
+                .then(response => setEtiquetasListarPorEscenario(response.data))
+                .catch(error => console.error(error));
+        }
     }, [selectedEscenario]);
     useEffect(() => {
         listarEtiquetasPorEscenario();
@@ -410,6 +418,19 @@ export const GridEstudiantes = ({ asignatura }) => {
         listarHorarios();
     }, [listarHorarios]);
 
+     //LISTAR TURNOS ESTUDIANTE
+     const listarTurnosEstudiante = (estudiante,fecha) => {
+        const fechaR = `${fecha.getFullYear()}-${String(fecha.getMonth() + 1).padStart(2, '0')}-${String(fecha.getDate()).padStart(2, '0')}`;
+
+        const url = `http://127.0.0.1:8085/turnos/turnosPorFechaEstudiante/${estudiante.id}/${fechaR}`
+
+        axios.get(url)
+            .then(response => {
+            console.log('Turnos listados:');
+            setTurnosEstudiante(response.data);
+            })
+            .catch(error => console.error(error));
+    }
     //Crear etiqueta
     const handleCrearEtiqueta = (etiquetaCrear) => {
         const url = `http://127.0.0.1:8085/etiquetas/`;
@@ -449,8 +470,12 @@ export const GridEstudiantes = ({ asignatura }) => {
         axios.post(url, params)
           .then(response => {
             console.log('Turno creado:', response.data);
+            showSuccessCrearTurno();
             listarTurnosEstudiante(selectedEstudiante,selectedDate);
-            //showSuccessEtiquetaAsociado();
+            listarHorarios();
+            setSelectedEscenario(null);
+            setSelectedJornada(null);
+            setSelectedEtiqueta(null);
           })
           .catch(error => {
             console.error('Error al crear turno:', error);
@@ -458,9 +483,34 @@ export const GridEstudiantes = ({ asignatura }) => {
           });
     }
 
+    //Eliminar turno
+    const eliminarTurno = async () => {
+        try {
+            const response = await fetch(`http://127.0.0.1:8085/turnos/${turnoIdEliminar}`, {
+                method: 'DELETE',
+            });
+        
+            if (response.ok) {
+                console.log(`Turno con ID ${turnoIdEliminar} eliminado.`);
+                listarTurnosEstudiante(selectedEstudiante,selectedDate); //actualiza turnos
+                showInfoEliminarTurno();
+                listarHorarios();
+            } else {
+            console.log(`No se pudo eliminar el Turno.`);
+            }
+        } catch (error) {
+            console.error(error);
+        }
+            setConfirmDialogVisibleTurnosEliminar(false);
+            setTurnoIdEliminar(null);
+    }
+    const handleEliminarTurno = (id) => {
+        setConfirmDialogVisibleTurnosEliminar(true);
+        setTurnoIdEliminar(id);
+    };
+
     //Eliminar etiqueta
     const eliminarEtiqueta = async () => {
-        //const url = `http://127.0.0.1:8085/etiquetas/2`
         try {
             const response = await fetch(`http://127.0.0.1:8085/etiquetas/${etiquetaIdEliminar}`, {
             method: 'DELETE'
@@ -488,6 +538,7 @@ export const GridEstudiantes = ({ asignatura }) => {
     const eliminarServicioAsociadoEtiqueta = async () => {
         //const url = `http://localhost:8085/etiquetas/2/eliminarAsosiacion`
         try {
+            
             const response = await fetch(`http://localhost:8085/etiquetas/${etiquetaIdEliminarAsociado}/eliminarAsosiacion`, {
             method: 'PUT'
             });
@@ -511,22 +562,7 @@ export const GridEstudiantes = ({ asignatura }) => {
         setEtiquetaIdEliminarAsociado(id);
     };
 
-    //LISTAR TURNOS ESTUDIANTE
-    const listarTurnosEstudiante = (estudiante,fecha) => {
-        const fechaR = `${fecha.getFullYear()}-${String(fecha.getMonth() + 1).padStart(2, '0')}-${String(fecha.getDate()).padStart(2, '0')}`;
-
-        const url = `http://127.0.0.1:8085/turnos/turnosPorFechaEstudiante/${estudiante.id}/${fechaR}`
-
-        axios.get(url)
-            .then(response => {
-            console.log('Turnos listados:');
-            setTurnosEstudiante(response.data);
-            })
-            .catch(error => console.error(error));
-    }
-
-    //INFORMACION HORARIO-TURNO
-    
+    //INFORMACION HORARIO-TURNO    
     const informacionHorarioTurno = (estudiante,fecha) => {
         const fechaR = `${fecha.getFullYear()}-${String(fecha.getMonth() + 1).padStart(2, '0')}-${String(fecha.getDate()).padStart(2, '0')}`;
 
@@ -538,8 +574,6 @@ export const GridEstudiantes = ({ asignatura }) => {
             })
             .catch(error => console.error(error));
     }
-
-    
 
     const listarEstudiantesSeleccionados = useCallback(() => {
         const url = `http://127.0.0.1:8085/turnos/estudiantesSeleccionados/1/${asignatura.idAsignatura}/1`
@@ -605,6 +639,43 @@ export const GridEstudiantes = ({ asignatura }) => {
     const estudiantesNoSeleccionados = estudiantes.filter((estudiante) => {
         return !estudiantesSeleccionados.some((est) => est.id === estudiante.id);
       });
+
+      const [filtroEstudiantesTodos, setFiltroEstudiantesTodos] = useState('');
+      const [filtroEstudiantesSeleccionados, setFiltroEstudiantesSeleccionados] = useState('');
+      const [filtroEstudiantesNoSeleccionados, setFiltroEstudiantesNoSeleccionados] = useState('');
+
+      const handleFiltroChangeTodos = (event) => {
+        setFiltroEstudiantesTodos(event.target.value);
+      };
+
+      const handleFiltroChangeSeleccionados = (event) => {
+        setFiltroEstudiantesSeleccionados(event.target.value);
+      };
+
+      const handleFiltroChangeNoSeleccionados = (event) => {
+        setFiltroEstudiantesNoSeleccionados(event.target.value);
+      };
+
+      const estudiantesFiltradosTodos = estudiantes.filter(
+        (estudiante) =>
+          estudiante.nombreCompleto
+            .toLowerCase()
+            .includes(filtroEstudiantesTodos.toLowerCase())
+      );
+
+      const estudiantesFiltradosSeleccionados = estudiantesSeleccionados.filter(
+        (estudiante) =>
+          estudiante.nombreCompleto
+            .toLowerCase()
+            .includes(filtroEstudiantesSeleccionados.toLowerCase())
+      );
+
+      const estudiantesFiltradosNoSeleccionados = estudiantesNoSeleccionados.filter(
+        (estudiante) =>
+          estudiante.nombreCompleto
+            .toLowerCase()
+            .includes(filtroEstudiantesNoSeleccionados.toLowerCase())
+      );
 
     return (
     <div className="card">
@@ -754,11 +825,35 @@ export const GridEstudiantes = ({ asignatura }) => {
             <div className='component-container-grid-gestion'>
                 <div style={{marginBottom: '10px'}}>
                     <Button label="Gestión estudiantes" style={{ fontSize: '0.8rem', backgroundColor: 'blue', marginRight: '5px' }} onClick={() => setVisibleEstudiantes(true)} />
-                    <Dialog header="GESTIÓN ESTUDIANTES" visible={visibleEstudiantes} style={{ width: '55vw' }} onHide={() => setVisibleEstudiantes(false)}>
+                    <Dialog header="GESTIÓN ESTUDIANTES" visible={visibleEstudiantes} style={{ width: '65vw' }} onHide={() => setVisibleEstudiantes(false)}>
                         <div>
                             <span className="p-input-icon-left" style={{ marginRight: '15px' }}>
                                 <i className="pi pi-search" />
-                                <InputText placeholder="Buscar estudiante por nombre" style={{fontSize: '0.8rem', width: '230px', height: '30px'}} value={searchTextEstudiantes} onChange={(e) => {setSearchTextEstudiantes(e.target.value); clearTimeout(timer); setTimer(setTimeout(() => {buscarEstudiantes(e.target.value);}, 500));}}/>
+                                {botonEstudiantesTodos && (
+                                    <InputText
+                                    placeholder="Buscar estudiante por nombre"
+                                    style={{ fontSize: '0.8rem', width: '230px', height: '30px' }}
+                                    value={filtroEstudiantesTodos}
+                                    onChange={handleFiltroChangeTodos}
+                                    />
+                                )}
+                                {botonEstudiantesSeleccionados && (
+                                    <InputText
+                                    placeholder="Buscar estudiante por nombre"
+                                    style={{ fontSize: '0.8rem', width: '230px', height: '30px' }}
+                                    value={filtroEstudiantesSeleccionados}
+                                    onChange={handleFiltroChangeSeleccionados}
+                                    />
+                                )}
+                                {botonEstudiantesNoSeleccionados && (
+                                    <InputText
+                                    placeholder="Buscar estudiante por nombre"
+                                    style={{ fontSize: '0.8rem', width: '230px', height: '30px' }}
+                                    value={filtroEstudiantesNoSeleccionados}
+                                    onChange={handleFiltroChangeNoSeleccionados}
+                                    />
+                                )}
+                               
                             </span>
                             <Button label="TODOS" style={{ fontSize: '0.8rem',marginLeft: '10px', backgroundColor: botonEstudiantesTodos ? 'red' : 'grey' }} onClick={() => handleClickEstadoBotonesEstudiantes('todos')}/>
                             <Button label="SELECCIONADOS" style={{ fontSize: '0.8rem', backgroundColor: botonEstudiantesSeleccionados ? 'red' : 'grey' }} onClick={() => handleClickEstadoBotonesEstudiantes('seleccionados')} />
@@ -766,10 +861,10 @@ export const GridEstudiantes = ({ asignatura }) => {
                             <Button label="DESMARCAR TODOS" style={{ fontSize: '0.8rem', backgroundColor: 'red', marginLeft: '25px' }}  onClick={() => handleDesSeleccionarEstudiantes()} />
                             {botonEstudiantesTodos ? (
                                 <div>
-                                    <div className='component-grid' style={{ maxHeight: '450px', overflowY: 'auto' }}>
+                                    <div className='component-grid' style={{ maxHeight: '650px', overflowY: 'auto' }}>
                                     <Box sx={{ flexGrow: 1 }}>
                                         <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 8, md: 12 }}>
-                                            {estudiantes.map((estudiante, index) => {
+                                            {estudiantesFiltradosTodos.map((estudiante, index) => {
                                             const isSelected = estudiantesSeleccionados.some((est) => est.id === estudiante.id);
 
                                             return (
@@ -790,7 +885,7 @@ export const GridEstudiantes = ({ asignatura }) => {
                                     <div className='component-grid' style={{ maxHeight: '450px', overflowY: 'auto' }}>
                                     <Box sx={{ flexGrow: 1 }}>
                                         <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 8, md: 12 }}>
-                                            {estudiantesSeleccionados.map((estudiante, index) => {
+                                            {estudiantesFiltradosSeleccionados.map((estudiante, index) => {
                                             const isSelected = estudiantesSeleccionados.some((est) => est.id === estudiante.id);
 
                                             return (
@@ -813,7 +908,7 @@ export const GridEstudiantes = ({ asignatura }) => {
                                     <Box sx={{ flexGrow: 1 }}>
                                         <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 8, md: 12 }}>
                                             
-                                            {estudiantesNoSeleccionados.map((estudiante, index) => {
+                                            {estudiantesFiltradosNoSeleccionados.map((estudiante, index) => {
                                             const isSelected = estudiantesSeleccionados.some((est) => est.id === estudiante.id);
                                                 
                                             return (
@@ -958,11 +1053,10 @@ export const GridEstudiantes = ({ asignatura }) => {
                     </Dialog>
                     }
                     
-                    
                     <Button label="Alimentación" style={{ fontSize: '0.8rem', backgroundColor: 'blue', marginRight: '15px' }} />
                     <span className="p-input-icon-left" style={{ marginRight: '15px' }}>
                         <i className="pi pi-search" />
-                        <InputText placeholder="Buscar estudiante" style={{fontSize: '0.8rem', width: '180px', height: '30px'}} value={searchText} onChange={(e) => {setSearchText(e.target.value); clearTimeout(timer); setTimer(setTimeout(() => {buscarEstudiantes(e.target.value);}, 500));}}/>
+                        <InputText placeholder="Buscar estudiante" style={{fontSize: '0.8rem', width: '180px', height: '30px'}} value={filtroEstudiantesSeleccionados} onChange={handleFiltroChangeSeleccionados} />
                     </span>
                     <Dropdown options={years} value={year} onChange={(e) => {
                         const newDate = new Date(fechaActual);
@@ -984,7 +1078,7 @@ export const GridEstudiantes = ({ asignatura }) => {
                     <Button label="Validación de turnos" style={{ fontSize: '0.8rem', backgroundColor: 'red', marginRight: '5px' }}  />
                 </div>
 
-                <DataTable value={estudiantesSeleccionados} tableStyle={{ minWidth: '50rem' }}>
+                <DataTable value={estudiantesFiltradosSeleccionados} tableStyle={{ minWidth: '50rem' }}>
                     <Column
                         header={
                         <div>
@@ -1194,10 +1288,10 @@ export const GridEstudiantes = ({ asignatura }) => {
                                 
                                 <Column header="Eliminar" body={(rowData) => (
                                     <div>
-                                        <button style={{ border: 'none', background: 'none' }} onClick={() => handleEliminarEtiqueta(rowData.idEtiqueta)}>
+                                        <button style={{ border: 'none', background: 'none' }} onClick={() => handleEliminarTurno(rowData.idTurno)}>
                                             <i className="pi pi-trash"></i>
                                         </button>
-                                        <ConfirmDialog visible={confirmDialogVisibleEtiquetas} onHide={() => setConfirmDialogVisibleEtiquetas(false)} message="¿Estás seguro de que deseas eliminar esta etiqueta?" header="Confirmar eliminación" acceptLabel="Aceptar" rejectLabel="Cancelar" icon="pi pi-exclamation-triangle" accept={() => eliminarEtiqueta()} />
+                                        <ConfirmDialog visible={confirmDialogVisibleTurnosEliminar} onHide={() => setConfirmDialogVisibleTurnosEliminar(false)} message="¿Estás seguro de que deseas eliminar este turno?" header="Confirmar eliminación" acceptLabel="Aceptar" rejectLabel="Cancelar" icon="pi pi-exclamation-triangle" accept={() => eliminarTurno()} />
                                     </div>
                                 )}>
                                     
