@@ -445,7 +445,8 @@ export const GridEstudiantes = ({ asignatura }) => {
           })
           .catch(error => {
             console.error('Error al registrar la etiqueta:', error);
-            showErrorCrearEtiqueta(error.response.data);
+            const errorMessage = error.response && error.response.data && error.response.data.message ? error.response.data.message : 'Error desconocido';
+            showErrorCrearEtiqueta(errorMessage);
           });
       }
 
