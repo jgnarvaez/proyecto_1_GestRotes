@@ -1,5 +1,6 @@
 package co.edu.unicauca.gesrotesbackend.services.DTO;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,7 +16,9 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class AsociacionEtiquetaServicioDTO {
+public class AsociacionEtiquetaServicioDTORequest {
+    @NotNull(message = "{label.id.empty}")
     int idEtiqueta;
+    @NotNull(message = "{label.scenario.empty}")
     int idServicio;
 }

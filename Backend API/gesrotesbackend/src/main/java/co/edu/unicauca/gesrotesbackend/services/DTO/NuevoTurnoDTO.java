@@ -2,6 +2,7 @@ package co.edu.unicauca.gesrotesbackend.services.DTO;
 
 import java.sql.Date;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,10 +21,16 @@ import lombok.Setter;
 @AllArgsConstructor
 public class NuevoTurnoDTO {
     Date fechaTurno;
+    @NotNull(message = "{student.id.empty}")
     int idEstudiante;
+    @NotNull(message = "{program.id.empty}")
     int idPrograma;
+    @NotNull(message = "{subject.id.empty}")
     int idAsignatura;
+    @NotNull(message = "{coordinator.id.empty}")
     int idCoordinador;
+    @NotNull(message = "{period.id.empty}")
     int idJornada;
+    @NotNull(message = "{label.id.empty}")
     int idEtiqueta;
 }

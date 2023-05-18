@@ -15,7 +15,6 @@ import co.edu.unicauca.gesrotesbackend.services.DTO.TurnoAsociadoDTO;
 import jakarta.transaction.Transactional;
 
 public interface TurnoRepository extends JpaRepository<Turno, TurnoId> {
-
     @Query(value = "SELECT * " +
             "FROM tbl_turno " +
             "WHERE pu_id = :estudianteId " +
@@ -23,7 +22,6 @@ public interface TurnoRepository extends JpaRepository<Turno, TurnoId> {
     List<Turno> findShiftsByStudentId(@Param("estudianteId") int estudianteId, @Param("fecha") Date fecha);
 
     //  Para mostrar la informacion cuando de click en Ver mas infomacion
-    //? CONCAT(e.nombres, ' ', e.apellidos),
     @Query("SELECT new co.edu.unicauca.gesrotesbackend.services.DTO.TurnoAsociadoDTO(t.id.id, es.nombre, j.franja, j.horaInicio, j.horaFin, et.nombre, t.fecha, e.id, t.alimentacion, CONCAT(e.nombres, ' ', e.apellidos)) " +
             "FROM Turno t " +
             "INNER JOIN Jornada j ON t.jornada.id = j.id " +
@@ -36,21 +34,6 @@ public interface TurnoRepository extends JpaRepository<Turno, TurnoId> {
             "WHERE t.id.estAsignacion.id.estudiante.id = :estudianteId " +
             "AND t.fecha = :fecha ")
     List<TurnoAsociadoDTO> findShiftsAssociationsByDate(@Param("estudianteId") int estudianteId, @Param("fecha") Date fecha);
-
-    /**
-     * Para listar los horarios en la grilla
-     * @return
-     */
-//     @Query("SELECT new co.edu.unicauca.gesrotesbackend.services.DTO.TurnoAsociadoDTO(t.id, es.nombre, j.franja, j.horaInicio, j.horaFin, et.nombre, t.fecha, e.id, t.alimentacion, CONCAT(e.nombres, ' ', e.apellidos)) " +
-//             "FROM Turno t " +
-//             "INNER JOIN Jornada j ON t.jornada.id = j.id " +
-//             "INNER JOIN Etiqueta et ON t.etiqueta.id = et.id " +
-//             "INNER JOIN EscenarioPractica es ON et.escenario.id = es.id " +
-//             "INNER JOIN Asignacion a ON t.id.estAsignacion.id.asignacion.id = a.id " +
-//             "INNER JOIN CoordinadorAsignatura c ON a.id.coordinador.id = c.id " +
-//             "INNER JOIN Asignatura asi ON a.id.asignatura.id = asi.id " +
-//             "INNER JOIN Estudiante e ON t.id.estAsignacion.id.estudiante.id = e.id ")
-//     List<TurnoAsociadoDTO> findSchedules();
 
     @Query("SELECT new co.edu.unicauca.gesrotesbackend.services.DTO.EstudianteFechaDTO(t.id.estAsignacion.id.estudiante.id, t.fecha) " +
                 "FROM Turno t " +

@@ -14,8 +14,6 @@ import co.edu.unicauca.gesrotesbackend.services.DTO.EtiquetaPorEscenarioDTO;
 import co.edu.unicauca.gesrotesbackend.services.DTO.EtiquetaConServicioDTO;
 
 public interface EtiquetaRepository extends JpaRepository<Etiqueta, Integer> {
-
-
     /**
      *  Comprueba si existe una etiqueta con el nombre especificado.
      *  

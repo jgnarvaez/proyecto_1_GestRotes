@@ -1,4 +1,4 @@
-package co.edu.unicauca.gesrotesbackend.services.services;
+package co.edu.unicauca.gesrotesbackend.services.services.Impl;
 
 import co.edu.unicauca.gesrotesbackend.models.Estudiante;
 import co.edu.unicauca.gesrotesbackend.models.Programa;
@@ -18,7 +18,8 @@ import co.edu.unicauca.gesrotesbackend.repositories.CoordinadorAsigRepository;
 
 import co.edu.unicauca.gesrotesbackend.services.DTO.EstAsignacionDTO;
 import co.edu.unicauca.gesrotesbackend.services.DTO.EstudianteDTO;
-import org.springframework.beans.factory.annotation.Autowired;
+import co.edu.unicauca.gesrotesbackend.services.services.IAsignacionEstudiantesService;
+
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -27,20 +28,25 @@ import java.util.Optional;
 
 @Service
 public class AsignacionEstudiantesServiceImpl implements IAsignacionEstudiantesService{
-    @Autowired
-    private AsignacionRepository asignacionRepository;
-    @Autowired
-    private EstAsignacionRepository estAsignacionRepository;
-    @Autowired
-    private EstudianteRepository estudianteRepository;
-    @Autowired
-    private ProgramaRepository programaRepository;
-    @Autowired
-    private AsignaturaRepository asignaturaRepository;
-    @Autowired
-    private CoordinadorAsigRepository coordinadorAsigRepository;
+    private final AsignacionRepository asignacionRepository;
+    private final EstAsignacionRepository estAsignacionRepository;
+    private final EstudianteRepository estudianteRepository;
+    private final ProgramaRepository programaRepository;
+    private final AsignaturaRepository asignaturaRepository;
+    private final CoordinadorAsigRepository coordinadorAsigRepository;
 
-    // Registrar estudiante en una asignatura
+    public AsignacionEstudiantesServiceImpl(AsignacionRepository asignacionRepository, EstAsignacionRepository estAsignacionRepository,
+                                            EstudianteRepository estudianteRepository, ProgramaRepository programaRepository,
+                                            AsignaturaRepository asignaturaRepository, CoordinadorAsigRepository coordinadorAsigRepository){
+        this.asignacionRepository = asignacionRepository;
+        this.estAsignacionRepository = estAsignacionRepository;
+        this.estudianteRepository = estudianteRepository;
+        this.programaRepository = programaRepository;
+        this.asignaturaRepository = asignaturaRepository;
+        this.coordinadorAsigRepository = coordinadorAsigRepository;
+    }
+
+    // * Registrar estudiante en una asignatura
     @Override
     public EstAsignacionDTO registerStudent(int cooId, int progId, int subjId, int studId) {
 
@@ -65,7 +71,6 @@ public class AsignacionEstudiantesServiceImpl implements IAsignacionEstudiantesS
             EstAsignacion entity = new EstAsignacion();
             EstAsignacionId entityId = new EstAsignacionId(student.get(), asignacion.get());
             entity.setId(entityId);
-            //entity.setEstado(StuAsgState.Registrado.toString());
             try {
                 if (estAsignacionRepository.save(entity) == null) {
                     // Error al guardar el registro
@@ -93,39 +98,39 @@ public class AsignacionEstudiantesServiceImpl implements IAsignacionEstudiantesS
         return null;
     }
 
-    // Obtener estudiantes registrados en una asignatura
+    // * Obtener estudiantes registrados en una asignatura
     @Override
     public List<EstudianteDTO> getAllStudents(int subjId, int progId, int cooId) {
         List<Estudiante> entities = estudianteRepository.getStudentInfo(subjId,progId,cooId);
         List<EstudianteDTO> listDTO = new ArrayList<>();
         for (Estudiante entity: entities) {
-            EstudianteDTO objDTO = new EstudianteDTO(entity.getId(),entity.getNombres()+" "+entity.getApellidos(),entity.getIdentificacion(),entity.getUsuario());
+            EstudianteDTO objDTO = new EstudianteDTO(entity.getId(),entity.getNombres()+" "+entity.getApellidos(),
+                                                    entity.getIdentificacion(),entity.getUsuario());
             listDTO.add(objDTO);
         }
         return listDTO;
     }
 
-    //Obtener estudiantes por nombres o apellidos
+    // * Obtener estudiantes por nombres o apellidos
     @Override
     public List<EstudianteDTO> findStudentsByName(String name, int subjId, int progId, int cooId) {
         List<Estudiante> entities = estudianteRepository.getStudentsByName(name,subjId,progId,cooId);
         List<EstudianteDTO> listDTO = new ArrayList<>();
         for (Estudiante entity: entities) {
-            EstudianteDTO objDTO = new EstudianteDTO(entity.getId(),entity.getNombres()+" "+entity.getApellidos(),entity.getIdentificacion(),entity.getUsuario());
+            EstudianteDTO objDTO = new EstudianteDTO(entity.getId(),entity.getNombres()+" "+entity.getApellidos(),
+                                                    entity.getIdentificacion(),entity.getUsuario());
             listDTO.add(objDTO);
         }
         return listDTO;
     }
 
-    //Eliminar todos los estudiantes asociados a una asignatura
+    // * Eliminar todos los estudiantes asociados a una asignatura
     public void deleteStudents(int cooId, int progId,int subjId){
-        // estAsignacionRepository.eliminarRegistrosTurEstAsignacion(progId,subjId,cooId); //! Deprecated. necesario porque no está ON DELETE CASCADE
         estAsignacionRepository.deleteAllStudents(progId,subjId,cooId);
     }
 
-    //Eliminar estudiante asociado a una asignatura
+    // * Eliminar estudiante asociado a una asignatura
     public void deleteStudent(int cooId, int progId,int subjId, int studId){
-        // estAsignacionRepository.eliminarRegistrosDeEstudianteEnTurEstAsignacion(studId,progId,subjId,cooId); //! Deprecated. necesario porque no está ON DELETE CASCADE
         estAsignacionRepository.deleteStudent(progId,subjId,cooId,studId);
     }
 }

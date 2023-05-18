@@ -3,7 +3,8 @@ package co.edu.unicauca.gesrotesbackend.services.services;
 import co.edu.unicauca.gesrotesbackend.services.DTO.EscenarioDTO;
 import co.edu.unicauca.gesrotesbackend.services.DTO.EtiquetaCreadaDTO;
 import co.edu.unicauca.gesrotesbackend.services.DTO.EtiquetaPorEscenarioDTO;
-import co.edu.unicauca.gesrotesbackend.services.DTO.AsociacionEtiquetaServicioDTO;
+import co.edu.unicauca.gesrotesbackend.services.DTO.AsociacionEtiquetaServicioDTORequest;
+import co.edu.unicauca.gesrotesbackend.services.DTO.AsociacionEtiquetaServicioDTOResponse;
 import co.edu.unicauca.gesrotesbackend.services.DTO.EtiquetaConServicioDTO;
 import co.edu.unicauca.gesrotesbackend.services.DTO.NuevaEtiquetaDTO;
 import co.edu.unicauca.gesrotesbackend.services.DTO.ServicioDTO;
@@ -71,7 +72,7 @@ public interface IEtiquetaService {
      *  @return Un objeto AsociacionEtiquetaServicioDTO que representa las asociación
      *          entre la etiqueta y el servicio.
      */ 
-    AsociacionEtiquetaServicioDTO asociarEtiqueta(int idEtiqueta, int idServicio);
+    AsociacionEtiquetaServicioDTOResponse asociarEtiqueta(AsociacionEtiquetaServicioDTORequest etiqueta);
     
     /**
      *  Elimina una etiqueta

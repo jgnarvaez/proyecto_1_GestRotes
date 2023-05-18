@@ -1,5 +1,9 @@
 package co.edu.unicauca.gesrotesbackend.services.DTO;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,6 +20,10 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class NuevaEtiquetaDTO {
+    @NotBlank(message = "{label.name.empty}")
+    @Size(min = 5, max = 30, message = "{label.name.length}")
+    @Pattern(regexp = "^[a-zA-Z\\s]+$", message = "{label.name.invalid}")
     String nombreEtiqueta;
+    @NotNull(message = "{scenario.id.empty}")
     int idEscenario;
 }

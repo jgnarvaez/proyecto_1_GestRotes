@@ -80,32 +80,6 @@ public interface EstAsignacionRepository extends JpaRepository<EstAsignacion, Es
     void modifyStateStudent(@Param("estado") Boolean estado, @Param("estudianteId") int estudianteId, @Param("programaId") int programaId, 
                                 @Param("asignaturaId") int asignaturaId, @Param("coordinadorId") int coordinadorId);
 
-//     @Transactional
-//     @Modifying
-//     @Query("UPDATE EstAsignacion ea " +
-//             "SET ea.seleccionado = true, " +
-//             "ea.mes = :mes, "+
-//             "ea.anio = :anio " +
-//             "WHERE ea.id.estudiante.id = :estudianteId " +
-//             "AND ea.id.asignacion.id.programa.id = :programaId " +
-//             "AND ea.id.asignacion.id.asignatura.id = :asignaturaId " +
-//             "AND ea.id.asignacion.id.coordinador.id = :coordinadorId ")
-//     void selectStudent(@Param("estudianteId") int estudianteId, @Param("programaId") int programaId, @Param("asignaturaId") int asignaturaId, 
-//                                 @Param("coordinadorId") int coordinadorId, @Param("mes") Mes mes, @Param("anio") int anio);
-
-//     @Transactional
-//     @Modifying
-//     @Query("UPDATE EstAsignacion ea " +
-//             "SET ea.seleccionado = false " +
-//             "WHERE ea.id.estudiante.id = :estudianteId " +
-//             "AND ea.id.asignacion.id.programa.id = :programaId " +
-//             "AND ea.id.asignacion.id.asignatura.id = :asignaturaId " +
-//             "AND ea.id.asignacion.id.coordinador.id = :coordinadorId " +
-//             "AND ea.mes = :mes " +
-//             "AND ea.anio = :anio ")
-//     void deselectStudent(@Param("estudianteId") int estudianteId, @Param("programaId") int programaId, @Param("asignaturaId") int asignaturaId, 
-//                                 @Param("coordinadorId") int coordinadorId, @Param("mes") Mes mes, @Param("anio") int anio);
-
     /**
      *  Obtiene los registros de tbl_est_asignacion que tienen en 1 el atributo est_asig_seleccionado
      *  
@@ -133,24 +107,5 @@ public interface EstAsignacionRepository extends JpaRepository<EstAsignacion, Es
             "AND ea.id.asignacion.id.asignatura.id = :asignaturaId " +
             "AND ea.id.asignacion.id.coordinador.id = :coordinadorId ")
     void deselectStudents(@Param("programaId") int programaId, @Param("asignaturaId") int asignaturaId, @Param("coordinadorId") int coordinadorId);
-
-
-    //! Deprecated
-//     @Transactional
-//     @Modifying
-//     @Query("DELETE FROM TurEstAsignacion tea " +
-//             "WHERE tea.id.estAsignacion.id.asignacion.id.coordinador.id = :coo_id " +
-//             "AND tea.id.estAsignacion.id.asignacion.id.asignatura.id = :asig_id " +
-//             "AND tea.id.estAsignacion.id.asignacion.id.programa.id = :prog_id")
-//     void eliminarRegistrosTurEstAsignacion(@Param("prog_id") int programaId, @Param("asig_id") int asignaturaId, @Param("coo_id") int coordinadorId);
-
-//     @Transactional
-//     @Modifying
-//     @Query("DELETE FROM TurEstAsignacion tea " +
-//             "WHERE tea.id.estAsignacion.id.estudiante.id = :est_id " +
-//             "AND tea.id.estAsignacion.id.asignacion.id.coordinador.id = :coo_id " +
-//             "AND tea.id.estAsignacion.id.asignacion.id.asignatura.id = :asig_id " +
-//             "AND tea.id.estAsignacion.id.asignacion.id.programa.id = :prog_id")
-//     void eliminarRegistrosDeEstudianteEnTurEstAsignacion(@Param("est_id") int estudianteId, @Param("prog_id") int programaId, @Param("asig_id") int asignaturaId, @Param("coo_id") int coordinadorId);
 }
 

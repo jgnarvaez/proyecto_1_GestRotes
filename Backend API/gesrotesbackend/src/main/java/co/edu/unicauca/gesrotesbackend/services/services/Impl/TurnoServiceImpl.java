@@ -1,4 +1,4 @@
-package co.edu.unicauca.gesrotesbackend.services.services;
+package co.edu.unicauca.gesrotesbackend.services.services.Impl;
 
 import java.sql.Date;
 import java.text.SimpleDateFormat;
@@ -7,10 +7,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
-import org.modelmapper.ModelMapper;
-import org.modelmapper.TypeToken;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import co.edu.unicauca.gesrotesbackend.models.EstAsignacion;
@@ -32,22 +30,31 @@ import co.edu.unicauca.gesrotesbackend.services.DTO.SeleccionEstudianteDTO;
 import co.edu.unicauca.gesrotesbackend.services.DTO.SeleccionEstudiantesDTO;
 import co.edu.unicauca.gesrotesbackend.services.DTO.TurnoAsociadoDTO;
 import co.edu.unicauca.gesrotesbackend.services.DTO.TurnoCreadoDTO;
+import co.edu.unicauca.gesrotesbackend.services.Mapper.JornadaDTOMapper;
 import co.edu.unicauca.gesrotesbackend.services.Utilities.Horario;
 import co.edu.unicauca.gesrotesbackend.services.Utilities.Intervalo;
+import co.edu.unicauca.gesrotesbackend.services.services.ITurnoService;
 import co.edu.unicauca.gesrotesbackend.services.DTO.InformacionHorarioTurnoDTO;
 
 @Service
 public class TurnoServiceImpl implements ITurnoService{
-    @Autowired
-    private JornadaRepository jornadaRepository;
-    @Autowired
-    private EtiquetaRepository etiquetaRepository;
-    @Autowired
-    private TurnoRepository turnoRepository;
-    @Autowired
-    private EstAsignacionRepository estAsignacionRepository;
-    @Autowired
-    private ModelMapper modelMapper;
+    private final JornadaRepository jornadaRepository;
+    private final EtiquetaRepository etiquetaRepository;
+    private final TurnoRepository turnoRepository;
+    private final EstAsignacionRepository estAsignacionRepository;
+    private final JornadaDTOMapper jornadaDTOMapper;
+
+    public TurnoServiceImpl(JornadaRepository jornadaRepository, 
+                            EtiquetaRepository etiquetaRepository,
+                            TurnoRepository turnoRepository, 
+                            EstAsignacionRepository estAsignacionRepository,
+                            JornadaDTOMapper jornadaDTOMapper){
+        this.jornadaRepository = jornadaRepository;
+        this.etiquetaRepository = etiquetaRepository;
+        this.turnoRepository = turnoRepository;
+        this.estAsignacionRepository = estAsignacionRepository;
+        this.jornadaDTOMapper = jornadaDTOMapper;
+    }
 
     @Override
     public void cambiarEstadoSeleccionado(SeleccionEstudianteDTO seleccionEstudiante){
@@ -57,16 +64,6 @@ public class TurnoServiceImpl implements ITurnoService{
                                                 seleccionEstudiante.getAsigId(), 
                                                 seleccionEstudiante.getCooId());
     }
-
-    // @Override
-    // public void deseleccionarEstudiante(SeleccionEstudianteDTO seleccionEstudiante){
-    //     estAsignacionRepository.deselectStudent(seleccionEstudiante.getPuId(), 
-    //                                             seleccionEstudiante.getProgId(), 
-    //                                             seleccionEstudiante.getAsigId(), 
-    //                                             seleccionEstudiante.getCooId(), 
-    //                                             Mes.valueOf(seleccionEstudiante.getMes()), 
-    //                                             seleccionEstudiante.getAnio());
-    // }
 
     @Override
     public List<EstudianteSeleccionadoDTO> obtenerEstudiantesSeleccionados(int progId, int asigId, int cooId){
@@ -83,9 +80,10 @@ public class TurnoServiceImpl implements ITurnoService{
 
     @Override
     public List<JornadaDTO> obetenerJornadas() {
-        List<Jornada> listadoEntity = this.jornadaRepository.findAll();
-        List<JornadaDTO> listadoDTO = this.modelMapper.map(listadoEntity,new TypeToken<List<JornadaDTO>>(){}.getType());
-        return listadoDTO;
+        return jornadaRepository.findAll()
+                .stream()
+                .map(jornadaDTOMapper)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -121,13 +119,10 @@ public class TurnoServiceImpl implements ITurnoService{
         LocalTime inicioRangoComida = LocalTime.parse("19:00");
         LocalTime finRangoComida = LocalTime.parse("21:00");
         if(obj.estaEnRango(inicioRangoDesayuno, finRangoDesayuno)){
-            //System.out.println("El estudiante es apto para desayuno");
             auxTurno.setAlimentacion(TipoAlimentacion.Desayuno);
         } else if (obj.estaEnRango(inicioRangoAlmuerzo, finRangoAlmuerzo)) {
-            //System.out.println("El estudiante es apto para almuerzo");
             auxTurno.setAlimentacion(TipoAlimentacion.Almuerzo);
         } else if (obj.estaEnRango(inicioRangoComida, finRangoComida)) {
-            //System.out.println("El estudiante es apto para comida");
             auxTurno.setAlimentacion(TipoAlimentacion.Comida);
         }
         //* Guardar el turno en la BD
@@ -149,14 +144,14 @@ public class TurnoServiceImpl implements ITurnoService{
         // * Realizo las operacoines necesarias para obtener el horario para el estudiante en esa fecha
         List<Horario> horarios = new ArrayList<>();
         for (TurnoAsociadoDTO turnoAsociado : turnosAsociadosDTO) {
-            horarios.add(new Horario(turnoAsociado.getHoraInicio().toString(), turnoAsociado.getHoraFin().toString()));
+            horarios.add(new Horario(turnoAsociado.horaInicio().toString(), turnoAsociado.horaFin().toString()));
         }
         String rango = establecerHorario(horarios);
         // System.out.println("El horario es de: " + rango);
         // * Realizo las operaciones necesarias para obtenter los booleanos de desayuno, almuerzo y comida para el horario en esa fecha
         Boolean[] alimentacion = aptoParaAlimentacion(turnosAsociadosDTO);        
         // * Agrego los datos a un objeto InformacionHorarioTurnoDTO
-        InformacionHorarioTurnoDTO horarioTurnoDTO = new InformacionHorarioTurnoDTO(turnosAsociadosDTO.get(0).getNombreEstudiante(), 
+        InformacionHorarioTurnoDTO horarioTurnoDTO = new InformacionHorarioTurnoDTO(turnosAsociadosDTO.get(0).nombreEstudiante(), 
                                                                                     rango, 
                                                                                     alimentacion[0], 
                                                                                     alimentacion[1],
@@ -173,21 +168,20 @@ public class TurnoServiceImpl implements ITurnoService{
         // * Recorro la lista para sacar las franjas y el horario de Turno a cada estudiante en determinada fecha
         for (EstudianteFechaDTO estudianteFechaDTO : estFechaDTOList) {
             // * Obtengo la los turnos asociados a un estudiante en determinada fecha
-            List<TurnoAsociadoDTO> turnosAsociadosDTO = turnoRepository.findShiftsAssociationsByDate2(estudianteFechaDTO.getIdEstudiante(), estudianteFechaDTO.getFechaTurno());
+            List<TurnoAsociadoDTO> turnosAsociadosDTO = turnoRepository.findShiftsAssociationsByDate2(estudianteFechaDTO.idEstudiante(), estudianteFechaDTO.fechaTurno());
             // * Operaciones para obtener las franjas de los turnos asociados al estudiante en esa fecha
             String franjas = "";
             for (TurnoAsociadoDTO turnoAsociado : turnosAsociadosDTO) {
-                franjas += turnoAsociado.getFranjaJornada() + " y ";
+                franjas += turnoAsociado.franjaJornada() + " y ";
             }
             // Elimino el "y " al final
             franjas = franjas.substring(0, franjas.length() - 2);
             // * Asigno el nombre del escenario, nombre de la etiqueta, franjas, fecha turno e id del estudiante a un objeto HorarioDTO
-            HorarioDTO horarioEst = new HorarioDTO();
-            horarioEst.setNombreEscenario(turnosAsociadosDTO.get(0).getNombreEscenario());
-            horarioEst.setNombreEtiqueta(turnosAsociadosDTO.get(0).getNombreEtiqueta());
-            horarioEst.setFranjasJornada(franjas);
-            horarioEst.setFechaTurno(estudianteFechaDTO.getFechaTurno());
-            horarioEst.setIdEstudiante(estudianteFechaDTO.getIdEstudiante());
+            HorarioDTO horarioEst = new HorarioDTO(turnosAsociadosDTO.get(0).nombreEscenario(),
+                                                    turnosAsociadosDTO.get(0).nombreEtiqueta(),
+                                                    franjas,
+                                                    estudianteFechaDTO.fechaTurno(),
+                                                    estudianteFechaDTO.idEstudiante());
             // * Añado el objeto a la lista a retornar
             horariosDTO.add(horarioEst);
         }
@@ -201,8 +195,6 @@ public class TurnoServiceImpl implements ITurnoService{
 
     @Override
     public void eliminarTurnoAsociado(int idTurno){
-        // turnoRepository.deleteRowByIdsAndOthers(turno.getFecha(), turno.getIdEstudiante(), turno.getIdPrograma(), turno.getIdAsignatura(), 
-        //                                         turno.getIdCoordinador(), turno.getIdJornada(), turno.getIdEtiqueta());
         turnoRepository.myDeletebyid(idTurno);
     }
 
@@ -246,7 +238,7 @@ public class TurnoServiceImpl implements ITurnoService{
     public Boolean[] aptoParaAlimentacion(List<TurnoAsociadoDTO> turnosAsociadosDTO){
         Boolean[] alimentacion = new Boolean[3];
         for (TurnoAsociadoDTO turnoAsociado : turnosAsociadosDTO) {
-            TipoAlimentacion tipoAlimentacion = turnoAsociado.getAlimentacion();
+            TipoAlimentacion tipoAlimentacion = turnoAsociado.alimentacion();
             if (tipoAlimentacion == TipoAlimentacion.Desayuno) {
                 alimentacion[0] = true;
             } else if (tipoAlimentacion == TipoAlimentacion.Almuerzo) {
