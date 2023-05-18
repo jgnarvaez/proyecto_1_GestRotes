@@ -1,9 +1,7 @@
 package co.edu.unicauca.gesrotesbackend.services.DTO;
 
 import java.sql.Date;
-import java.sql.Time;
 
-import co.edu.unicauca.gesrotesbackend.models.TipoAlimentacion;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

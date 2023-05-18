@@ -1,4 +1,4 @@
-package co.edu.unicauca.gesrotesbackend.services.DTO;
+package co.edu.unicauca.gesrotesbackend.services.Utilities;
 import java.sql.Time;
 import java.text.SimpleDateFormat;
 import java.time.LocalTime;

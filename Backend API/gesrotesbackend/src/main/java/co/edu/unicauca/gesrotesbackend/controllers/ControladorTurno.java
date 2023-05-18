@@ -3,7 +3,6 @@ package co.edu.unicauca.gesrotesbackend.controllers;
 import java.sql.Date;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -15,7 +14,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import co.edu.unicauca.gesrotesbackend.exceptions.ValidacionException;
@@ -35,35 +33,31 @@ import co.edu.unicauca.gesrotesbackend.services.services.ITurnoService;
 @RequestMapping("turnos")
 @CrossOrigin(origins = "*")
 public class ControladorTurno {
-    @Autowired
+    
     ITurnoService turnoService;
+
+    public ControladorTurno(ITurnoService turnoService){
+        this.turnoService = turnoService;
+    }
 
     // * Seleccionar o deseleccionar un estudiante
     @PutMapping("/seleccion")
-    @ResponseBody
+    // @ResponseBody
     @CrossOrigin(origins = "*", methods = { RequestMethod.PUT })
     public void changeSelectState(@RequestBody SeleccionEstudianteDTO seleccionEstudiante){
         turnoService.cambiarEstadoSeleccionado(seleccionEstudiante);
     }
 
-    // * Deseleccionar un estudiante
-    // @PutMapping("/deseleccionar")
-    // @ResponseBody
-    // @CrossOrigin(origins = "*", methods = { RequestMethod.PUT })
-    // public void deselectStudent(@RequestBody SeleccionEstudianteDTO seleccionEstudiante){
-    //     turnoService.deseleccionarEstudiante(seleccionEstudiante);
-    // }
-
     // * Listar los estudiantes seleccionados
     @GetMapping("/estudiantesSeleccionados/{progId}/{asigId}/{cooId}")
-    @ResponseBody
+    // @ResponseBody
     public List<EstudianteSeleccionadoDTO> findSelectedStudents(@PathVariable int progId, @PathVariable int asigId, @PathVariable int cooId){
         return turnoService.obtenerEstudiantesSeleccionados(progId, asigId, cooId);
     }
 
     // * Deseleccionar todos los estudiantes
     @PutMapping("/deseleccionarTodos")
-    @ResponseBody
+    // @ResponseBody
     @CrossOrigin(origins = "*", methods = { RequestMethod.PUT })
     public void deselectStudents(@RequestBody SeleccionEstudiantesDTO seleccionEstudiantes){
         turnoService.deseleccionarEstudiantes(seleccionEstudiantes);
@@ -71,14 +65,14 @@ public class ControladorTurno {
 
     // * Listar las jornadas
     @GetMapping("/jornadas")
-    @ResponseBody
+    // @ResponseBody
     public List<JornadaDTO> findHospitals(){
         return turnoService.obetenerJornadas();
     }
 
     // * Crear un turno a un estudiante
     @PostMapping("/")
-    @ResponseBody
+    // @ResponseBody
     public TurnoCreadoDTO create(@RequestBody NuevoTurnoDTO nuevoTurno){
         // TODO: Validar que los ID's no sean nulos
         // TODO: Validar que la fecha no sea nula
@@ -88,28 +82,28 @@ public class ControladorTurno {
 
     // * Listar informacion de un horario en determinada fecha
     @GetMapping("/horarioTurno/{idEstudiante}/{fechaTurno}")
-    @ResponseBody
+    // @ResponseBody
     public InformacionHorarioTurnoDTO findSchedule(@PathVariable int idEstudiante, @PathVariable Date fechaTurno){
         return turnoService.obetenerInfoHorarioTurnoPorFecha(idEstudiante, fechaTurno);
     }
 
     // * Listar horarios para una asignacion
     @GetMapping("/{idPrograma}/{idCoordinador}/{idAsignatura}")
-    @ResponseBody
+    // @ResponseBody
     public List<HorarioDTO> findSchedules(@PathVariable int idPrograma, @PathVariable int idCoordinador, @PathVariable int idAsignatura){
         return turnoService.obetenerHorariosTurno(idPrograma, idCoordinador, idAsignatura);
     }
 
     // * Listar turnos asociados a un estudiante
     @GetMapping("/turnosPorFechaEstudiante/{idEstudiante}/{fechaTurno}")
-    @ResponseBody
+    // @ResponseBody
     public List<TurnoAsociadoDTO> findShifts(@PathVariable int idEstudiante, @PathVariable Date fechaTurno){
         return turnoService.obetenerTurnosPorFecha(idEstudiante, fechaTurno);
     }
 
     // * Eliminar turno asociado a un estudiante
     @DeleteMapping("/{idTurno}")
-    @ResponseBody
+    // @ResponseBody
     @CrossOrigin(origins = "*", methods = { RequestMethod.DELETE })
     public ResponseEntity<String> delete(@PathVariable int idTurno) {
         try {

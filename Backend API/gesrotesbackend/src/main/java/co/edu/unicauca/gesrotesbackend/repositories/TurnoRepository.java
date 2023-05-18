@@ -11,7 +11,6 @@ import org.springframework.data.repository.query.Param;
 import co.edu.unicauca.gesrotesbackend.models.Turno;
 import co.edu.unicauca.gesrotesbackend.models.TurnoId;
 import co.edu.unicauca.gesrotesbackend.services.DTO.EstudianteFechaDTO;
-import co.edu.unicauca.gesrotesbackend.services.DTO.HorarioDTO;
 import co.edu.unicauca.gesrotesbackend.services.DTO.TurnoAsociadoDTO;
 import jakarta.transaction.Transactional;
 

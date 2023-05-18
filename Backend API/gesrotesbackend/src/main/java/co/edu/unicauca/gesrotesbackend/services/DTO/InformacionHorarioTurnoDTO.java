@@ -1,6 +1,5 @@
 package co.edu.unicauca.gesrotesbackend.services.DTO;
 
-import java.sql.Date;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

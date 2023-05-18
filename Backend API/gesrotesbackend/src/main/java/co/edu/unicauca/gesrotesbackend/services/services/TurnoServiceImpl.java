@@ -32,8 +32,8 @@ import co.edu.unicauca.gesrotesbackend.services.DTO.SeleccionEstudianteDTO;
 import co.edu.unicauca.gesrotesbackend.services.DTO.SeleccionEstudiantesDTO;
 import co.edu.unicauca.gesrotesbackend.services.DTO.TurnoAsociadoDTO;
 import co.edu.unicauca.gesrotesbackend.services.DTO.TurnoCreadoDTO;
-import co.edu.unicauca.gesrotesbackend.services.DTO.Horario;
-import co.edu.unicauca.gesrotesbackend.services.DTO.Intervalo;
+import co.edu.unicauca.gesrotesbackend.services.Utilities.Horario;
+import co.edu.unicauca.gesrotesbackend.services.Utilities.Intervalo;
 import co.edu.unicauca.gesrotesbackend.services.DTO.InformacionHorarioTurnoDTO;
 
 @Service

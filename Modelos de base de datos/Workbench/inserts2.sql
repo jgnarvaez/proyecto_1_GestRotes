@@ -197,31 +197,31 @@ VALUES
 INSERT INTO mydb.tbl_est_asignacion (pu_id, prog_id, asig_id, coo_id, est_asig_seleccionado)
 VALUES
 -- Enfermeria
-(3, 1, 3, 1, 0),
-(4, 1, 3, 1, 0),
-(5, 1, 4, 1, 0),
-(6, 1, 4, 1, 0),
-(7, 1, 1, 1, 0),
-(8, 1, 1, 1, 0),
-(9, 1, 3, 1, 0),
-(10, 1, 3, 1, 0),
-(11, 1, 4, 1, 0),
-(12, 1, 4, 1, 0),
-(13, 1, 1, 1, 0),
-(14, 1, 1, 1, 0),
-(15, 1, 1, 1, 0),
-(16, 1, 1, 1, 0),
-(17, 1, 1, 1, 0),
+(3, 1, 3, 1, 1),
+(4, 1, 3, 1, 1),
+(5, 1, 4, 1, 1),
+(6, 1, 4, 1, 1),
+(7, 1, 1, 1, 1),
+(8, 1, 1, 1, 1),
+(9, 1, 3, 1, 1),
+(10, 1, 3, 1, 1),
+(11, 1, 4, 1, 1),
+(12, 1, 4, 1, 1),
+(13, 1, 1, 1, 1),
+(14, 1, 1, 1, 1),
+(15, 1, 1, 1, 1),
+(16, 1, 1, 1, 1),
+(17, 1, 1, 1, 1),
 -- Fisioterapia
-(22, 2, 8, 2, 0),
-(23, 2, 8, 2, 0),
-(24, 2, 8, 2, 0),
-(25, 2, 9, 2, 0),
-(26, 2, 9, 2, 0),
-(27, 2, 9, 2, 0),
-(28, 2, 10, 2, 0),
-(29, 2, 10, 2, 0),
-(30, 2, 10, 2, 0);
+(22, 2, 8, 2, 1),
+(23, 2, 8, 2, 1),
+(24, 2, 8, 2, 1),
+(25, 2, 9, 2, 1),
+(26, 2, 9, 2, 1),
+(27, 2, 9, 2, 1),
+(28, 2, 10, 2, 1),
+(29, 2, 10, 2, 1),
+(30, 2, 10, 2, 1);
 
 -- etiqueta
 INSERT INTO mydb.tbl_etiqueta (eti_nombre, esc_id, ser_id)
@@ -262,3 +262,16 @@ VALUES
 ('2023-05-12', 5, 1, 4, 1, 4, 1, 'Desayuno'), -- 11:30 a 12:00
 ('2023-05-12', 5, 1, 4, 1, 5, 1, 'Almuerzo'), -- 12:00 a 18:00
 ('2023-05-12', 5, 1, 4, 1, 9, 1, 'Comida'); -- 18:00 a 21:30
+
+-- VALIDACIONES
+-- Un estudiante no puede tener un turno distinto en la misma fecha
+-- INSERT INTO mydb.tbl_est_asignacion (pu_id, prog_id, asig_id, coo_id, est_asig_seleccionado)
+-- VALUE
+-- (4, 1, 1, 1, 1);
+-- INSERT INTO mydb.tbl_turno(tur_fecha, pu_id, prog_id, asig_id, coo_id, jor_id, eti_id, tur_alimentacion)
+-- VALUE
+-- ('2023-05-12', 4, 1, 1, 1, 1, 2, 'Desayuno');
+-- Un estudiante no puede tener registrado una misma jornada en una misma fecha
+-- INSERT INTO mydb.tbl_turno(tur_fecha, pu_id, prog_id, asig_id, coo_id, jor_id, eti_id, tur_alimentacion)
+-- VALUE
+-- ('2023-05-12', 4, 1, 3, 1, 1, 2, 'Desayuno');
