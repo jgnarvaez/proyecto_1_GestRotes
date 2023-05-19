@@ -3,7 +3,6 @@ package co.edu.unicauca.gesrotesbackend.controllers;
 import java.sql.Date;
 import java.util.List;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -17,7 +16,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import co.edu.unicauca.gesrotesbackend.exceptions.ValidacionException;
 import co.edu.unicauca.gesrotesbackend.services.DTO.EstudianteSeleccionadoDTO;
 import co.edu.unicauca.gesrotesbackend.services.DTO.HorarioDTO;
 import co.edu.unicauca.gesrotesbackend.services.DTO.InformacionHorarioTurnoDTO;
@@ -69,9 +67,6 @@ public class ControladorTurno {
     // * Crear un turno a un estudiante
     @PostMapping("/")
     public TurnoCreadoDTO create(@RequestBody NuevoTurnoDTO nuevoTurno){
-        // TODO: Validar que los ID's no sean nulos
-        // TODO: Validar que la fecha no sea nula
-        System.out.println("Fecha a asignar: " + nuevoTurno.getFechaTurno());
         return turnoService.crearTurno(nuevoTurno);
     }
 
@@ -97,11 +92,11 @@ public class ControladorTurno {
     @DeleteMapping("/{idTurno}")
     @CrossOrigin(origins = "*", methods = { RequestMethod.DELETE })
     public ResponseEntity<String> delete(@PathVariable int idTurno) {
-        try {
+        // try {
             turnoService.eliminarTurnoAsociado(idTurno);
             return ResponseEntity.ok("Turno asociado eliminado correctamente");
-        } catch (ValidacionException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No se ha encontrado el turno.");
-        }
+        // } catch (ValidacionException e) {
+        //     return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No se ha encontrado el turno.");
+        // }
     }
 }

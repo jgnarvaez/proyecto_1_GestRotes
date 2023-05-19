@@ -3,11 +3,11 @@ import java.sql.Time;
 import java.text.SimpleDateFormat;
 import java.time.LocalTime;
 
-public class Horario implements Comparable<Horario> {
+public class HorarioJornada implements Comparable<HorarioJornada> {
     public Time horaInicio;
     public Time horaFin;
 
-    public Horario(String horaInicio, String horaFin) {
+    public HorarioJornada(String horaInicio, String horaFin) {
         SimpleDateFormat formato = new SimpleDateFormat("HH:mm");
         try {
             this.horaInicio = new Time(formato.parse(horaInicio).getTime());
@@ -18,7 +18,7 @@ public class Horario implements Comparable<Horario> {
     }
 
     @Override
-    public int compareTo(Horario otroHorario) {
+    public int compareTo(HorarioJornada otroHorario) {
         return this.horaInicio.compareTo(otroHorario.horaInicio);
     }
 

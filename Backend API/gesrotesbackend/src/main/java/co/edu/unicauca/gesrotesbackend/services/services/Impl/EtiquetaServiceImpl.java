@@ -1,14 +1,13 @@
 package co.edu.unicauca.gesrotesbackend.services.services.Impl;
 
 import java.util.List;
-import java.util.Optional;
 
 import java.util.stream.Collectors;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import co.edu.unicauca.gesrotesbackend.exceptions.HTTPException;
-import co.edu.unicauca.gesrotesbackend.exceptions.ValidacionException;
 import co.edu.unicauca.gesrotesbackend.models.Etiqueta;
 
 import co.edu.unicauca.gesrotesbackend.repositories.EscenarioRepository;
@@ -48,17 +47,17 @@ public class EtiquetaServiceImpl implements IEtiquetaService {
 
     @Override
     public List<EtiquetaCreadaDTO> obtenerEtiquetasCreadas() {
-        return this.etiquetaRepository.obtenerEtiquetasConEscenario();
+        return etiquetaRepository.obtenerEtiquetasConEscenario();
     }
 
     @Override
     public List<EtiquetaConServicioDTO> obtenerEtiquetasAsociadas() {
-        return this.etiquetaRepository.obtenerEtiquetasConServicio();
+        return etiquetaRepository.obtenerEtiquetasConServicio();
     }
 
     @Override
     public List<EtiquetaPorEscenarioDTO> obtenerEtiquetasPorEscenario(int idEscenario){
-        return this.etiquetaRepository.obtenerPorEscenario(idEscenario);
+        return etiquetaRepository.obtenerPorEscenario(idEscenario);
     }
 
     @Override
@@ -80,11 +79,13 @@ public class EtiquetaServiceImpl implements IEtiquetaService {
     @Override
     public NuevaEtiquetaDTO crearEtiqueta(NuevaEtiquetaDTO nuevaEtiqueta) {
         if(etiquetaRepository.alreadyExists(nuevaEtiqueta.getNombreEtiqueta(), nuevaEtiqueta.getIdEscenario()) != 0){
-            throw new HTTPException(409, "Ya existe una etiqueta con nombre " + nuevaEtiqueta.getNombreEtiqueta() + 
-                                                    " asociada al escenario con ID: " + nuevaEtiqueta.getIdEscenario());
+            throw new HTTPException(HttpStatus.CONFLICT.value(), 
+                                    "Ya existe una etiqueta con nombre " + nuevaEtiqueta.getNombreEtiqueta() + 
+                                    " asociada al escenario con ID: " + nuevaEtiqueta.getIdEscenario());
         }else if(etiquetaRepository.saveLabel(nuevaEtiqueta.getNombreEtiqueta(),nuevaEtiqueta.getIdEscenario()) == 0){
-            throw new HTTPException(500, "No se pudo crear la etiqueta con el nombre " + nuevaEtiqueta.getNombreEtiqueta() +
-                                                    " y con ID de escenario: " + nuevaEtiqueta.getIdEscenario());
+            throw new HTTPException(HttpStatus.INTERNAL_SERVER_ERROR.value(), 
+                                    "No se pudo crear la etiqueta con el nombre " + nuevaEtiqueta.getNombreEtiqueta() +
+                                    " y con ID de escenario: " + nuevaEtiqueta.getIdEscenario());
         }
         return nuevaEtiqueta;
     }
@@ -98,28 +99,25 @@ public class EtiquetaServiceImpl implements IEtiquetaService {
             return new AsociacionEtiquetaServicioDTOResponse(etiquetaActualizada.getId(), etiquetaActualizada.getServicio().getId());
         } catch (Exception e) {
             // Si se produce una excepción, lanzamos una excepción personalizada
-            throw new ValidacionException("Error al asociar la etiqueta con el servicio", e);
+            throw new HTTPException(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Error al asociar la etiqueta con el servicio");
         }
     }    
 
     @Override
-    public void eliminarEtiqueta(int idEtiqueta) throws ValidacionException {
-        Optional<Etiqueta> etiquetaOptional = etiquetaRepository.findById(idEtiqueta);
-        if (etiquetaOptional.isPresent()) {
-            etiquetaRepository.deleteById(idEtiqueta);
-        } else {
-            throw new ValidacionException("No se ha encontrado la etiqueta con el ID " + idEtiqueta);
-        }
+    public void eliminarEtiqueta(int idEtiqueta) {
+        etiquetaRepository.findById(idEtiqueta)
+            .orElseThrow(() -> new HTTPException(HttpStatus.NOT_FOUND.value(), "No se ha encontrado la etiqueta con el ID " + idEtiqueta));
+        
+        etiquetaRepository.eliminarServicioAsociado(idEtiqueta);
+        etiquetaRepository.deleteById(idEtiqueta);
     }
 
     @Override
-    public void eliminarAsociacion(int idEtiqueta) throws ValidacionException {
-        Optional<Etiqueta> etiquetaOptional = etiquetaRepository.findById(idEtiqueta);
-        if (etiquetaOptional.isPresent()) {
-            etiquetaRepository.eliminarServicioAsociado(idEtiqueta);
-        } else {
-            throw new ValidacionException("No se ha encontrado la etiqueta con el ID " + idEtiqueta);
-        }
+    public void eliminarAsociacion(int idEtiqueta) {
+        etiquetaRepository.findById(idEtiqueta)
+            .orElseThrow(() -> new HTTPException(HttpStatus.NOT_FOUND.value(), "No se ha encontrado la etiqueta con el ID " + idEtiqueta));
+        
+        etiquetaRepository.eliminarServicioAsociado(idEtiqueta);
     }
 
     /**

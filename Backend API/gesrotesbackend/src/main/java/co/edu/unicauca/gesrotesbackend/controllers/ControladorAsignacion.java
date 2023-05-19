@@ -2,6 +2,11 @@ package co.edu.unicauca.gesrotesbackend.controllers;
 
 import co.edu.unicauca.gesrotesbackend.services.DTO.AsignacionDTO;
 import co.edu.unicauca.gesrotesbackend.services.services.IAsignacionService;
+import jakarta.validation.constraints.Digits;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
+
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.validation.annotation.Validated;
@@ -24,7 +29,11 @@ public class ControladorAsignacion {
 
     // * Listar asignaturas asociadas a un coordinador
     @GetMapping("/")
-    public List<AsignacionDTO> findAll(@PathVariable int cooId){
-        return asignacionService.getAllByCoo(cooId);
+    public List<AsignacionDTO> findAllSubjects(@PathVariable("cooId") 
+                                        @NotBlank(message = "{coordinator.id.empty}")
+                                        @Pattern(regexp = "\\d+", message = "{id.value.string}")
+                                        @Min(value = 1, message = "{id.value.min}")
+                                        @Digits(integer = 10, fraction = 0, message = "{id.value.float}") String cooId){
+        return asignacionService.getAllByCoo(Integer.parseInt(cooId));
     }
 }

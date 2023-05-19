@@ -15,13 +15,26 @@ import co.edu.unicauca.gesrotesbackend.services.DTO.TurnoAsociadoDTO;
 import jakarta.transaction.Transactional;
 
 public interface TurnoRepository extends JpaRepository<Turno, TurnoId> {
+    /**
+     *  Obtiene los turnos, con todos sus atributos, filtrando por id de estudiante y fecha del turno
+     *   
+     *  @param estudianteId : id del estudiante
+     *  @param fecha : fecha del turno
+     *  @return
+     */
     @Query(value = "SELECT * " +
             "FROM tbl_turno " +
             "WHERE pu_id = :estudianteId " +
             "AND tur_fecha = :fecha ", nativeQuery=true)
     List<Turno> findShiftsByStudentId(@Param("estudianteId") int estudianteId, @Param("fecha") Date fecha);
 
-    //  Para mostrar la informacion cuando de click en Ver mas infomacion
+    /**
+     *  Obtiene una lista de turnos asociados a un estudiante en una fecha
+     *  
+     *  @param estudianteId : id del estudiante
+     *  @param fecha : fecha del turno
+     *  @return lista de objetos TurnoAsociadoDTO
+     */
     @Query("SELECT new co.edu.unicauca.gesrotesbackend.services.DTO.TurnoAsociadoDTO(t.id.id, es.nombre, j.franja, j.horaInicio, j.horaFin, et.nombre, t.fecha, e.id, t.alimentacion, CONCAT(e.nombres, ' ', e.apellidos)) " +
             "FROM Turno t " +
             "INNER JOIN Jornada j ON t.jornada.id = j.id " +
@@ -35,6 +48,14 @@ public interface TurnoRepository extends JpaRepository<Turno, TurnoId> {
             "AND t.fecha = :fecha ")
     List<TurnoAsociadoDTO> findShiftsAssociationsByDate(@Param("estudianteId") int estudianteId, @Param("fecha") Date fecha);
 
+    /**
+     *  Obtiene los registros de tbl_turno que tienen un id de estudiante y fecha distintos
+     *  
+     *  @param programaId : id del programa
+     *  @param asignaturaId : id de la asignatura
+     *  @param coordinadorId : id del coordinador
+     *  @return lista de objetos EstudianteFechaDTO
+     */
     @Query("SELECT new co.edu.unicauca.gesrotesbackend.services.DTO.EstudianteFechaDTO(t.id.estAsignacion.id.estudiante.id, t.fecha) " +
                 "FROM Turno t " +
                 "WHERE t.id.estAsignacion.id.asignacion.id.programa.id = :programaId " +
@@ -45,7 +66,13 @@ public interface TurnoRepository extends JpaRepository<Turno, TurnoId> {
     List<EstudianteFechaDTO> findDifferentSchedules(@Param("programaId") int programaId, @Param("asignaturaId") int asignaturaId, 
                                                         @Param("coordinadorId") int coordinadorId);
 
-    //TODO: Documentar
+    /**
+     *  Obtiene las filas de tbl_turno filtrando por id del estudiante y fecha en la que tiene el tunro
+     *  
+     *  @param estudianteId : id del estudiante que tiene el turno
+     *  @param fecha : fecha del turno
+     *  @return lista de objetos TurnoAsociadoDTO
+     */
     @Query("SELECT new co.edu.unicauca.gesrotesbackend.services.DTO.TurnoAsociadoDTO(t.id.id, es.nombre, j.franja, j.horaInicio, j.horaFin, et.nombre, t.fecha, e.id, t.alimentacion, CONCAT(e.nombres, ' ', e.apellidos)) " +
             "FROM Turno t " +
             "INNER JOIN Jornada j ON t.jornada.id = j.id " +
@@ -60,16 +87,15 @@ public interface TurnoRepository extends JpaRepository<Turno, TurnoId> {
     List<TurnoAsociadoDTO> findShiftsAssociationsByDate2(@Param("estudianteId") int estudianteId, @Param("fecha") Date fecha);
 
     /**
-     *  TODO: Documentar
+     *  Elimina un registro de la tabla tbl_turno, dados unos parametros específicos
      *  
-     *  @param fecha
-     *  @param estudianteId
-     *  @param programaId
-     *  @param asignaturaId
-     *  @param coordinadorId
-     *  @param jornadaId
-     *  @param etiquetaId
-     *  @return 
+     *  @param fecha : fecha del turno
+     *  @param estudianteId : id del estudiante asociado
+     *  @param programaId : id del programa asociado
+     *  @param asignaturaId : id de la asignatura asociada
+     *  @param coordinadorId : id del coordinador asociado
+     *  @param jornadaId : id de la jornada asociada
+     *  @param etiquetaId : id de la etiqueta asociada
     */
     @Modifying
     @Transactional
@@ -85,6 +111,10 @@ public interface TurnoRepository extends JpaRepository<Turno, TurnoId> {
                                         @Param("asignaturaId") int asignaturaId, @Param("coordinadorId") int coordinadorId,
                                         @Param("jornadaId") int jornadaId, @Param("etiquetaId") int etiquetaId);
 
+    /** Elimina un registro de la tabla tbl_turno mediante el id del turno
+     *  
+     *  @param idTurno : id del turno a eliminar
+     */
     @Modifying
     @Transactional
     @Query("DELETE FROM Turno t " +

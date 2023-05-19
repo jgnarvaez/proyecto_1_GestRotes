@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.RestController;
 import co.edu.unicauca.gesrotesbackend.services.DTO.EscenarioDTO;
 import co.edu.unicauca.gesrotesbackend.services.DTO.EtiquetaCreadaDTO;
 import co.edu.unicauca.gesrotesbackend.services.DTO.EtiquetaPorEscenarioDTO;
-import co.edu.unicauca.gesrotesbackend.exceptions.ValidacionException;
 import co.edu.unicauca.gesrotesbackend.services.DTO.AsociacionEtiquetaServicioDTORequest;
 import co.edu.unicauca.gesrotesbackend.services.DTO.AsociacionEtiquetaServicioDTOResponse;
 import co.edu.unicauca.gesrotesbackend.services.DTO.EtiquetaConServicioDTO;
@@ -90,23 +89,23 @@ public class ControladorEtiqueta {
     @DeleteMapping("/{idEtiqueta}")
     @CrossOrigin(origins = "*", methods = { RequestMethod.DELETE })
     public ResponseEntity<String> delete(@PathVariable int idEtiqueta) {
-        try {
+        // try {
             etiquetaService.eliminarEtiqueta(idEtiqueta);
             return ResponseEntity.ok("Etiqueta eliminada correctamente");
-        } catch (ValidacionException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No se ha encontrado la etiqueta con el ID " + idEtiqueta);
-        }
+        // } catch (ValidacionException e) {
+        //     return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No se ha encontrado la etiqueta con el ID " + idEtiqueta);
+        // }
     }
 
     // * Eliminar el servicio de una etiqueta
     @PutMapping("/{idEtiqueta}/eliminarAsosiacion")
     @CrossOrigin(origins = "*", methods = { RequestMethod.PUT })
     public ResponseEntity<String> deleteLabel(@PathVariable int idEtiqueta) {
-        try {
+        // try {
             etiquetaService.eliminarAsociacion(idEtiqueta);
             return ResponseEntity.ok("Servicio desvinculado correctamente");
-        } catch (ValidacionException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No se ha encontrado la etiqueta con el ID " + idEtiqueta);
-        }
+        // } catch (ValidacionException e) {
+        //     return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No se ha encontrado la etiqueta con el ID " + idEtiqueta);
+        // }
     }
 }

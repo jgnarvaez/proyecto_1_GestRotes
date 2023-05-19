@@ -27,13 +27,13 @@ public class ControladorAsignacionEstudiantes {
 
     // * Listar estudiantes registrados
     @GetMapping("/estudiantes")
-    public List<EstudianteDTO> findAll(@PathVariable int cooId, @PathVariable int progId, @PathVariable int asigId){
+    public List<EstudianteDTO> findAllStudents(@PathVariable int cooId, @PathVariable int progId, @PathVariable int asigId){
         return asignacionEstudiantesService.getAllStudents(asigId,progId,cooId);
     }
 
     // * Buscar estudiantes por nombre
     @GetMapping("/estudiantes/{puNombre}")
-    public List<EstudianteDTO> findStudent(@PathVariable String puNombre, @PathVariable int cooId, @PathVariable int progId, @PathVariable int asigId){
+    public List<EstudianteDTO> searchStudents(@PathVariable String puNombre, @PathVariable int cooId, @PathVariable int progId, @PathVariable int asigId){
         return asignacionEstudiantesService.findStudentsByName(puNombre,asigId,progId,cooId);
     }
 
@@ -51,7 +51,7 @@ public class ControladorAsignacionEstudiantes {
 
     // * Eliminar un estudiante en especifico
     @DeleteMapping("/estudiantes/{puId}")
-    public void deleteAllStudent(@PathVariable int cooId, @PathVariable int progId,@PathVariable int asigId,@PathVariable int puId){
+    public void deleteStudent(@PathVariable int cooId, @PathVariable int progId,@PathVariable int asigId,@PathVariable int puId){
         asignacionEstudiantesService.deleteStudent(cooId,progId,asigId,puId);
     }
 }

@@ -6,7 +6,7 @@ public class Intervalo {
     public Time inicio;
     public Time fin;
 
-    public Intervalo(Horario horario) {
+    public Intervalo(HorarioJornada horario) {
         this.inicio = horario.horaInicio;
         this.fin = horario.horaFin;
     }

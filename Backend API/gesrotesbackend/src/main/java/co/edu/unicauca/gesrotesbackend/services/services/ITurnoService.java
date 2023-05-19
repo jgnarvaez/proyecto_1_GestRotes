@@ -17,25 +17,26 @@ public interface ITurnoService {
 
     //* GESTION ESTUDIANTES */
     /**
-     *  TODO: Documentar
-     *  @param seleccionEstudiante
-     *  @return
+     *  Cambia el estado de selección de un estudiante registrado en una asignación
+     *  
+     *  @param seleccionEstudiante : DTO con la información para modificar el estado de selección
      */
     void cambiarEstadoSeleccionado(SeleccionEstudianteDTO seleccionEstudiante);
     
-    // void deseleccionarEstudiante(SeleccionEstudianteDTO seleccionEstudiante);
-
     /**
-     *  TODO: Documentar
-     *  @param seleccionEstudiantes
-     *  @return
+     *  Obtiene los estudiantes, de una asignación, que tienen el estado de seleccionado en true
+     *  
+     *  @param progId : id del programa asociado
+     *  @param asigId : id de la asignatura asociada
+     *  @param cooId : id del coordinador asociado
+     *  @return lista de objetos EstudianteSeleccionadoDTO
      */
     List<EstudianteSeleccionadoDTO> obtenerEstudiantesSeleccionados(int progId, int asigId, int cooId);
 
     /**
-     *  TODO: Documentar
-     *  @param seleccionEstudiantes
-     *  @return
+     *  Deselecciona todos los estudiantes registrados en una asignación
+     *  
+     *  @param seleccionEstudiantes : DTO con la información de la asignacion para la cual se va a deseleccionar todos los estudiantes 
      */
     void deseleccionarEstudiantes(SeleccionEstudiantesDTO seleccionEstudiantes);
 
@@ -57,28 +58,37 @@ public interface ITurnoService {
     TurnoCreadoDTO crearTurno(NuevoTurnoDTO nuevoTurno);
 
     /**
-     *  TODO: Documentar
-     *  @param idEstudiante
-     *  @return
+     *  Obtiene la información a mostrar de un horario de turnos asignado a un estudiante
+     *  
+     *  @param idEstudiante : id del estudiante
+     *  @param fechaTurno : fecha en la que tiene asignado el horario
+     *  @return un objeto InformacionHorarioTurnoDTO
      */
     InformacionHorarioTurnoDTO obetenerInfoHorarioTurnoPorFecha(int idEstudiante, Date fechaTurno);
 
     /**
-     *  TODO: Documentar
-     * @return
+     *  Obtiene todos los horarios de los estudiantes registrados en una asignación
+     *  
+     *  @param idPrograma : id del programa asociado
+     *  @param idCoordinador : id del coordinador asociado
+     *  @param idAsignatura : id de la asignatura asociada
+     *  @return una lista de objetos HorarioDTO
      */
     List<HorarioDTO> obetenerHorariosTurno(int idPrograma, int idCoordinador, int idAsignatura);
 
     /**
-     *  TODO: Documentar
-     *  @param idEstudiante
-     *  @return
+     *   Obtiene los turnos asociados a un estudiante en determinada fecha
+     *  
+     *  @param idEstudiante : id del estudiante
+     *  @param fechaTurno : fecha de los turnos asociados
+     *  @return lista de objetos TurnoAsociadoDTO
      */
     List<TurnoAsociadoDTO> obetenerTurnosPorFecha(int idEstudiante, Date fechaTurno);
 
     /**
-     *  TODO: Documentar
-     *  @param turno
+     *  Elimina un turno por medio de su id
+     *  
+     *  @param idTurno : id del turno a eliminar
      */
     void eliminarTurnoAsociado(int idTurno);
 }

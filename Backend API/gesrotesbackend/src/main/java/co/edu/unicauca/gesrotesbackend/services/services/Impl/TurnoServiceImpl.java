@@ -31,7 +31,7 @@ import co.edu.unicauca.gesrotesbackend.services.DTO.SeleccionEstudiantesDTO;
 import co.edu.unicauca.gesrotesbackend.services.DTO.TurnoAsociadoDTO;
 import co.edu.unicauca.gesrotesbackend.services.DTO.TurnoCreadoDTO;
 import co.edu.unicauca.gesrotesbackend.services.Mapper.JornadaDTOMapper;
-import co.edu.unicauca.gesrotesbackend.services.Utilities.Horario;
+import co.edu.unicauca.gesrotesbackend.services.Utilities.HorarioJornada;
 import co.edu.unicauca.gesrotesbackend.services.Utilities.Intervalo;
 import co.edu.unicauca.gesrotesbackend.services.services.ITurnoService;
 import co.edu.unicauca.gesrotesbackend.services.DTO.InformacionHorarioTurnoDTO;
@@ -111,7 +111,7 @@ public class TurnoServiceImpl implements ITurnoService{
         auxId.setEstAsignacion(estAsignacion);
         auxTurno.setId(auxId);
         //* Establecer la alimentación
-        Horario obj = new Horario(jornada.get().getHoraInicio().toString(), jornada.get().getHoraFin().toString());
+        HorarioJornada obj = new HorarioJornada(jornada.get().getHoraInicio().toString(), jornada.get().getHoraFin().toString());
         LocalTime inicioRangoDesayuno = LocalTime.parse("06:00");
         LocalTime finRangoDesayuno = LocalTime.parse("12:00");
         LocalTime inicioRangoAlmuerzo = LocalTime.parse("12:00");
@@ -142,9 +142,9 @@ public class TurnoServiceImpl implements ITurnoService{
         // * Obtengo la lista de turnos que tiene un estudiante en determinada fecha
         List<TurnoAsociadoDTO> turnosAsociadosDTO = turnoRepository.findShiftsAssociationsByDate(idEstudiante, fechaTurno);
         // * Realizo las operacoines necesarias para obtener el horario para el estudiante en esa fecha
-        List<Horario> horarios = new ArrayList<>();
+        List<HorarioJornada> horarios = new ArrayList<>();
         for (TurnoAsociadoDTO turnoAsociado : turnosAsociadosDTO) {
-            horarios.add(new Horario(turnoAsociado.horaInicio().toString(), turnoAsociado.horaFin().toString()));
+            horarios.add(new HorarioJornada(turnoAsociado.horaInicio().toString(), turnoAsociado.horaFin().toString()));
         }
         String rango = establecerHorario(horarios);
         // System.out.println("El horario es de: " + rango);
@@ -199,18 +199,19 @@ public class TurnoServiceImpl implements ITurnoService{
     }
 
     /**
-     *  TODO: Documentar
-     *  @param horarios
-     *  @return
+     *  Determina el rango del horario mediante la jornada de cada turno asociado
+     * 
+     *  @param horarioJornadas lista de horarios que tiene un estudiante en una fecha
+     *  @return cadena con el rango de horario que tendrá el estudiante
      */
-    public String establecerHorario(List<Horario> horarios){
+    public String establecerHorario(List<HorarioJornada> horarioJornadas){
         // Ordena los horarios por hora de inicio
-        Collections.sort(horarios);
+        Collections.sort(horarioJornadas);
         // Combina los intervalos solapados de los horarios
         List<Intervalo> intervalos = new ArrayList<>();
-        Intervalo intervaloActual = new Intervalo(horarios.get(0));
-        for (int i = 1; i < horarios.size(); i++) {
-            Horario horario = horarios.get(i);
+        Intervalo intervaloActual = new Intervalo(horarioJornadas.get(0));
+        for (int i = 1; i < horarioJornadas.size(); i++) {
+            HorarioJornada horario = horarioJornadas.get(i);
             if (intervaloActual.fin.compareTo(horario.horaInicio) >= 0) {
                 intervaloActual.fin = horario.horaFin;
             } else {
@@ -231,9 +232,10 @@ public class TurnoServiceImpl implements ITurnoService{
     }
 
     /**
-     *  TODO: Documentar
-     *  @param turnosAsociadosDTO
-     *  @return
+     *  Determina si el estudiante es apto para desayuno, almuerzo o comida según los turnos asociados
+     *  
+     *  @param turnosAsociadosDTO lista de los turnos asociados un estudiante en determinada fecha
+     *  @return array booleano de dimension 3
      */
     public Boolean[] aptoParaAlimentacion(List<TurnoAsociadoDTO> turnosAsociadosDTO){
         Boolean[] alimentacion = new Boolean[3];
