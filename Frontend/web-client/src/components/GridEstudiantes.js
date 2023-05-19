@@ -298,8 +298,11 @@ export const GridEstudiantes = ({ asignatura }) => {
     
         if (response.ok) {
         console.log(`Estudiante con ID ${estudianteIdEliminar} eliminado.`);
+        
         showInfoEliminarEstudiante();
         fetchEstudiantes(); //actualiza estudiantes
+        handleEstudianteSeleccionado(estudianteIdEliminar);
+        listarHorarios();
         setEstudiantesBusqueda([]);
         setSearchText('');
         } else {
@@ -409,8 +412,7 @@ export const GridEstudiantes = ({ asignatura }) => {
     //Listar horarios
     const listarHorarios = useCallback(() => {
         const url = `http://127.0.0.1:8085/turnos/1/1/${asignatura.idAsignatura}` //cambiar
-        axios.get(url)
-        
+        axios.get(url) 
         .then(response => setHorarios(response.data))
         .catch(error => console.error(error));
     }, [asignatura.idAsignatura]);
@@ -521,6 +523,7 @@ export const GridEstudiantes = ({ asignatura }) => {
                 console.log(`Etiqueta con ID ${etiquetaIdEliminar} eliminada.`);
                 listarEtiquetasCreadas(); //actualiza etiquetas
                 showInfoEliminarEtiquetaCreada();
+                listarEtiquetasAsociadas();
             } else {
             console.log(`No se pudo eliminar la etiqueta con ID ${etiquetaIdEliminar}.`);
             }
@@ -591,15 +594,15 @@ export const GridEstudiantes = ({ asignatura }) => {
         listarEstudiantesSeleccionados();
         }, [listarEstudiantesSeleccionados]);
 
-    const handleEstudianteSeleccionado = (estudiante) => {
+    const handleEstudianteSeleccionado = (id) => {
 
         //PUT CAMBIAR ESTADO
         const estadoEstudiante = {
-            puId: estudiante.id,
+            puId: id,
             progId: 1,
             asigId: asignatura.idAsignatura,
             cooId: 1,
-            estado: estudiantesSeleccionados.some(e => e.id === estudiante.id) ? false : true
+            estado: estudiantesSeleccionados.some(e => e.id === id) ? false : true
         };
 
         const url = `http://127.0.0.1:8085/turnos/seleccion`
@@ -872,7 +875,7 @@ export const GridEstudiantes = ({ asignatura }) => {
                                                 <Grid item xs={2} sm={4} md={4} key={index}>
                                                 <div style={{ border: '1px solid grey', padding: '5px', display: 'flex', alignItems: 'center', width: '240px', justifyContent: 'center', borderRadius: '10px' }}>
                                                     <InputText value={estudiante.nombreCompleto} readOnly style={{ border: "none", boxShadow: "none" }} />
-                                                    <Checkbox onChange={() => handleEstudianteSeleccionado(estudiante)} checked={isSelected} />
+                                                    <Checkbox onChange={() => handleEstudianteSeleccionado(estudiante.id)} checked={isSelected} />
                                                 </div>
                                                 </Grid>
                                             );
@@ -893,7 +896,7 @@ export const GridEstudiantes = ({ asignatura }) => {
                                                 <Grid item xs={2} sm={4} md={4} key={index}>
                                                 <div style={{ border: '1px solid grey', padding: '5px', display: 'flex', alignItems: 'center', width: '240px', justifyContent: 'center', borderRadius: '10px' }}>
                                                     <InputText value={estudiante.nombreCompleto} readOnly style={{ border: "none", boxShadow: "none" }} />
-                                                    <Checkbox onChange={() => handleEstudianteSeleccionado(estudiante)} checked={isSelected} />
+                                                    <Checkbox onChange={() => handleEstudianteSeleccionado(estudiante.id)} checked={isSelected} />
                                                 </div>
                                                 </Grid>
                                             );
@@ -916,7 +919,7 @@ export const GridEstudiantes = ({ asignatura }) => {
                                                 <Grid item xs={2} sm={4} md={4} key={index}>
                                                 <div style={{ border: '1px solid grey', padding: '5px', display: 'flex', alignItems: 'center', width: '240px', justifyContent: 'center', borderRadius: '10px' }}>
                                                     <InputText value={estudiante.nombreCompleto} readOnly style={{ border: "none", boxShadow: "none" }} />
-                                                    <Checkbox onChange={() => handleEstudianteSeleccionado(estudiante)} checked={isSelected} />
+                                                    <Checkbox onChange={() => handleEstudianteSeleccionado(estudiante.id)} checked={isSelected} />
                                                 </div>
                                                 </Grid>
                                             );
