@@ -18,7 +18,7 @@ public class AsignacionServiceImpl implements IAsignacionService {
 
     @Override
     public List<AsignacionDTO> getAllByCoo(int cooId) {
-        return asignacionRepository.obtenerPorCoordinador(cooId);
+        return asignacionRepository.getByCoordinatorId(cooId);
     }
 }
 

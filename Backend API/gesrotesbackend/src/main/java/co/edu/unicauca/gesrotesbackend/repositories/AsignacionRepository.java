@@ -22,7 +22,7 @@ public interface AsignacionRepository extends JpaRepository<Asignacion, Asignaci
     @Query("SELECT new co.edu.unicauca.gesrotesbackend.services.DTO.AsignacionDTO(e.id.asignatura.id, e.id.asignatura.name, e.id.programa.nombre) " +
             "FROM Asignacion e " +
             "WHERE e.id.coordinador.id = :coordinadorId")
-    List<AsignacionDTO> obtenerPorCoordinador(@Param("coordinadorId") int idCoordinador);
+    List<AsignacionDTO> getByCoordinatorId(@Param("coordinadorId") int idCoordinador);
 
     /**
      *  Verifica si existe un registro en la tabla tbl_asignación con
