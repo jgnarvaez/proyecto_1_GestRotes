@@ -2,6 +2,7 @@ package co.edu.unicauca.gesrotesbackend.services.services.Impl;
 
 import co.edu.unicauca.gesrotesbackend.models.Estudiante;
 import co.edu.unicauca.gesrotesbackend.models.Programa;
+import co.edu.unicauca.gesrotesbackend.exceptions.HTTPException;
 import co.edu.unicauca.gesrotesbackend.models.Asignacion;
 import co.edu.unicauca.gesrotesbackend.models.AsignacionId;
 import co.edu.unicauca.gesrotesbackend.models.Asignatura;
@@ -20,11 +21,10 @@ import co.edu.unicauca.gesrotesbackend.services.DTO.EstAsignacionDTO;
 import co.edu.unicauca.gesrotesbackend.services.DTO.EstudianteDTO;
 import co.edu.unicauca.gesrotesbackend.services.services.IAsignacionEstudiantesService;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class AsignacionEstudiantesServiceImpl implements IAsignacionEstudiantesService{
@@ -48,80 +48,52 @@ public class AsignacionEstudiantesServiceImpl implements IAsignacionEstudiantesS
 
     // * Registrar estudiante en una asignatura
     @Override
-    public EstAsignacionDTO registerStudent(int cooId, int progId, int subjId, int studId) {
-
-        int count = asignacionRepository.existsByIds(progId,subjId,cooId);
-        if (count == 0) {
-            // La fila no existe
-            System.out.println("NO esxiste una asignacion disponible");
-            return null;
-        }
-
-        Optional<Estudiante> student = estudianteRepository.findById(studId);
+    public EstAsignacionDTO registerStudent(int cooId, int progId, int asigId, int estId) {
+        // * Validar que existan las asociaciones
+        Estudiante estudiante = estudianteRepository.findById(estId)
+            .orElseThrow(() -> new HTTPException(HttpStatus.NOT_FOUND.value(),
+                                                "No se encontró el estudiante con el ID: " + estId));
         
-        Optional<Programa> programa = programaRepository.findById(progId);
-        Optional<Asignatura> asignatura = asignaturaRepository.findById(subjId);
-        Optional<CoordinadorAsignatura> coordinador = this.coordinadorAsigRepository.findById(cooId);
-
-        AsignacionId idAsignacion = new AsignacionId(programa.get(), asignatura.get(), coordinador.get());
-        Optional<Asignacion> asignacion = asignacionRepository.findById(idAsignacion);
-
-        if (student.isPresent() && programa.isPresent() && asignatura.isPresent() && coordinador.isPresent() && asignacion.isPresent()) {
-            //Asignarle los valores a la entity
-            EstAsignacion entity = new EstAsignacion();
-            EstAsignacionId entityId = new EstAsignacionId(student.get(), asignacion.get());
-            entity.setId(entityId);
-            try {
-                if (estAsignacionRepository.save(entity) == null) {
-                    // Error al guardar el registro
-                } else {
-                    EstAsignacionDTO objDTO = new EstAsignacionDTO(studId,progId,subjId,cooId);
-                    // Registro guardado exitosamente
-                    return objDTO;
-                }
-            }catch (Exception e){
-                System.out.println("No se pudo registrar el estudiante");
-            }
-        } else if(!student.isPresent()){
-            // no se encontró el estudiante
-            System.out.println("No se encontro el estudiante con el id: " + studId);
-        } else if(!programa.isPresent()){
-            // no se encontró el programa
-            System.out.println("No se encontro el programa con el id: " + progId);
-        } else if(!asignatura.isPresent()){
-            // no se encontró la asignatura
-            System.out.println("No se encontro la asignatura con el id: " + subjId);
-        } else if(!coordinador.isPresent()){
-            // no se encontró el coordinador
-            System.out.println("No se encontro el coordinador de asignatura con el id: " + cooId);
-        }
-        return null;
+        Programa programa = programaRepository.findById(progId)
+            .orElseThrow(() -> new HTTPException(HttpStatus.NOT_FOUND.value(),
+                                                "No se encontró el programa con el ID: " + progId));
+        
+        Asignatura asignatura = asignaturaRepository.findById(asigId)
+            .orElseThrow(() -> new HTTPException(HttpStatus.NOT_FOUND.value(),
+                                                "No se encontró la asignatura con el ID: " + asigId));
+        
+        CoordinadorAsignatura coordinador = this.coordinadorAsigRepository.findById(cooId)
+            .orElseThrow(() -> new HTTPException(HttpStatus.NOT_FOUND.value(),
+                                                "No se encontró el coordinador con el ID: " + cooId));
+        
+        AsignacionId idAsignacion = new AsignacionId(programa, asignatura, coordinador);
+        
+        Asignacion asignacion = asignacionRepository.findById(idAsignacion)
+            .orElseThrow(() -> new HTTPException(HttpStatus.NOT_FOUND.value(),
+                                                "No se encontró la asignación"));
+        
+        // * Asignarle los valores a la entity
+        EstAsignacion entity = new EstAsignacion();
+        EstAsignacionId entityId = new EstAsignacionId(estudiante, asignacion);
+        entity.setId(entityId);
+        
+        // * Guardar el registro en la BD
+        estAsignacionRepository.save(entity);
+        
+        // * Retornar el DTO
+        return new EstAsignacionDTO(estId,progId,asigId,cooId);
     }
 
     // * Obtener estudiantes registrados en una asignatura
     @Override
     public List<EstudianteDTO> getAllStudents(int subjId, int progId, int cooId) {
-        List<Estudiante> entities = estudianteRepository.getStudentInfo(subjId,progId,cooId);
-        List<EstudianteDTO> listDTO = new ArrayList<>();
-        for (Estudiante entity: entities) {
-            EstudianteDTO objDTO = new EstudianteDTO(entity.getId(),entity.getNombres()+" "+entity.getApellidos(),
-                                                    entity.getIdentificacion(),entity.getUsuario());
-            listDTO.add(objDTO);
-        }
-        return listDTO;
+        return estudianteRepository.getStudentsInfo(subjId,progId,cooId);
     }
 
     // * Obtener estudiantes por nombres o apellidos
     @Override
     public List<EstudianteDTO> findStudentsByName(String name, int subjId, int progId, int cooId) {
-        List<Estudiante> entities = estudianteRepository.getStudentsByName(name,subjId,progId,cooId);
-        List<EstudianteDTO> listDTO = new ArrayList<>();
-        for (Estudiante entity: entities) {
-            EstudianteDTO objDTO = new EstudianteDTO(entity.getId(),entity.getNombres()+" "+entity.getApellidos(),
-                                                    entity.getIdentificacion(),entity.getUsuario());
-            listDTO.add(objDTO);
-        }
-        return listDTO;
+        return estudianteRepository.getStudentsInfoByName(name,subjId,progId,cooId);
     }
 
     // * Eliminar todos los estudiantes asociados a una asignatura

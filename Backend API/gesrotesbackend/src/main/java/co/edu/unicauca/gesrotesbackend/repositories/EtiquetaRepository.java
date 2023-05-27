@@ -87,6 +87,18 @@ public interface EtiquetaRepository extends JpaRepository<Etiqueta, Integer> {
     void asociarEtiquetaConServicio(@Param("etiquetaId") int idEtiqueta, @Param("servicioId") int idServicio);
 
     /**
+     *  Comprueba si existe una etiqueta asociada a un servicio.
+     *  
+     *  @param idEtiqueta : el id de la etiqueta a buscar
+     *  @param idServicio : el id del servicio
+     *  @return el número de etiquetas con el nombre especificado
+    */
+    @Query(value = "SELECT COUNT(*) FROM tbl_etiqueta " +
+                "WHERE eti_id = :etiquetaId " +
+                "AND ser_id = :servicioId", nativeQuery = true)
+    int existsAssociation(@Param("etiquetaId") int idEtiqueta, @Param("servicioId") int idServicio);
+    
+    /**
      *  Método que elimina la asociación de una etiqueta con un servicio dado.
      *  
      *  @param idEtiqueta : el id de la etiqueta a la cual se le quiere eliminar la asociación con el servicio.

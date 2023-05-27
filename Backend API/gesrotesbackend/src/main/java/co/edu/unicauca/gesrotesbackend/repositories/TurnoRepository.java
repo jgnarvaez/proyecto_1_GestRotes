@@ -120,4 +120,28 @@ public interface TurnoRepository extends JpaRepository<Turno, TurnoId> {
     @Query("DELETE FROM Turno t " +
             "WHERE t.id.id = :idTurno ")
     void myDeletebyid(@Param("idTurno") int idTurno);
+
+    /** Verifica si ya existe un turno con los valores pasados por parámetro
+     *  
+     *  @param fecha : fecha del turno
+     *  @param estudianteId : id del estudiante asociado
+     *  @param programaId : id del programa asociado
+     *  @param asignaturaId : id de la asignatura asociada
+     *  @param coordinadorId : id del coordinador asociado
+     *  @param jornadaId : id de la jornada asociada
+     *  @param etiquetaId : id de la etiqueta asociada
+     * 
+     *  @return un entero con el conteo de reigstros que tienen esos atributos  
+     */
+    @Query(value = "SELECT COUNT(*) FROM tbl_turno " +
+                "WHERE tur_fecha = :fecha " +
+                "AND pu_id = :estudianteId " +
+                "AND prog_id = :programaId " +
+                "AND asig_id = :asignaturaId " +
+                "AND coo_id = :coordinadorId " +
+                "AND jor_id = :jornadaId " +
+                "AND eti_id = :etiquetaId", nativeQuery = true)
+    int alreadyExists(@Param("fecha") Date fecha, @Param("estudianteId") int estudianteId, @Param("programaId") int programaId, 
+                                        @Param("asignaturaId") int asignaturaId, @Param("coordinadorId") int coordinadorId,
+                                        @Param("jornadaId") int jornadaId, @Param("etiquetaId") int etiquetaId);
 }

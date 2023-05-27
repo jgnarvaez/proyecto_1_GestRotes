@@ -2,9 +2,7 @@ package co.edu.unicauca.gesrotesbackend.controllers;
 
 import java.util.List;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -72,9 +70,12 @@ public class ControladorEtiqueta {
 
     // * Crear nueva etiqueta
     @PostMapping("/")
-    public ResponseEntity<?> createLabel(@Valid @RequestBody NuevaEtiquetaDTO etiqueta, BindingResult result){
-        etiquetaService.crearEtiqueta(etiqueta);
-        return new ResponseEntity<String>("Etiqueta registrada correctamente", HttpStatus.OK);
+    public ResponseEntity<String> createLabel(@Valid @RequestBody NuevaEtiquetaDTO etiquetaRequest){
+        NuevaEtiquetaDTO etiquetaResponse = etiquetaService.crearEtiqueta(etiquetaRequest);
+        String body = "Etiqueta con nombre " + etiquetaResponse.getNombreEtiqueta() +
+                            " e ID de escenario " + etiquetaResponse.getIdEscenario() +
+                            " registrada correctamente";
+        return ResponseEntity.ok(body);
     }
 
     // * Asociar servicio a una etiqueta
@@ -89,23 +90,17 @@ public class ControladorEtiqueta {
     @DeleteMapping("/{idEtiqueta}")
     @CrossOrigin(origins = "*", methods = { RequestMethod.DELETE })
     public ResponseEntity<String> delete(@PathVariable int idEtiqueta) {
-        // try {
-            etiquetaService.eliminarEtiqueta(idEtiqueta);
-            return ResponseEntity.ok("Etiqueta eliminada correctamente");
-        // } catch (ValidacionException e) {
-        //     return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No se ha encontrado la etiqueta con el ID " + idEtiqueta);
-        // }
+        etiquetaService.eliminarEtiqueta(idEtiqueta);
+        String body = "Etiqueta eliminada correctamente";
+        return ResponseEntity.ok(body);
     }
 
     // * Eliminar el servicio de una etiqueta
     @PutMapping("/{idEtiqueta}/eliminarAsosiacion")
     @CrossOrigin(origins = "*", methods = { RequestMethod.PUT })
     public ResponseEntity<String> deleteLabel(@PathVariable int idEtiqueta) {
-        // try {
-            etiquetaService.eliminarAsociacion(idEtiqueta);
-            return ResponseEntity.ok("Servicio desvinculado correctamente");
-        // } catch (ValidacionException e) {
-        //     return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No se ha encontrado la etiqueta con el ID " + idEtiqueta);
-        // }
+        etiquetaService.eliminarAsociacion(idEtiqueta);
+        String body = "Etiqueta eliminada correctamente";
+        return ResponseEntity.ok(body);
     }
 }

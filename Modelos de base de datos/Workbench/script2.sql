@@ -368,7 +368,7 @@ BEGIN
 
   -- Si existe una fila con los criterios mencionados, lanzar un error
   IF existing_row_count > 0 THEN
-    SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Ya existe una fila con la misma tur_fecha y pu_id pero con distintos prog_id, asig_id y coo_id.';
+    SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Ya existe un turno asignado en esa fecha.';
   END IF;
 END$$
 

@@ -6,11 +6,13 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.springframework.dao.DataAccessException;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import co.edu.unicauca.gesrotesbackend.exceptions.HTTPException;
 import co.edu.unicauca.gesrotesbackend.models.EstAsignacion;
 import co.edu.unicauca.gesrotesbackend.models.Etiqueta;
 import co.edu.unicauca.gesrotesbackend.models.Jornada;
@@ -43,6 +45,12 @@ public class TurnoServiceImpl implements ITurnoService{
     private final TurnoRepository turnoRepository;
     private final EstAsignacionRepository estAsignacionRepository;
     private final JornadaDTOMapper jornadaDTOMapper;
+    private final LocalTime inicioRangoDesayuno = LocalTime.parse("06:00");
+    private final LocalTime finRangoDesayuno = LocalTime.parse("12:00");
+    private final LocalTime inicioRangoAlmuerzo = LocalTime.parse("12:00");
+    private final LocalTime finRangoAlmuerzo = LocalTime.parse("14:00");
+    private final LocalTime inicioRangoComida = LocalTime.parse("19:00");
+    private final LocalTime finRangoComida = LocalTime.parse("21:00");
 
     public TurnoServiceImpl(JornadaRepository jornadaRepository, 
                             EtiquetaRepository etiquetaRepository,
@@ -90,34 +98,49 @@ public class TurnoServiceImpl implements ITurnoService{
     public TurnoCreadoDTO crearTurno(NuevoTurnoDTO nuevoTurno) {
         //* Crear un registro en tbl_turno
         //* Obtener la jornada
-        Optional<Jornada> jornada = jornadaRepository.findById(nuevoTurno.getIdJornada());
+        Jornada jornada = jornadaRepository.findById(nuevoTurno.getIdJornada())
+            .orElseThrow(() -> new HTTPException(HttpStatus.NOT_FOUND.value(),
+                                            "No se encontró la jornada con ID " +
+                                            nuevoTurno.getIdJornada()));
         //* Obtener la etiqueta
-        Optional<Etiqueta> etiqueta = etiquetaRepository.findById(nuevoTurno.getIdEtiqueta());
-        if (!(jornada.isPresent() && etiqueta.isPresent())) {
-            return null;
-        }
+        Etiqueta etiqueta = etiquetaRepository.findById(nuevoTurno.getIdEtiqueta())
+            .orElseThrow(() -> new HTTPException(HttpStatus.NOT_FOUND.value(),
+                                            "No se encontró la etiqueta con ID " +
+                                            nuevoTurno.getIdEtiqueta()));
         //* Inicializar el turno
         Turno auxTurno = new Turno();
         //* settear la fecha
         auxTurno.setFecha(nuevoTurno.getFechaTurno());
         //* settear la jornada
-        auxTurno.setJornada(jornada.get());
+        auxTurno.setJornada(jornada);
         //* settear la etiqueta
-        auxTurno.setEtiqueta(etiqueta.get());
+        auxTurno.setEtiqueta(etiqueta);
         //* Obtener el estAsignacion asociado a los ID's de estudiante, programa, asignatura y coordinador
-        EstAsignacion estAsignacion = estAsignacionRepository.getRowByIds(nuevoTurno.getIdEstudiante(), nuevoTurno.getIdPrograma(), nuevoTurno.getIdAsignatura(), nuevoTurno.getIdCoordinador());
+        EstAsignacion estAsignacion = estAsignacionRepository.getRowByIds(nuevoTurno.getIdEstudiante(), 
+                                                                        nuevoTurno.getIdPrograma(), 
+                                                                        nuevoTurno.getIdAsignatura(), 
+                                                                        nuevoTurno.getIdCoordinador());
+        // * Validar que la estAsginacion existe
+        if(estAsignacion == null) {
+            throw new HTTPException(HttpStatus.NOT_FOUND.value(), "El estudiante no está registrado en la asignación donde"+
+                                                                " el ID del programa sea " + nuevoTurno.getIdPrograma() +
+                                                                " el ID de la asignatura sea " + nuevoTurno.getIdAsignatura() +
+                                                                " el ID del coordinador sea " + nuevoTurno.getIdCoordinador());
+        }
+        // * Validar que el turno no exista
+        if(turnoRepository.alreadyExists(nuevoTurno.getFechaTurno(), nuevoTurno.getIdEstudiante(), 
+                                            nuevoTurno.getIdPrograma(), nuevoTurno.getIdAsignatura(), 
+                                            nuevoTurno.getIdCoordinador(), nuevoTurno.getIdJornada(), 
+                                            nuevoTurno.getIdEtiqueta())!=0){
+            throw new HTTPException(HttpStatus.CONFLICT.value(), "El turno que intenta registrar ya exise");
+        }
         //* Setear la estAsignacion
-        TurnoId auxId = new TurnoId();
-        auxId.setEstAsignacion(estAsignacion);
-        auxTurno.setId(auxId);
+        TurnoId auxTurnoId = new TurnoId();
+        auxTurnoId.setEstAsignacion(estAsignacion);
+        auxTurno.setId(auxTurnoId);
         //* Establecer la alimentación
-        HorarioJornada obj = new HorarioJornada(jornada.get().getHoraInicio().toString(), jornada.get().getHoraFin().toString());
-        LocalTime inicioRangoDesayuno = LocalTime.parse("06:00");
-        LocalTime finRangoDesayuno = LocalTime.parse("12:00");
-        LocalTime inicioRangoAlmuerzo = LocalTime.parse("12:00");
-        LocalTime finRangoAlmuerzo = LocalTime.parse("14:00");
-        LocalTime inicioRangoComida = LocalTime.parse("19:00");
-        LocalTime finRangoComida = LocalTime.parse("21:00");
+        HorarioJornada obj = new HorarioJornada(jornada.getHoraInicio().toString(), jornada.getHoraFin().toString());
+        
         if(obj.estaEnRango(inicioRangoDesayuno, finRangoDesayuno)){
             auxTurno.setAlimentacion(TipoAlimentacion.Desayuno);
         } else if (obj.estaEnRango(inicioRangoAlmuerzo, finRangoAlmuerzo)) {
@@ -126,14 +149,23 @@ public class TurnoServiceImpl implements ITurnoService{
             auxTurno.setAlimentacion(TipoAlimentacion.Comida);
         }
         //* Guardar el turno en la BD
-        Turno turnoCreado = turnoRepository.save(auxTurno);// ? validar con try catch?
+        Turno turnoCreado = new Turno();
+        try {
+            turnoCreado = turnoRepository.save(auxTurno);    
+        } catch (DataAccessException e) {
+            throw new HTTPException(HttpStatus.BAD_REQUEST.value(), "Ya existe un turno asignado al estudiante en la misma fecha");
+        }
         //* Asignarle los valores al DTO a retornar
-        TurnoCreadoDTO objDTO = new TurnoCreadoDTO();
-        objDTO.setNombreEtiqueta(turnoCreado.getEtiqueta().getNombre());
-        objDTO.setFranjaJornada(turnoCreado.getJornada().getFranja());
-        objDTO.setHoraInicio(turnoCreado.getJornada().getHoraInicio());
-        objDTO.setHoraFin(turnoCreado.getJornada().getHoraFin());
-        objDTO.setNombreEscenario(turnoCreado.getEtiqueta().getEscenario().getNombre());
+        TurnoCreadoDTO objDTO = new TurnoCreadoDTO(turnoCreado.getEtiqueta().getNombre(),
+                                                    turnoCreado.getJornada().getFranja(),
+                                                    turnoCreado.getJornada().getHoraInicio(),
+                                                    turnoCreado.getJornada().getHoraFin(),
+                                                    turnoCreado.getEtiqueta().getEscenario().getNombre());
+        // objDTO.setNombreEtiqueta(turnoCreado.getEtiqueta().getNombre());
+        // objDTO.setFranjaJornada(turnoCreado.getJornada().getFranja());
+        // objDTO.setHoraInicio(turnoCreado.getJornada().getHoraInicio());
+        // objDTO.setHoraFin(turnoCreado.getJornada().getHoraFin());
+        // objDTO.setNombreEscenario(turnoCreado.getEtiqueta().getEscenario().getNombre());
         return objDTO;
     }
 

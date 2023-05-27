@@ -8,8 +8,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import co.edu.unicauca.gesrotesbackend.exceptions.HTTPException;
-import co.edu.unicauca.gesrotesbackend.models.Etiqueta;
-
 import co.edu.unicauca.gesrotesbackend.repositories.EscenarioRepository;
 import co.edu.unicauca.gesrotesbackend.repositories.EtiquetaRepository;
 import co.edu.unicauca.gesrotesbackend.repositories.ServicioRepository;
@@ -90,23 +88,32 @@ public class EtiquetaServiceImpl implements IEtiquetaService {
         return nuevaEtiqueta;
     }
 
-    public AsociacionEtiquetaServicioDTOResponse asociarEtiqueta(AsociacionEtiquetaServicioDTORequest etiqueta) {
-        try {
-            etiquetaRepository.asociarEtiquetaConServicio(etiqueta.getIdEtiqueta(), etiqueta.getIdServicio());
-            // Si llegamos aquí, la actualización se ha realizado correctamente
-            // Realizar una consulta para obtener la etiqueta actualizada con el servicio asociado
-            Etiqueta etiquetaActualizada = etiquetaRepository.getReferenceById(etiqueta.getIdEtiqueta());
-            return new AsociacionEtiquetaServicioDTOResponse(etiquetaActualizada.getId(), etiquetaActualizada.getServicio().getId());
-        } catch (Exception e) {
-            // Si se produce una excepción, lanzamos una excepción personalizada
-            throw new HTTPException(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Error al asociar la etiqueta con el servicio");
+    public AsociacionEtiquetaServicioDTOResponse asociarEtiqueta(AsociacionEtiquetaServicioDTORequest etiquetaParaAsociar) {
+        etiquetaRepository.findById(etiquetaParaAsociar.getIdEtiqueta())
+            .orElseThrow(() -> new HTTPException(HttpStatus.NOT_FOUND.value(),
+                                                "No se encontró la etiqueta con el ID: " + 
+                                                etiquetaParaAsociar.getIdEtiqueta()));
+        
+        servicioRepository.findById(etiquetaParaAsociar.getIdServicio())
+            .orElseThrow(() -> new HTTPException(HttpStatus.NOT_FOUND.value(),
+                                                "No se encontró el servicio con el ID: " + 
+                                                etiquetaParaAsociar.getIdServicio()));
+        
+        if(etiquetaRepository.existsAssociation(etiquetaParaAsociar.getIdEtiqueta(), etiquetaParaAsociar.getIdServicio())!=0){
+            throw new HTTPException(HttpStatus.CONFLICT.value(),
+                                    "Ya existe una asociación entre la etiqueta con ID " + 
+                                    etiquetaParaAsociar.getIdEtiqueta() + " y el servicio con ID "+
+                                    etiquetaParaAsociar.getIdServicio());
         }
-    }    
+        etiquetaRepository.asociarEtiquetaConServicio(etiquetaParaAsociar.getIdEtiqueta(), etiquetaParaAsociar.getIdServicio());    
+        return new AsociacionEtiquetaServicioDTOResponse(etiquetaParaAsociar.getIdEtiqueta(), etiquetaParaAsociar.getIdServicio());
+    }
 
     @Override
     public void eliminarEtiqueta(int idEtiqueta) {
         etiquetaRepository.findById(idEtiqueta)
-            .orElseThrow(() -> new HTTPException(HttpStatus.NOT_FOUND.value(), "No se ha encontrado la etiqueta con el ID " + idEtiqueta));
+            .orElseThrow(() -> new HTTPException(HttpStatus.NOT_FOUND.value(), 
+                                                "No se ha encontrado la etiqueta con el ID " + idEtiqueta));
         
         etiquetaRepository.eliminarServicioAsociado(idEtiqueta);
         etiquetaRepository.deleteById(idEtiqueta);
@@ -115,17 +122,13 @@ public class EtiquetaServiceImpl implements IEtiquetaService {
     @Override
     public void eliminarAsociacion(int idEtiqueta) {
         etiquetaRepository.findById(idEtiqueta)
-            .orElseThrow(() -> new HTTPException(HttpStatus.NOT_FOUND.value(), "No se ha encontrado la etiqueta con el ID " + idEtiqueta));
+            .orElseThrow(() -> new HTTPException(HttpStatus.NOT_FOUND.value(), 
+                                                "No se ha encontrado la etiqueta con el ID " + idEtiqueta));
         
         etiquetaRepository.eliminarServicioAsociado(idEtiqueta);
     }
 
-    /**
-     *  Verifica si una cadena contiene caracteres especiales
-     *  
-     *  @param str cadena a evaluar
-     *  @return true si la cadena contiene caracteres especiales
-     */
+    //! Deprecated
     // private static boolean hasSpecialChars(String str) {
     //     Pattern pattern = Pattern.compile("[^a-zA-Z0-9 ]");
     //     Matcher matcher = pattern.matcher(str);
