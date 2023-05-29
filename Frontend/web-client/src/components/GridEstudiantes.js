@@ -987,7 +987,6 @@ export const GridEstudiantes = ({ asignatura }) => {
                                         <ConfirmDialog visible={confirmDialogVisibleEtiquetas} onHide={() => setConfirmDialogVisibleEtiquetas(false)} message="¿Estás seguro de que deseas eliminar esta etiqueta?" header="Confirmar eliminación" acceptLabel="Aceptar" rejectLabel="Cancelar" icon="pi pi-exclamation-triangle" accept={() => eliminarEtiqueta()} />
                                     </div>
                                 )}>
-                                    
                                 </Column>
                             </DataTable>
                         </div>
@@ -1082,135 +1081,152 @@ export const GridEstudiantes = ({ asignatura }) => {
                     <Button label="Validación de turnos" style={{ fontSize: '0.8rem', backgroundColor: 'red', marginRight: '5px' }}  />
                 </div>
 
-                <DataTable value={estudiantesFiltradosSeleccionados} tableStyle={{ minWidth: '50rem' }}>
-                    <Column
-                        header={
-                        <div>
-                            <div>Fecha</div>
-                            <div>Estudiante</div>
-                        </div>
-                        }
-                        body={(rowData) => {
-                            
-                            return (
-                              <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                                  <PerfilEstudiante src="https://primefaces.org/cdn/primereact/images/avatar/amyelsner.png" style={{ marginBottom: '0.5rem' }} />
-                                  <p style={{ fontSize: '0.6rem', margin: 0, fontWeight: 'bold' }}>{rowData.nombreCompleto}</p>
-                                </div>
-                              </div>
-                            );
-                          }}
-                    />
-
-                    {[0, 1, 2, 3, 4, 5, 6].map((dayOfWeek) => {
-                    const daysToAdd = dayOfWeek - fechaActual.getDay();
-                    const dateColumn = new Date(year, month, fechaActual.getDate() + daysToAdd);
-
-                    return (
+                <div style={{ height: '425px', overflow: 'auto' }}>
+                    <DataTable value={estudiantesFiltradosSeleccionados} tableStyle={{ minWidth: '50rem' }}>
                         <Column
-                        header={dateColumn.toLocaleDateString('es-ES', { weekday: 'short' }) + ' ' + dateColumn.getDate()}
-                        key={dayOfWeek}
-                        body={(rowData) => {
-                            
-                            const formattedDateColumn = `${dateColumn.getFullYear()}-${String(dateColumn.getMonth() + 1).padStart(2, '0')}-${String(dateColumn.getDate()).padStart(2, '0')}`;
-                            const hasMatchingHorario = horarios.find((horario) => horario.idEstudiante === rowData.id && horario.fechaTurno === formattedDateColumn);
-                            
-                            if (hasMatchingHorario) {
-                            return (
-                                <CustomCard>
-                                <div style={{ display: 'flex', flexDirection: 'column', textAlign: 'left', alignItems: 'flex-start' }}>
-                                        <p style={{fontSize: '0.5rem', margin: 0, fontWeight: 'bold', color: 'red' }}>Información de turno</p>
-                                        <p style={{fontSize: '0.5rem', margin: 0}}>{hasMatchingHorario.nombreEscenario}</p>
-                                        <p style={{fontSize: '0.5rem', margin: 0}}>{hasMatchingHorario.nombreEtiqueta}</p>
-                                        <p style={{fontSize: '0.5rem', margin: 0}}>{hasMatchingHorario.franjasJornada}</p>
-                                        <Button
-                                            label='Ver más información'
-                                            style={{ fontSize: '0.5rem', textDecoration: 'underline', background: 'none', border: 'none', color: 'blue', padding: 0, margin: 0 }}
+                            header={
+                                <div style={{ width: '80px', height:'55px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexDirection: 'column', padding: '8px', position: 'relative' }}>
+                                    <div style={{ alignSelf: 'flex-end', marginBottom: '0.5rem' }}>
+                                        <div style={{ display: 'flex', flexDirection: 'row' }}>
+                                        <p style={{ fontSize: '0.6rem', margin: 0, fontWeight: 'bold', marginRight: 'auto' }}>Fecha</p>
+                                        </div>
+                                    </div>
+                                    <div style={{ position: 'absolute', top: '20px', left: '10px', width: '70%', height: '70%' }}>
+                                        <div style={{ position: 'absolute', top: '0', left: '0', width: '100%', height: '1px', background: 'black', transform: 'rotate(25deg)' }}></div>
+                                    </div>
+                                    <div style={{ display: 'flex', justifyContent: 'flex-start' }}>
+                                        <p style={{ fontSize: '0.6rem', margin: 0, fontWeight: 'bold', marginLeft: 0 }}>Estudiante</p>
+                                    </div>
+                                </div>
+
+                            }
+                            body={(rowData) => {
+                                
+                                return (
+                                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                                    <PerfilEstudiante src="https://primefaces.org/cdn/primereact/images/avatar/amyelsner.png" style={{ marginBottom: '0.5rem' }} />
+                                    <p style={{ fontSize: '0.6rem', margin: 0, fontWeight: 'bold' }}>{rowData.nombreCompleto}</p>
+                                    </div>
+                                </div>
+                                );
+                            }}
+                        />
+
+                        {[0, 1, 2, 3, 4, 5, 6].map((dayOfWeek) => {
+                        const daysToAdd = dayOfWeek - fechaActual.getDay();
+                        const dateColumn = new Date(year, month, fechaActual.getDate() + daysToAdd);
+
+                        return (
+                            <Column
+                            header={
+                                <div style={{width: '100px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', marginRight: 'auto' }}>
+                                    <div>{dateColumn.toLocaleDateString('es-ES', { weekday: 'short' })}</div>
+                                    <div>{dateColumn.getDate()}</div>
+                                </div>
+                            }
+                            key={dayOfWeek}
+                            body={(rowData) => {
+                                
+                                const formattedDateColumn = `${dateColumn.getFullYear()}-${String(dateColumn.getMonth() + 1).padStart(2, '0')}-${String(dateColumn.getDate()).padStart(2, '0')}`;
+                                const hasMatchingHorario = horarios.find((horario) => horario.idEstudiante === rowData.id && horario.fechaTurno === formattedDateColumn);
+                                
+                                if (hasMatchingHorario) {
+                                return (
+                                    <CustomCard>
+                                    <div style={{ display: 'flex', flexDirection: 'column', textAlign: 'left', alignItems: 'flex-start' }}>
+                                            <p style={{fontSize: '0.5rem', margin: 0, fontWeight: 'bold', color: 'red' }}>Información de turno</p>
+                                            <p style={{fontSize: '0.5rem', margin: 0}}>{hasMatchingHorario.nombreEscenario}</p>
+                                            <p style={{fontSize: '0.5rem', margin: 0}}>{hasMatchingHorario.nombreEtiqueta}</p>
+                                            <p style={{fontSize: '0.5rem', margin: 0}}>{hasMatchingHorario.franjasJornada}</p>
+                                            <Button
+                                                label='Ver más información'
+                                                style={{ fontSize: '0.5rem', textDecoration: 'underline', background: 'none', border: 'none', color: 'blue', padding: 0, margin: 0 }}
+                                                onClick={() => {
+                                                    setSelectedDate(dateColumn);
+                                                    setSelectedEstudiante(rowData);
+                                                    setVisibleMasInformacion(true);
+                                                    informacionHorarioTurno(rowData, dateColumn);
+                                                    }}
+                                            />
+                                            <Button
+                                                label='Gestionar Turno'
+                                                style={{ fontSize: '0.5rem', textDecoration: 'underline', background: 'none', border: 'none', color: 'blue', padding: 0, margin: 0 }}
+                                                onClick={() => {
+                                                setSelectedDate(dateColumn);
+                                                setSelectedEstudiante(rowData);
+                                                setVisibleTurnos(true);
+                                                listarTurnosEstudiante(rowData, dateColumn);
+                                                }}
+                                            />
+                                        </div>
+                                        {visibleMasInformacion && (
+                                        <Dialog header="INFORMACIÓN TURNO" visible={visibleMasInformacion} onHide={() => setVisibleMasInformacion(false)}>
+                                            <div>
+                                                <p style={{marginLeft:'30px' ,marginRight: '25px' }}><span style={{ fontWeight: 'bold' }}>Estudiante:</span> {infoHorarioTurno.nombreEstudiante}</p>
+                                                <p style={{marginLeft:'30px' ,marginRight: '25px' }}><span style={{ fontWeight: 'bold' }}>Horario:</span> {selectedDate.toLocaleDateString('es-ES', { weekday: 'long' })} {infoHorarioTurno.rangoHorario}</p>
+                                                <div style={{ display: 'flex', alignItems: 'center' }}>
+                                                    <p style={{ marginLeft: '30px', marginRight: '25px' }}>
+                                                        <span style={{ fontWeight: 'bold' }}>Desayuno:</span>
+                                                    </p>
+                                                    {infoHorarioTurno.desayuno ? (
+                                                        <Tag icon="pi pi-check" severity="success" rounded>Apto</Tag>
+                                                        ) : (
+                                                        <Tag icon="pi pi-times" severity="danger" rounded>No Apto</Tag>
+                                                    )}
+                                                    
+                                                    </div>
+                                                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                                                    <p style={{ marginLeft: '30px', marginRight: '25px' }}>
+                                                        <span style={{ fontWeight: 'bold' }}>Almuerzo:</span>
+                                                    </p>
+                                                    {infoHorarioTurno.almuerzo ? (
+                                                        <Tag icon="pi pi-check" severity="success" rounded>Apto</Tag> 
+                                                        ) : (
+                                                        <Tag icon="pi pi-times" severity="danger" rounded>No Apto</Tag>
+                                                    )}
+                                                    </div>
+                                                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                                                    <p style={{ marginLeft: '30px', marginRight: '25px' }}>
+                                                        <span style={{ fontWeight: 'bold' }}>Comida:</span>
+                                                    </p>
+                                                    {infoHorarioTurno.comida ? (
+                                                        <Tag icon="pi pi-check" severity="success" rounded>Apto</Tag>
+                                                        ) : (
+                                                        <Tag icon="pi pi-times" severity="danger" rounded>No Apto</Tag>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        </Dialog>
+                                        )}
+                                        </CustomCard>
+                                );
+                                } else {
+                                    return (
+                                        <CustomCard>
+                                        <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column', height: '100%'}}>
+                                            <Button
                                             onClick={() => {
                                                 setSelectedDate(dateColumn);
                                                 setSelectedEstudiante(rowData);
-                                                setVisibleMasInformacion(true);
-                                                informacionHorarioTurno(rowData, dateColumn);
-                                                }}
-                                        />
-                                        <Button
-                                            label='Gestionar Turno'
-                                            style={{ fontSize: '0.5rem', textDecoration: 'underline', background: 'none', border: 'none', color: 'blue', padding: 0, margin: 0 }}
-                                            onClick={() => {
-                                            setSelectedDate(dateColumn);
-                                            setSelectedEstudiante(rowData);
-                                            setVisibleTurnos(true);
-                                            listarTurnosEstudiante(rowData, dateColumn);
+                                                setVisibleTurnos(true);
+                                                listarTurnosEstudiante(rowData, dateColumn);
                                             }}
-                                        />
-                                    </div>
-                                    {visibleMasInformacion && (
-                                    <Dialog header="INFORMACIÓN TURNO" visible={visibleMasInformacion} onHide={() => setVisibleMasInformacion(false)}>
-                                        <div>
-                                            <p style={{marginLeft:'30px' ,marginRight: '25px' }}><span style={{ fontWeight: 'bold' }}>Estudiante:</span> {infoHorarioTurno.nombreEstudiante}</p>
-                                            <p style={{marginLeft:'30px' ,marginRight: '25px' }}><span style={{ fontWeight: 'bold' }}>Horario:</span> {selectedDate.toLocaleDateString('es-ES', { weekday: 'long' })} {infoHorarioTurno.rangoHorario}</p>
-                                            <div style={{ display: 'flex', alignItems: 'center' }}>
-                                                <p style={{ marginLeft: '30px', marginRight: '25px' }}>
-                                                    <span style={{ fontWeight: 'bold' }}>Desayuno:</span>
-                                                </p>
-                                                {infoHorarioTurno.desayuno ? (
-                                                    <Tag icon="pi pi-check" severity="success" rounded>Apto</Tag>
-                                                    ) : (
-                                                    <Tag icon="pi pi-times" severity="danger" rounded>No Apto</Tag>
-                                                )}
-                                                
-                                                </div>
-                                                <div style={{ display: 'flex', alignItems: 'center' }}>
-                                                <p style={{ marginLeft: '30px', marginRight: '25px' }}>
-                                                    <span style={{ fontWeight: 'bold' }}>Almuerzo:</span>
-                                                </p>
-                                                {infoHorarioTurno.almuerzo ? (
-                                                    <Tag icon="pi pi-check" severity="success" rounded>Apto</Tag> 
-                                                    ) : (
-                                                    <Tag icon="pi pi-times" severity="danger" rounded>No Apto</Tag>
-                                                )}
-                                                </div>
-                                                <div style={{ display: 'flex', alignItems: 'center' }}>
-                                                <p style={{ marginLeft: '30px', marginRight: '25px' }}>
-                                                    <span style={{ fontWeight: 'bold' }}>Comida:</span>
-                                                </p>
-                                                {infoHorarioTurno.comida ? (
-                                                    <Tag icon="pi pi-check" severity="success" rounded>Apto</Tag>
-                                                    ) : (
-                                                    <Tag icon="pi pi-times" severity="danger" rounded>No Apto</Tag>
-                                                )}
-                                            </div>
+                                            style={{width: '30px', height: '30px', borderRadius: '15px', backgroundColor: '#bebbbb', display: 'flex', justifyContent: 'center', alignItems: 'center'}}
+                                            >
+                                            <i className="pi pi-plus" style={{ margin: 0 }} />
+                                            </Button>
+                                            <p style={{ fontSize: '0.5rem', margin: '4px 0 0 0' }}>Sin asignar</p>
                                         </div>
-                                    </Dialog>
-                                    )}
-                                    </CustomCard>
-                            );
-                            } else {
-                                return (
-                                    <CustomCard>
-                                      <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column', height: '100%'}}>
-                                        <Button
-                                          onClick={() => {
-                                            setSelectedDate(dateColumn);
-                                            setSelectedEstudiante(rowData);
-                                            setVisibleTurnos(true);
-                                            listarTurnosEstudiante(rowData, dateColumn);
-                                          }}
-                                          style={{width: '30px', height: '30px', borderRadius: '15px', backgroundColor: '#bebbbb', display: 'flex', justifyContent: 'center', alignItems: 'center'}}
-                                        >
-                                          <i className="pi pi-plus" style={{ margin: 0 }} />
-                                        </Button>
-                                        <p style={{ fontSize: '0.5rem', margin: '4px 0 0 0' }}>Sin asignar</p>
-                                      </div>
-                                    </CustomCard>
-                                  );
-                            }
-                        }}
-                        />
-                    );
-                    })}
-                </DataTable>
+                                        </CustomCard>
+                                    );
+                                }
+                            }}
+                            />
+                        );
+                        })}
+                    </DataTable>
+                </div>
 
                 <Dialog header="GESTIONAR TURNO" visible={visibleTurnos} onHide={() => setVisibleTurnos(false)}>
                 {selectedDate && selectedEstudiante && (
