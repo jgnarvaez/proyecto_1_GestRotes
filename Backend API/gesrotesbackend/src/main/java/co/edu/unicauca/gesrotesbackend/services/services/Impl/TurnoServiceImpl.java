@@ -16,22 +16,29 @@ import co.edu.unicauca.gesrotesbackend.exceptions.HTTPException;
 import co.edu.unicauca.gesrotesbackend.models.EstAsignacion;
 import co.edu.unicauca.gesrotesbackend.models.Etiqueta;
 import co.edu.unicauca.gesrotesbackend.models.Jornada;
+import co.edu.unicauca.gesrotesbackend.models.Mes;
 import co.edu.unicauca.gesrotesbackend.models.TipoAlimentacion;
 import co.edu.unicauca.gesrotesbackend.models.Turno;
 import co.edu.unicauca.gesrotesbackend.models.TurnoId;
+import co.edu.unicauca.gesrotesbackend.models.ValidacionTurnos;
+import co.edu.unicauca.gesrotesbackend.models.ValidacionTurnosId;
 import co.edu.unicauca.gesrotesbackend.repositories.EstAsignacionRepository;
 import co.edu.unicauca.gesrotesbackend.repositories.EtiquetaRepository;
 import co.edu.unicauca.gesrotesbackend.repositories.JornadaRepository;
 import co.edu.unicauca.gesrotesbackend.repositories.TurnoRepository;
+import co.edu.unicauca.gesrotesbackend.repositories.ValidacionTurnosRepository;
 import co.edu.unicauca.gesrotesbackend.services.DTO.EstudianteFechaDTO;
 import co.edu.unicauca.gesrotesbackend.services.DTO.EstudianteSeleccionadoDTO;
 import co.edu.unicauca.gesrotesbackend.services.DTO.HorarioDTO;
 import co.edu.unicauca.gesrotesbackend.services.DTO.JornadaDTO;
+import co.edu.unicauca.gesrotesbackend.services.DTO.ModificarObsDTO;
 import co.edu.unicauca.gesrotesbackend.services.DTO.NuevoTurnoDTO;
 import co.edu.unicauca.gesrotesbackend.services.DTO.SeleccionEstudianteDTO;
 import co.edu.unicauca.gesrotesbackend.services.DTO.SeleccionEstudiantesDTO;
 import co.edu.unicauca.gesrotesbackend.services.DTO.TurnoAsociadoDTO;
 import co.edu.unicauca.gesrotesbackend.services.DTO.TurnoCreadoDTO;
+import co.edu.unicauca.gesrotesbackend.services.DTO.ValidacionEstudianteDTO;
+import co.edu.unicauca.gesrotesbackend.services.DTO.ValidacionTurnoDTO;
 import co.edu.unicauca.gesrotesbackend.services.Mapper.JornadaDTOMapper;
 import co.edu.unicauca.gesrotesbackend.services.Utilities.HorarioJornada;
 import co.edu.unicauca.gesrotesbackend.services.Utilities.Intervalo;
@@ -44,6 +51,7 @@ public class TurnoServiceImpl implements ITurnoService{
     private final EtiquetaRepository etiquetaRepository;
     private final TurnoRepository turnoRepository;
     private final EstAsignacionRepository estAsignacionRepository;
+    private final ValidacionTurnosRepository validacionTurnosRepository;
     private final JornadaDTOMapper jornadaDTOMapper;
     private final LocalTime inicioRangoDesayuno = LocalTime.parse("06:00");
     private final LocalTime finRangoDesayuno = LocalTime.parse("12:00");
@@ -56,11 +64,13 @@ public class TurnoServiceImpl implements ITurnoService{
                             EtiquetaRepository etiquetaRepository,
                             TurnoRepository turnoRepository, 
                             EstAsignacionRepository estAsignacionRepository,
+                            ValidacionTurnosRepository validacionTurnosRepository,
                             JornadaDTOMapper jornadaDTOMapper){
         this.jornadaRepository = jornadaRepository;
         this.etiquetaRepository = etiquetaRepository;
         this.turnoRepository = turnoRepository;
         this.estAsignacionRepository = estAsignacionRepository;
+        this.validacionTurnosRepository = validacionTurnosRepository;
         this.jornadaDTOMapper = jornadaDTOMapper;
     }
 
@@ -71,6 +81,26 @@ public class TurnoServiceImpl implements ITurnoService{
                                                 seleccionEstudiante.getProgId(), 
                                                 seleccionEstudiante.getAsigId(), 
                                                 seleccionEstudiante.getCooId());
+        
+        //TODO hacer testing
+        if(seleccionEstudiante.getEstado()){
+            EstAsignacion estAsignacion = estAsignacionRepository.getRowByIds(seleccionEstudiante.getPuId(), 
+                                                                        seleccionEstudiante.getProgId(), 
+                                                                        seleccionEstudiante.getAsigId(), 
+                                                                        seleccionEstudiante.getCooId());
+        
+            ValidacionTurnosId idValidacionTurnos = new ValidacionTurnosId();
+            idValidacionTurnos.setEstAsignacion(estAsignacion);
+            ValidacionTurnos validacionTurnos = new ValidacionTurnos(idValidacionTurnos, Mes.valueOf(seleccionEstudiante.getMes()),
+                                                                    seleccionEstudiante.getAnio(), null, null, "");
+            validacionTurnos.setId(idValidacionTurnos);
+            validacionTurnosRepository.save(validacionTurnos);
+        }else{
+            validacionTurnosRepository.deleteRowByUnique(Mes.valueOf(seleccionEstudiante.getMes()), seleccionEstudiante.getAnio(), 
+                                                        seleccionEstudiante.getPuId(), seleccionEstudiante.getProgId(), 
+                                                        seleccionEstudiante.getAsigId(), seleccionEstudiante.getCooId());
+        }
+        
     }
 
     @Override
@@ -84,6 +114,11 @@ public class TurnoServiceImpl implements ITurnoService{
         estAsignacionRepository.deselectStudents(seleccionEstudiantes.getProgId(),
                                                     seleccionEstudiantes.getAsigId(), 
                                                     seleccionEstudiantes.getCooId());
+                    
+        //TODO hacer testing
+        validacionTurnosRepository.deleteRowsByAsignation(Mes.valueOf(seleccionEstudiantes.getMes()), seleccionEstudiantes.getAnio(), 
+                                                        seleccionEstudiantes.getProgId(), seleccionEstudiantes.getAsigId(), 
+                                                        seleccionEstudiantes.getCooId());
     }
 
     @Override
@@ -282,5 +317,46 @@ public class TurnoServiceImpl implements ITurnoService{
             }
         }
         return alimentacion;
+    }
+
+    //TODO
+    public List<InformacionHorarioTurnoDTO> obtenerEstudiantesConAlimentacion(Date fechaTurno, int progId, int asigId, int cooId){
+        // * Inicializar la lista de InformacionHorarioTurnoDTO
+        List<InformacionHorarioTurnoDTO> listDTO = new ArrayList<>();
+        // * Obtener los IDs de los estudiantes asociados a esa fecha (Crear metodo en EstAsignacion)
+        List<Integer> listaConsulta = turnoRepository.findAllStudentsIdByDate(fechaTurno, progId, asigId, cooId);
+        List<Integer> listaIdEstudiantes = eliminarRepetidos(listaConsulta);
+        // * por cada elemento de la lista de IDs pasar por parametros el ID y fecha al metodo obetenerInfoHorarioTurnoPorFecha(int idEstudiante, Date fechaTurno)
+        for (Integer estudianteID : listaIdEstudiantes) {
+            InformacionHorarioTurnoDTO obj = obetenerInfoHorarioTurnoPorFecha(estudianteID, fechaTurno);
+            // * agregar a la lista de InformacionHorarioTurnoDTO
+            listDTO.add(obj);
+        }
+        
+        // * retornar la lista
+        return listDTO;
+    }
+
+    public List<ValidacionEstudianteDTO> obtenerEstudiantesValidacion(SeleccionEstudiantesDTO seleccionEstudiantesDTO){
+        return validacionTurnosRepository.getStudentsToValidate(Mes.valueOf(seleccionEstudiantesDTO.getMes()), seleccionEstudiantesDTO.getAnio(), 
+                                                                seleccionEstudiantesDTO.getProgId(), seleccionEstudiantesDTO.getAsigId(),
+                                                                seleccionEstudiantesDTO.getCooId());
+    }
+
+    public void modificarAsistenciaYEstado(ValidacionTurnoDTO validacionTurnoDTO){
+        Boolean estado = validacionTurnoDTO.getAsistencia();
+        validacionTurnosRepository.asociarEtiquetaConServicio(validacionTurnoDTO.getVtuId(), validacionTurnoDTO.getAsistencia(), 
+                                                                estado, validacionTurnoDTO.getObservaciones());
+    }
+
+    public void modificarObservaciones(ModificarObsDTO modificarObsDTO){
+        validacionTurnosRepository.actualizarObservaciones(modificarObsDTO.getVtuId(), modificarObsDTO.getObservaciones());
+    }
+
+    public static List<Integer> eliminarRepetidos(List<Integer> listaOriginal) {
+        List<Integer> listaSinRepetidos = listaOriginal.stream()
+                                                        .distinct()
+                                                        .collect(Collectors.toList());
+        return listaSinRepetidos;
     }
 }

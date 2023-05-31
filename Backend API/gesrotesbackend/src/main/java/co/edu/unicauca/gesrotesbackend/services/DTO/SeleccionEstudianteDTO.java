@@ -1,5 +1,6 @@
 package co.edu.unicauca.gesrotesbackend.services.DTO;
 
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -26,4 +27,8 @@ public class SeleccionEstudianteDTO {
     int cooId;
     @NotNull(message = "{selection.state.empty}")
     Boolean estado;
+    @NotBlank(message = "{selection.month.empty}")
+    String mes;
+    @NotNull(message = "{selection.year.empty}")
+    int anio;
 }

@@ -20,11 +20,14 @@ import co.edu.unicauca.gesrotesbackend.services.DTO.EstudianteSeleccionadoDTO;
 import co.edu.unicauca.gesrotesbackend.services.DTO.HorarioDTO;
 import co.edu.unicauca.gesrotesbackend.services.DTO.InformacionHorarioTurnoDTO;
 import co.edu.unicauca.gesrotesbackend.services.DTO.JornadaDTO;
+import co.edu.unicauca.gesrotesbackend.services.DTO.ModificarObsDTO;
 import co.edu.unicauca.gesrotesbackend.services.DTO.NuevoTurnoDTO;
 import co.edu.unicauca.gesrotesbackend.services.DTO.SeleccionEstudianteDTO;
 import co.edu.unicauca.gesrotesbackend.services.DTO.SeleccionEstudiantesDTO;
 import co.edu.unicauca.gesrotesbackend.services.DTO.TurnoAsociadoDTO;
 import co.edu.unicauca.gesrotesbackend.services.DTO.TurnoCreadoDTO;
+import co.edu.unicauca.gesrotesbackend.services.DTO.ValidacionEstudianteDTO;
+import co.edu.unicauca.gesrotesbackend.services.DTO.ValidacionTurnoDTO;
 import co.edu.unicauca.gesrotesbackend.services.services.ITurnoService;
 
 @RestController
@@ -98,5 +101,32 @@ public class ControladorTurno {
         // } catch (ValidacionException e) {
         //     return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No se ha encontrado el turno.");
         // }
+    }
+
+    // * Listar los estudiantes con alimentacion
+    @GetMapping("/estudiantesConAlimentacion/{progId}/{asigId}/{cooId}/{fecha}")
+    public List<InformacionHorarioTurnoDTO> findStudentsWithFood(@PathVariable Date fecha, @PathVariable int progId, @PathVariable int asigId, @PathVariable int cooId){
+        return turnoService.obtenerEstudiantesConAlimentacion(fecha, progId, asigId, cooId);
+    }
+
+    // * Listar los estudiantes para validacion
+    @GetMapping("/estudiantesAValidar/{progId}/{asigId}/{cooId}/{mes}/{anio}")
+    public List<ValidacionEstudianteDTO> findStudentsToValidate(@PathVariable int progId, @PathVariable int asigId, @PathVariable int cooId, @PathVariable String mes, @PathVariable int anio){
+        SeleccionEstudiantesDTO seleccionEstudiantesDTO = new SeleccionEstudiantesDTO(progId, asigId, cooId, mes, anio);
+        return turnoService.obtenerEstudiantesValidacion(seleccionEstudiantesDTO);
+    }
+
+    // * Validar asistencia
+    @PutMapping("/validarAsistencia")
+    @CrossOrigin(origins = "*", methods = { RequestMethod.PUT })
+    public void validateAttendance(@RequestBody ValidacionTurnoDTO validacionTurnoDTO){
+        turnoService.modificarAsistenciaYEstado(validacionTurnoDTO);
+    }
+
+    // * Modificar observaciones
+    @PutMapping("/modificarObservaciones")
+    @CrossOrigin(origins = "*", methods = { RequestMethod.PUT })
+    public void modifyObservations(@RequestBody ModificarObsDTO modificarObsDTO){
+        turnoService.modificarObservaciones(modificarObsDTO);
     }
 }

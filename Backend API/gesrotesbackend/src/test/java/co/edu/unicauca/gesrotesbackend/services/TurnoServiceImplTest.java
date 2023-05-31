@@ -35,6 +35,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 // import org.springframework.test.context.jdbc.Sql;
 
 import co.edu.unicauca.gesrotesbackend.models.Jornada;
+import co.edu.unicauca.gesrotesbackend.models.Mes;
 import co.edu.unicauca.gesrotesbackend.models.Programa;
 import co.edu.unicauca.gesrotesbackend.models.Servicio;
 import co.edu.unicauca.gesrotesbackend.models.TipoAlimentacion;
@@ -53,6 +54,7 @@ import co.edu.unicauca.gesrotesbackend.repositories.EstAsignacionRepository;
 import co.edu.unicauca.gesrotesbackend.repositories.EtiquetaRepository;
 import co.edu.unicauca.gesrotesbackend.repositories.JornadaRepository;
 import co.edu.unicauca.gesrotesbackend.repositories.TurnoRepository;
+import co.edu.unicauca.gesrotesbackend.repositories.ValidacionTurnosRepository;
 import co.edu.unicauca.gesrotesbackend.services.Mapper.JornadaDTOMapper;
 import co.edu.unicauca.gesrotesbackend.services.Utilities.HorarioJornada;
 import co.edu.unicauca.gesrotesbackend.services.services.Impl.TurnoServiceImpl;
@@ -69,6 +71,8 @@ public class TurnoServiceImplTest {
     @Mock
     private EstAsignacionRepository estAsignacionRepository;
     @Mock
+    private ValidacionTurnosRepository validacionTurnosRepository;
+    @Mock
     private JornadaDTOMapper jornadaDTOMapper;
 
     private TurnoServiceImpl serviceUnderTest;
@@ -78,14 +82,15 @@ public class TurnoServiceImplTest {
         serviceUnderTest = new TurnoServiceImpl(jornadaRepository, 
                                                     etiquetaRepository, 
                                                     turnoRepository, 
-                                                    estAsignacionRepository, 
+                                                    estAsignacionRepository,
+                                                    validacionTurnosRepository, 
                                                     jornadaDTOMapper);
     }
 
     @Test
     void test_Can_ChangeStudentSelectedState() {
         // given
-        SeleccionEstudianteDTO seleccionEstudiante = new SeleccionEstudianteDTO(1, 2, 3, 4, true);
+        SeleccionEstudianteDTO seleccionEstudiante = new SeleccionEstudianteDTO(1, 2, 3, 4, true, Mes.Junio.toString(), 2023);
 
         // when
         serviceUnderTest.cambiarEstadoSeleccionado(seleccionEstudiante);
@@ -113,7 +118,7 @@ public class TurnoServiceImplTest {
     @Test
     void test_Can_DeselectStudents() {
         // given
-        SeleccionEstudiantesDTO seleccionEstudiantes = new SeleccionEstudiantesDTO(1, 2, 3);
+        SeleccionEstudiantesDTO seleccionEstudiantes = new SeleccionEstudiantesDTO(1, 2, 3, Mes.Junio.toString(), 2023);
         
         // when
         serviceUnderTest.deseleccionarEstudiantes(seleccionEstudiantes);

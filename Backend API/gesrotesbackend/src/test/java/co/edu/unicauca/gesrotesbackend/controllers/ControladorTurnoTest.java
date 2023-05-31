@@ -29,6 +29,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
+import co.edu.unicauca.gesrotesbackend.models.Mes;
 import co.edu.unicauca.gesrotesbackend.models.TipoAlimentacion;
 import co.edu.unicauca.gesrotesbackend.services.DTO.EstudianteSeleccionadoDTO;
 import co.edu.unicauca.gesrotesbackend.services.DTO.HorarioDTO;
@@ -69,7 +70,7 @@ public class ControladorTurnoTest {
     void changeSelectStateTest() throws Exception {
         // given
         String urlChangeSelect = url + "/seleccion";
-        SeleccionEstudianteDTO seleccionEstudianteDTO = new SeleccionEstudianteDTO(1, 1, 3, 1, true);
+        SeleccionEstudianteDTO seleccionEstudianteDTO = new SeleccionEstudianteDTO(1, 1, 3, 1, true, Mes.Junio.toString(), 2023);
 
         // when
         ResultActions response = mockMvc.perform(put(urlChangeSelect)
@@ -131,7 +132,7 @@ public class ControladorTurnoTest {
         int asigId = 3;
         int cooId = 1;
         String urlDeselectStudents = url + "deseleccionarTodos";
-        SeleccionEstudiantesDTO seleccionEstudiantesDTO = new SeleccionEstudiantesDTO(progId, asigId, cooId);
+        SeleccionEstudiantesDTO seleccionEstudiantesDTO = new SeleccionEstudiantesDTO(progId, asigId, cooId, Mes.Junio.toString(), 2023);
 
         // when
         ResultActions response = mockMvc.perform(put(urlDeselectStudents)

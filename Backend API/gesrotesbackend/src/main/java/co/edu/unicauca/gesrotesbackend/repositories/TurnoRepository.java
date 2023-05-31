@@ -48,6 +48,21 @@ public interface TurnoRepository extends JpaRepository<Turno, TurnoId> {
             "AND t.fecha = :fecha ")
     List<TurnoAsociadoDTO> findShiftsAssociationsByDate(@Param("estudianteId") int estudianteId, @Param("fecha") Date fecha);
 
+    
+    /**
+     *  Obtiene una lista de turnos asociados a un estudiante en una fecha
+     *  
+     *  @param fecha : fecha del turno
+     *  @return lista de objetos 
+     */
+    @Query("SELECT t.id.estAsignacion.id.estudiante.id " +
+            "FROM Turno t " +
+            "WHERE t.id.estAsignacion.id.asignacion.id.programa.id = :progId " +
+            "AND t.id.estAsignacion.id.asignacion.id.asignatura.id = :asigId " +
+            "AND t.id.estAsignacion.id.asignacion.id.coordinador.id = :cooId " +
+            "AND t.fecha = :fecha ")
+    List<Integer> findAllStudentsIdByDate(@Param("fecha") Date fecha, @Param("progId") int progId, @Param("asigId") int asigId, @Param("cooId") int cooId);
+
     /**
      *  Obtiene los registros de tbl_turno que tienen un id de estudiante y fecha distintos
      *  

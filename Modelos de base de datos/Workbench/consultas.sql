@@ -38,3 +38,13 @@ SELECT pu_id, tur_fecha
 FROM tbl_turno
 GROUP BY pu_id, prog_id, asig_id, coo_id, tur_fecha
 HAVING COUNT(*) > 0;
+
+--
+select vtu.pu_id, concat(pu_nombres, " ", pu_apellidos) as nombre, vtu_asistencia, vtu_estado, vtu_observaciones
+from mydb.tbl_validacion_turnos vtu
+join mydb.tbl_persona_universitaria pu on vtu.pu_id = pu.pu_id
+where vtu_mes = "Marzo"
+and vtu_anio = 2023
+and prog_id = 1
+and asig_id = 4
+and coo_id = 1;

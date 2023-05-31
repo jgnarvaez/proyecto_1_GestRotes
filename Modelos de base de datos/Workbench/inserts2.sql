@@ -255,13 +255,13 @@ VALUES
 -- ('2023-05-12', 3, 1, 3, 1, 2, 2, 'Desayuno'), -- 6:30 a 12 
 -- ('2023-05-12', 3, 1, 3, 1, 6, 2, 'Almuerzo'), -- 12 a 14:30
 -- estudiante 2: 06:30 a 11:30 y 14:00 a 21:00
-('2023-05-12', 4, 1, 3, 1, 1, 1, 'Desayuno'), -- 6:30 a 11:30
-('2023-05-12', 4, 1, 3, 1, 7, 1, null), -- 14:00 a 18:00
-('2023-05-12', 4, 1, 3, 1, 8, 1, 'Comida'), -- 18:00 a 21:00
+('2023-05-31', 4, 1, 3, 1, 1, 1, 'Desayuno'), -- 6:30 a 11:30
+('2023-05-31', 4, 1, 3, 1, 7, 1, null), -- 14:00 a 18:00
+('2023-05-31', 4, 1, 3, 1, 8, 1, 'Comida'), -- 18:00 a 21:00
 -- estudiante 3: 11:30 a 21:30
-('2023-05-12', 5, 1, 4, 1, 4, 1, 'Desayuno'), -- 11:30 a 12:00
-('2023-05-12', 5, 1, 4, 1, 5, 1, 'Almuerzo'), -- 12:00 a 18:00
-('2023-05-12', 5, 1, 4, 1, 9, 1, 'Comida'); -- 18:00 a 21:30
+('2023-05-31', 5, 1, 4, 1, 4, 1, 'Desayuno'), -- 11:30 a 12:00
+('2023-05-31', 5, 1, 4, 1, 5, 1, 'Almuerzo'), -- 12:00 a 18:00
+('2023-05-31', 5, 1, 4, 1, 9, 1, 'Comida'); -- 18:00 a 21:30
 
 -- VALIDACIONES
 -- Un estudiante no puede tener un turno distinto en la misma fecha
@@ -275,3 +275,8 @@ VALUES
 -- INSERT INTO mydb.tbl_turno(tur_fecha, pu_id, prog_id, asig_id, coo_id, jor_id, eti_id, tur_alimentacion)
 -- VALUE
 -- ('2023-05-12', 4, 1, 3, 1, 1, 2, 'Desayuno');
+
+insert into mydb.tbl_validacion_turnos (vtu_mes, vtu_anio, pu_id, prog_id, asig_id, coo_id)
+values 
+("Mayo", 2023, 4, 1, 3, 1),
+("Mayo", 2023, 5, 1, 4, 1);

@@ -7,11 +7,14 @@ import co.edu.unicauca.gesrotesbackend.services.DTO.EstudianteSeleccionadoDTO;
 import co.edu.unicauca.gesrotesbackend.services.DTO.HorarioDTO;
 import co.edu.unicauca.gesrotesbackend.services.DTO.InformacionHorarioTurnoDTO;
 import co.edu.unicauca.gesrotesbackend.services.DTO.JornadaDTO;
+import co.edu.unicauca.gesrotesbackend.services.DTO.ModificarObsDTO;
 import co.edu.unicauca.gesrotesbackend.services.DTO.NuevoTurnoDTO;
 import co.edu.unicauca.gesrotesbackend.services.DTO.SeleccionEstudianteDTO;
 import co.edu.unicauca.gesrotesbackend.services.DTO.SeleccionEstudiantesDTO;
 import co.edu.unicauca.gesrotesbackend.services.DTO.TurnoAsociadoDTO;
 import co.edu.unicauca.gesrotesbackend.services.DTO.TurnoCreadoDTO;
+import co.edu.unicauca.gesrotesbackend.services.DTO.ValidacionEstudianteDTO;
+import co.edu.unicauca.gesrotesbackend.services.DTO.ValidacionTurnoDTO;
 
 public interface ITurnoService {
 
@@ -91,4 +94,12 @@ public interface ITurnoService {
      *  @param idTurno : id del turno a eliminar
      */
     void eliminarTurnoAsociado(int idTurno);
+
+    List<InformacionHorarioTurnoDTO> obtenerEstudiantesConAlimentacion(Date fechaTurno, int progId, int asigId, int cooId);
+
+    List<ValidacionEstudianteDTO> obtenerEstudiantesValidacion(SeleccionEstudiantesDTO seleccionEstudiantesDTO);
+
+    void modificarAsistenciaYEstado(ValidacionTurnoDTO validacionAsistenciaDTO);
+
+    void modificarObservaciones(ModificarObsDTO modificarObsDTO);
 }
