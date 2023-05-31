@@ -95,12 +95,8 @@ public class ControladorTurno {
     @DeleteMapping("/{idTurno}")
     @CrossOrigin(origins = "*", methods = { RequestMethod.DELETE })
     public ResponseEntity<String> delete(@PathVariable int idTurno) {
-        // try {
-            turnoService.eliminarTurnoAsociado(idTurno);
-            return ResponseEntity.ok("Turno asociado eliminado correctamente");
-        // } catch (ValidacionException e) {
-        //     return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No se ha encontrado el turno.");
-        // }
+        turnoService.eliminarTurnoAsociado(idTurno);
+        return ResponseEntity.ok("Turno asociado eliminado correctamente");
     }
 
     // * Listar los estudiantes con alimentacion
