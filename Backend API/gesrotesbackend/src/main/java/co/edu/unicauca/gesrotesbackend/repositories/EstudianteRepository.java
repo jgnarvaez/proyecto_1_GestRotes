@@ -59,7 +59,7 @@ public interface EstudianteRepository extends JpaRepository<Estudiante, Integer>
     @Query("SELECT " +
         "new co.edu.unicauca.gesrotesbackend.services.DTO.EstudianteDTO(e.id, CONCAT(e.nombres, ' ', e.apellidos), e.identificacion, e.usuario) " +        
         "FROM Estudiante e " +
-        "WHERE (e.nombres LIKE %:cadenaBusqueda% OR e.apellidos LIKE %:cadenaBusqueda%) " +
+        "WHERE (CONCAT(e.nombres, ' ', e.apellidos) LIKE %:cadenaBusqueda%) " +
         "AND e.id NOT IN (" +
         "    SELECT ea.id.estudiante.id " +
         "    FROM EstAsignacion ea " +

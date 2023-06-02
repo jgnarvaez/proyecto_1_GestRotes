@@ -6,6 +6,6 @@ package co.edu.unicauca.gesrotesbackend.services.DTO;
  *  Se utiliza para:
  *  -Listar estudiantes seleccionados para asignarles turnos0
 */
-public record EstudianteSeleccionadoDTO (int id, String nombreCompleto){
+public record EstudianteSeleccionadoDTO (int id, String nombreCompleto, int mes, int anio){
     
 }

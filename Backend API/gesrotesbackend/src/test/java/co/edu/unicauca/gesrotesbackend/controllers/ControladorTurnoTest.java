@@ -104,8 +104,8 @@ public class ControladorTurnoTest {
         int cooId = 1;
         String urlFindSelectedStudents = url + "estudiantesSeleccionados/" + progId + "/" + asigId + "/" + cooId;
         List<EstudianteSeleccionadoDTO> estudiantesSeleccionados = new ArrayList<>();
-        estudiantesSeleccionados.add(new EstudianteSeleccionadoDTO(1, "Cristian Gomez Santos"));
-        estudiantesSeleccionados.add(new EstudianteSeleccionadoDTO(2, "Cristobal Colon Lopez"));
+        estudiantesSeleccionados.add(new EstudianteSeleccionadoDTO(1, "Cristian Gomez Santos", 6, 2023));
+        estudiantesSeleccionados.add(new EstudianteSeleccionadoDTO(2, "Cristobal Colon Lopez", 6, 2023));
         given(service.obtenerEstudiantesSeleccionados(progId, asigId, cooId)).willReturn(estudiantesSeleccionados);
 
         // when

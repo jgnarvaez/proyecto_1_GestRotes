@@ -91,6 +91,14 @@ public class ControladorTurno {
         return turnoService.obetenerTurnosPorFecha(idEstudiante, fechaTurno);
     }
 
+    // * Modificar turno
+    @PutMapping("/{idTurno}")
+    @CrossOrigin(origins = "*", methods = { RequestMethod.PUT })
+    public void modifyShift(/*@RequestBody ValidacionTurnoDTO validacionTurnoDTO*/){
+        // TODO modificar turno
+        // turnoService.modificarAsistenciaYEstado(validacionTurnoDTO);
+    }
+
     // * Eliminar turno asociado a un estudiante
     @DeleteMapping("/{idTurno}")
     @CrossOrigin(origins = "*", methods = { RequestMethod.DELETE })

@@ -227,7 +227,8 @@ VALUES
 INSERT INTO mydb.tbl_etiqueta (eti_nombre, esc_id, ser_id)
 VALUES
 ('Salas', 1, 3),
-('Primer piso', 1, 1);
+('Primer piso', 1, 1),
+("Salas", 2, 2);
 
 -- jornada
 INSERT INTO mydb.tbl_jornada (jor_franja, jor_hora_inicio, jor_hora_fin)
