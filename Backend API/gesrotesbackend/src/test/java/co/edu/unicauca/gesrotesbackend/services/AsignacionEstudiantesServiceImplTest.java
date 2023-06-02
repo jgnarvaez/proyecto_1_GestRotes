@@ -31,6 +31,7 @@ import co.edu.unicauca.gesrotesbackend.repositories.CoordinadorAsigRepository;
 import co.edu.unicauca.gesrotesbackend.repositories.EstAsignacionRepository;
 import co.edu.unicauca.gesrotesbackend.repositories.EstudianteRepository;
 import co.edu.unicauca.gesrotesbackend.repositories.ProgramaRepository;
+import co.edu.unicauca.gesrotesbackend.repositories.ValidacionTurnosRepository;
 import co.edu.unicauca.gesrotesbackend.services.services.Impl.AsignacionEstudiantesServiceImpl;
 
 @ExtendWith(MockitoExtension.class)
@@ -48,6 +49,9 @@ public class AsignacionEstudiantesServiceImplTest {
     @Mock
     private CoordinadorAsigRepository coordinadorAsigRepository;
 
+    @Mock
+    private ValidacionTurnosRepository validacionTurnosRepository;
+
     private AsignacionEstudiantesServiceImpl serviceUnderTest;
 
     @BeforeEach
@@ -57,7 +61,8 @@ public class AsignacionEstudiantesServiceImplTest {
                                                                 estudianteRepository, 
                                                                 programaRepository, 
                                                                 asignaturaRepository, 
-                                                                coordinadorAsigRepository);
+                                                                coordinadorAsigRepository,
+                                                                validacionTurnosRepository);
     }
 
     @Test

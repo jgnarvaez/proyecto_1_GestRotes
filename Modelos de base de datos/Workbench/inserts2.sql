@@ -279,5 +279,5 @@ VALUES
 
 insert into mydb.tbl_validacion_turnos (vtu_mes, vtu_anio, pu_id, prog_id, asig_id, coo_id)
 values 
-("Mayo", 2023, 4, 1, 3, 1),
+("Junio", 2023, 4, 1, 3, 1),
 ("Mayo", 2023, 5, 1, 4, 1);

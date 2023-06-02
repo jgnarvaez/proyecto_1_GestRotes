@@ -4,6 +4,7 @@ import java.util.List;
 
 import co.edu.unicauca.gesrotesbackend.services.DTO.EstAsignacionDTO;
 import co.edu.unicauca.gesrotesbackend.services.DTO.EstudianteDTO;
+import co.edu.unicauca.gesrotesbackend.services.DTO.ValidacionCreadaDTO;
 
 public interface IAsignacionEstudiantesService {
     /**
@@ -65,4 +66,10 @@ public interface IAsignacionEstudiantesService {
      *  @param studId : El ID del estudiante a eliminar.
      */ 
     void deleteStudent(int cooId, int progId,int subjId, int studId);
+
+    ValidacionCreadaDTO crearValidacionTurnos(int studId, int progId, int subjId, int cooId);
+
+    // void deleteAssociationInValidation();
+
+    // void deleteAssociationsInValidation();
 }

@@ -97,7 +97,7 @@ public interface ITurnoService {
 
     List<InformacionHorarioTurnoDTO> obtenerEstudiantesConAlimentacion(Date fechaTurno, int progId, int asigId, int cooId);
 
-    List<ValidacionEstudianteDTO> obtenerEstudiantesValidacion(SeleccionEstudiantesDTO seleccionEstudiantesDTO);
+    List<ValidacionEstudianteDTO> obtenerEstudiantesValidacion(int progId, int asigId, int cooId, String mes, int anio);
 
     void modificarAsistenciaYEstado(ValidacionTurnoDTO validacionAsistenciaDTO);
 

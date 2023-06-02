@@ -40,18 +40,22 @@ public class ControladorAsignacionEstudiantes {
     // * Registrar estudiante
     @PostMapping("/estudiantes/{puId}")
     public EstAsignacionDTO regiStudent(@PathVariable int cooId, @PathVariable int progId, @PathVariable int asigId, @PathVariable int puId){
-        return asignacionEstudiantesService.registerStudent(cooId,progId,asigId, puId);
+        EstAsignacionDTO responseDTO = asignacionEstudiantesService.registerStudent(cooId,progId,asigId, puId);
+        asignacionEstudiantesService.crearValidacionTurnos(puId, progId, asigId, cooId);//? puede ser void
+        return responseDTO;
     }
 
     // * Eliminar todos los estudiantes
     @DeleteMapping("/estudiantes")
     public void deleteAllStudents(@PathVariable int cooId, @PathVariable int progId,@PathVariable int asigId){
         asignacionEstudiantesService.deleteStudents(cooId,progId,asigId);
+        //TODO Eliminar registros asociados en tbl_validacion_turnos
     }
 
     // * Eliminar un estudiante en especifico
     @DeleteMapping("/estudiantes/{puId}")
     public void deleteStudent(@PathVariable int cooId, @PathVariable int progId,@PathVariable int asigId,@PathVariable int puId){
         asignacionEstudiantesService.deleteStudent(cooId,progId,asigId,puId);
+        //TODO Eliminar registros asociado en tbl_validacion_turnos
     }
 }

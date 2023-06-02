@@ -35,7 +35,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 // import org.springframework.test.context.jdbc.Sql;
 
 import co.edu.unicauca.gesrotesbackend.models.Jornada;
-import co.edu.unicauca.gesrotesbackend.models.Mes;
 import co.edu.unicauca.gesrotesbackend.models.Programa;
 import co.edu.unicauca.gesrotesbackend.models.Servicio;
 import co.edu.unicauca.gesrotesbackend.models.TipoAlimentacion;
@@ -90,7 +89,7 @@ public class TurnoServiceImplTest {
     @Test
     void test_Can_ChangeStudentSelectedState() {
         // given
-        SeleccionEstudianteDTO seleccionEstudiante = new SeleccionEstudianteDTO(1, 2, 3, 4, true, Mes.Junio.toString(), 2023);
+        SeleccionEstudianteDTO seleccionEstudiante = new SeleccionEstudianteDTO(1, 2, 3, 4, true);
 
         // when
         serviceUnderTest.cambiarEstadoSeleccionado(seleccionEstudiante);
@@ -118,7 +117,7 @@ public class TurnoServiceImplTest {
     @Test
     void test_Can_DeselectStudents() {
         // given
-        SeleccionEstudiantesDTO seleccionEstudiantes = new SeleccionEstudiantesDTO(1, 2, 3, Mes.Junio.toString(), 2023);
+        SeleccionEstudiantesDTO seleccionEstudiantes = new SeleccionEstudiantesDTO(1, 2, 3);
         
         // when
         serviceUnderTest.deseleccionarEstudiantes(seleccionEstudiantes);

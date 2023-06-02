@@ -29,7 +29,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
-import co.edu.unicauca.gesrotesbackend.models.Mes;
 import co.edu.unicauca.gesrotesbackend.models.TipoAlimentacion;
 import co.edu.unicauca.gesrotesbackend.services.DTO.EstudianteSeleccionadoDTO;
 import co.edu.unicauca.gesrotesbackend.services.DTO.HorarioDTO;
@@ -70,7 +69,7 @@ public class ControladorTurnoTest {
     void changeSelectStateTest() throws Exception {
         // given
         String urlChangeSelect = url + "/seleccion";
-        SeleccionEstudianteDTO seleccionEstudianteDTO = new SeleccionEstudianteDTO(1, 1, 3, 1, true, Mes.Junio.toString(), 2023);
+        SeleccionEstudianteDTO seleccionEstudianteDTO = new SeleccionEstudianteDTO(1, 1, 3, 1, true);
 
         // when
         ResultActions response = mockMvc.perform(put(urlChangeSelect)
@@ -104,8 +103,8 @@ public class ControladorTurnoTest {
         int cooId = 1;
         String urlFindSelectedStudents = url + "estudiantesSeleccionados/" + progId + "/" + asigId + "/" + cooId;
         List<EstudianteSeleccionadoDTO> estudiantesSeleccionados = new ArrayList<>();
-        estudiantesSeleccionados.add(new EstudianteSeleccionadoDTO(1, "Cristian Gomez Santos", 6, 2023));
-        estudiantesSeleccionados.add(new EstudianteSeleccionadoDTO(2, "Cristobal Colon Lopez", 6, 2023));
+        estudiantesSeleccionados.add(new EstudianteSeleccionadoDTO(1, "Cristian Gomez Santos"));
+        estudiantesSeleccionados.add(new EstudianteSeleccionadoDTO(2, "Cristobal Colon Lopez"));
         given(service.obtenerEstudiantesSeleccionados(progId, asigId, cooId)).willReturn(estudiantesSeleccionados);
 
         // when
@@ -132,7 +131,7 @@ public class ControladorTurnoTest {
         int asigId = 3;
         int cooId = 1;
         String urlDeselectStudents = url + "deseleccionarTodos";
-        SeleccionEstudiantesDTO seleccionEstudiantesDTO = new SeleccionEstudiantesDTO(progId, asigId, cooId, Mes.Junio.toString(), 2023);
+        SeleccionEstudiantesDTO seleccionEstudiantesDTO = new SeleccionEstudiantesDTO(progId, asigId, cooId);
 
         // when
         ResultActions response = mockMvc.perform(put(urlDeselectStudents)

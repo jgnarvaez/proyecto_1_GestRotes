@@ -15,6 +15,7 @@ import co.edu.unicauca.gesrotesbackend.services.DTO.ValidacionEstudianteDTO;
 import jakarta.transaction.Transactional;
 
 public interface ValidacionTurnosRepository extends JpaRepository<ValidacionTurnos, ValidacionTurnosId> {
+
     /**
      *  Elimina un registro de la tabla tbl_validacion_turnos, dados unos parametros específicos
      *  

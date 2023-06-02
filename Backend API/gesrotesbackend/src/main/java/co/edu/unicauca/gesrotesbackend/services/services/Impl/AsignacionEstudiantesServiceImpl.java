@@ -2,6 +2,8 @@ package co.edu.unicauca.gesrotesbackend.services.services.Impl;
 
 import co.edu.unicauca.gesrotesbackend.models.Estudiante;
 import co.edu.unicauca.gesrotesbackend.models.Programa;
+import co.edu.unicauca.gesrotesbackend.models.ValidacionTurnos;
+import co.edu.unicauca.gesrotesbackend.models.ValidacionTurnosId;
 import co.edu.unicauca.gesrotesbackend.exceptions.HTTPException;
 import co.edu.unicauca.gesrotesbackend.models.Asignacion;
 import co.edu.unicauca.gesrotesbackend.models.AsignacionId;
@@ -14,11 +16,13 @@ import co.edu.unicauca.gesrotesbackend.repositories.AsignacionRepository;
 import co.edu.unicauca.gesrotesbackend.repositories.EstAsignacionRepository;
 import co.edu.unicauca.gesrotesbackend.repositories.EstudianteRepository;
 import co.edu.unicauca.gesrotesbackend.repositories.ProgramaRepository;
+import co.edu.unicauca.gesrotesbackend.repositories.ValidacionTurnosRepository;
 import co.edu.unicauca.gesrotesbackend.repositories.AsignaturaRepository;
 import co.edu.unicauca.gesrotesbackend.repositories.CoordinadorAsigRepository;
 
 import co.edu.unicauca.gesrotesbackend.services.DTO.EstAsignacionDTO;
 import co.edu.unicauca.gesrotesbackend.services.DTO.EstudianteDTO;
+import co.edu.unicauca.gesrotesbackend.services.DTO.ValidacionCreadaDTO;
 import co.edu.unicauca.gesrotesbackend.services.services.IAsignacionEstudiantesService;
 
 import org.springframework.http.HttpStatus;
@@ -34,16 +38,19 @@ public class AsignacionEstudiantesServiceImpl implements IAsignacionEstudiantesS
     private final ProgramaRepository programaRepository;
     private final AsignaturaRepository asignaturaRepository;
     private final CoordinadorAsigRepository coordinadorAsigRepository;
+    private final ValidacionTurnosRepository validacionTurnosRepository;
 
     public AsignacionEstudiantesServiceImpl(AsignacionRepository asignacionRepository, EstAsignacionRepository estAsignacionRepository,
                                             EstudianteRepository estudianteRepository, ProgramaRepository programaRepository,
-                                            AsignaturaRepository asignaturaRepository, CoordinadorAsigRepository coordinadorAsigRepository){
+                                            AsignaturaRepository asignaturaRepository, CoordinadorAsigRepository coordinadorAsigRepository,
+                                            ValidacionTurnosRepository validacionTurnosRepository){
         this.asignacionRepository = asignacionRepository;
         this.estAsignacionRepository = estAsignacionRepository;
         this.estudianteRepository = estudianteRepository;
         this.programaRepository = programaRepository;
         this.asignaturaRepository = asignaturaRepository;
         this.coordinadorAsigRepository = coordinadorAsigRepository;
+        this.validacionTurnosRepository = validacionTurnosRepository;
     }
 
     // * Registrar estudiante en una asignatura
@@ -104,5 +111,17 @@ public class AsignacionEstudiantesServiceImpl implements IAsignacionEstudiantesS
     // * Eliminar estudiante asociado a una asignatura
     public void deleteStudent(int cooId, int progId,int subjId, int studId){
         estAsignacionRepository.deleteStudent(progId,subjId,cooId,studId);
+    }
+
+    public ValidacionCreadaDTO crearValidacionTurnos(int studId, int progId, int subjId, int cooId){
+        EstAsignacion estAsignacion = estAsignacionRepository.getRowByIds(studId, progId, subjId, cooId);
+        
+        ValidacionTurnosId idValidacionTurnos = new ValidacionTurnosId();
+        idValidacionTurnos.setEstAsignacion(estAsignacion);
+        ValidacionTurnos validacionTurnos = new ValidacionTurnos();
+        validacionTurnos.setId(idValidacionTurnos);
+        validacionTurnosRepository.save(validacionTurnos);
+        ValidacionCreadaDTO validacionCreadaDTO = new ValidacionCreadaDTO(validacionTurnos.getId().getId(), null, null, null, null);
+        return validacionCreadaDTO;
     }
 }

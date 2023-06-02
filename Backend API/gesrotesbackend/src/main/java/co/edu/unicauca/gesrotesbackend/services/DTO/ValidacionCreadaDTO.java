@@ -1,7 +1,7 @@
 package co.edu.unicauca.gesrotesbackend.services.DTO;
 
-public record ValidacionEstudianteDTO (
-    int idTurno, 
+public record ValidacionCreadaDTO (
+    int idValidacion, 
     String nombreCompleto, 
     Boolean asistencia, 
     Boolean estado, 

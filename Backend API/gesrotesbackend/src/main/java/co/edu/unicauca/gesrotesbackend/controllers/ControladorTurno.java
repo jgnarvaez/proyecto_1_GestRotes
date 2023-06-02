@@ -116,8 +116,7 @@ public class ControladorTurno {
     // * Listar los estudiantes para validacion
     @GetMapping("/estudiantesAValidar/{progId}/{asigId}/{cooId}/{mes}/{anio}")
     public List<ValidacionEstudianteDTO> findStudentsToValidate(@PathVariable int progId, @PathVariable int asigId, @PathVariable int cooId, @PathVariable String mes, @PathVariable int anio){
-        SeleccionEstudiantesDTO seleccionEstudiantesDTO = new SeleccionEstudiantesDTO(progId, asigId, cooId, mes, anio);
-        return turnoService.obtenerEstudiantesValidacion(seleccionEstudiantesDTO);
+        return turnoService.obtenerEstudiantesValidacion(progId, asigId, cooId, mes, anio);
     }
 
     // * Validar asistencia

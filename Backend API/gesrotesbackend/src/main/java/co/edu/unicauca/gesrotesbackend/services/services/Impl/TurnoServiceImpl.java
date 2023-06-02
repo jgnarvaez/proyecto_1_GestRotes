@@ -20,8 +20,6 @@ import co.edu.unicauca.gesrotesbackend.models.Mes;
 import co.edu.unicauca.gesrotesbackend.models.TipoAlimentacion;
 import co.edu.unicauca.gesrotesbackend.models.Turno;
 import co.edu.unicauca.gesrotesbackend.models.TurnoId;
-import co.edu.unicauca.gesrotesbackend.models.ValidacionTurnos;
-import co.edu.unicauca.gesrotesbackend.models.ValidacionTurnosId;
 import co.edu.unicauca.gesrotesbackend.repositories.EstAsignacionRepository;
 import co.edu.unicauca.gesrotesbackend.repositories.EtiquetaRepository;
 import co.edu.unicauca.gesrotesbackend.repositories.JornadaRepository;
@@ -83,23 +81,23 @@ public class TurnoServiceImpl implements ITurnoService{
                                                 seleccionEstudiante.getCooId());
         
         //TODO hacer testing
-        if(seleccionEstudiante.getEstado()){
-            EstAsignacion estAsignacion = estAsignacionRepository.getRowByIds(seleccionEstudiante.getPuId(), 
-                                                                        seleccionEstudiante.getProgId(), 
-                                                                        seleccionEstudiante.getAsigId(), 
-                                                                        seleccionEstudiante.getCooId());
+        // if(seleccionEstudiante.getEstado()){
+        //     EstAsignacion estAsignacion = estAsignacionRepository.getRowByIds(seleccionEstudiante.getPuId(), 
+        //                                                                 seleccionEstudiante.getProgId(), 
+        //                                                                 seleccionEstudiante.getAsigId(), 
+        //                                                                 seleccionEstudiante.getCooId());
         
-            ValidacionTurnosId idValidacionTurnos = new ValidacionTurnosId();
-            idValidacionTurnos.setEstAsignacion(estAsignacion);
-            ValidacionTurnos validacionTurnos = new ValidacionTurnos(idValidacionTurnos, Mes.valueOf(seleccionEstudiante.getMes()),
-                                                                    seleccionEstudiante.getAnio(), null, null, "");
-            validacionTurnos.setId(idValidacionTurnos);
-            validacionTurnosRepository.save(validacionTurnos);
-        }else{
-            validacionTurnosRepository.deleteRowByUnique(Mes.valueOf(seleccionEstudiante.getMes()), seleccionEstudiante.getAnio(), 
-                                                        seleccionEstudiante.getPuId(), seleccionEstudiante.getProgId(), 
-                                                        seleccionEstudiante.getAsigId(), seleccionEstudiante.getCooId());
-        }
+        //     ValidacionTurnosId idValidacionTurnos = new ValidacionTurnosId();
+        //     idValidacionTurnos.setEstAsignacion(estAsignacion);
+        //     ValidacionTurnos validacionTurnos = new ValidacionTurnos(idValidacionTurnos, Mes.valueOf(seleccionEstudiante.getMes()),
+        //                                                             seleccionEstudiante.getAnio(), null, null, "");
+        //     validacionTurnos.setId(idValidacionTurnos);
+        //     validacionTurnosRepository.save(validacionTurnos);
+        // }else{
+        //     validacionTurnosRepository.deleteRowByUnique(Mes.valueOf(seleccionEstudiante.getMes()), seleccionEstudiante.getAnio(), 
+        //                                                 seleccionEstudiante.getPuId(), seleccionEstudiante.getProgId(), 
+        //                                                 seleccionEstudiante.getAsigId(), seleccionEstudiante.getCooId());
+        // }
         
     }
 
@@ -116,9 +114,9 @@ public class TurnoServiceImpl implements ITurnoService{
                                                     seleccionEstudiantes.getCooId());
                     
         //TODO hacer testing
-        validacionTurnosRepository.deleteRowsByAsignation(Mes.valueOf(seleccionEstudiantes.getMes()), seleccionEstudiantes.getAnio(), 
-                                                        seleccionEstudiantes.getProgId(), seleccionEstudiantes.getAsigId(), 
-                                                        seleccionEstudiantes.getCooId());
+        // validacionTurnosRepository.deleteRowsByAsignation(Mes.valueOf(seleccionEstudiantes.getMes()), seleccionEstudiantes.getAnio(), 
+        //                                                 seleccionEstudiantes.getProgId(), seleccionEstudiantes.getAsigId(), 
+        //                                                 seleccionEstudiantes.getCooId());
     }
 
     @Override
@@ -337,10 +335,8 @@ public class TurnoServiceImpl implements ITurnoService{
         return listDTO;
     }
 
-    public List<ValidacionEstudianteDTO> obtenerEstudiantesValidacion(SeleccionEstudiantesDTO seleccionEstudiantesDTO){
-        return validacionTurnosRepository.getStudentsToValidate(Mes.valueOf(seleccionEstudiantesDTO.getMes()), seleccionEstudiantesDTO.getAnio(), 
-                                                                seleccionEstudiantesDTO.getProgId(), seleccionEstudiantesDTO.getAsigId(),
-                                                                seleccionEstudiantesDTO.getCooId());
+    public List<ValidacionEstudianteDTO> obtenerEstudiantesValidacion(int progId, int asigId, int cooId, String mes, int anio){
+        return validacionTurnosRepository.getStudentsToValidate(Mes.valueOf(mes), anio, progId, asigId, cooId);
     }
 
     public void modificarAsistenciaYEstado(ValidacionTurnoDTO validacionTurnoDTO){
