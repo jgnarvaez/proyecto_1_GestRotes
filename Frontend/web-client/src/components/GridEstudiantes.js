@@ -56,6 +56,7 @@ export const GridEstudiantes = ({ asignatura }) => {
     const [month, setMonth] = useState(new Date().getMonth());
     const [year, setYear] = useState(new Date().getFullYear());
     
+    
 
     const months = [
         {label: 'Enero', value: 0},
@@ -91,6 +92,11 @@ export const GridEstudiantes = ({ asignatura }) => {
     const [infoHorarioTurno, setInfoHorarioTurno] = useState([]);
     const [confirmDialogVisibleTurnosEliminar, setConfirmDialogVisibleTurnosEliminar] = useState(false);
     const [turnoIdEliminar, setTurnoIdEliminar] = useState([]);
+    const [visibleValidarTurnos, setVisibleValidarTurnos] = useState(false);
+    const [visibleAlimentacion, setVisibleAlimentacion] = useState(false);
+    const [diaSeleccionado, setDiaSeleccionado] = useState(false);
+    const [estudiantesConAlimentacion, setEstudiantesConAlimentacion] = useState([]);
+
 
     //CREAR ETIQUETAS
     const [valueCrearEtiqueta, setValueCrearEtiqueta] = useState('');
@@ -115,6 +121,10 @@ export const GridEstudiantes = ({ asignatura }) => {
     const [botonEstudiantesTodos, setBotonEstudiantesTodos] = useState(true);
     const [botonEstudiantesSeleccionados, setBotonEstudiantesSeleccionados] = useState(false);
     const [botonEstudiantesNoSeleccionados, setBotonEstudiantesNoSeleccionados] = useState(false);
+    const [botonTurnosTodos, setBotonTurnosTodos] = useState(true);
+    const [botonTurnosAprobados, setBotonTurnosAprobados] = useState(false);
+    const [botonTurnosNoAprobados, setBotonTurnosNoAprobados] = useState(false);
+    const [botonTurnosSinValidar, setBotonTurnosSinValidar] = useState(true);
 
     //ELIMINAR ETIQUETAS
     const [etiquetaIdEliminar, setEtiquetaIdEliminar] = useState([]);
@@ -201,6 +211,10 @@ export const GridEstudiantes = ({ asignatura }) => {
         toast.current.show({severity:'error', summary: 'Error', detail:'Error al intentar asociar el servicio a la etiqueta.', life: 8000});
     }
 
+    const showErrorAlimentacion = () => {
+        toast.current.show({severity:'error', summary: 'Error', detail:'No ha seleccionado un dia.', life: 8000});
+    }
+
     const handleClickEstadoBotones = (tipo) => {
         if (tipo === 'crear') {
             setBotonCrearEtiquetas(true);
@@ -229,6 +243,31 @@ export const GridEstudiantes = ({ asignatura }) => {
             setBotonEstudiantesSeleccionados(false);
             setBotonEstudiantesNoSeleccionados(true);
             //setVisibleEstudiantesTodosNoSeleccionados(true);
+          }
+    }
+
+    const handleClickEstadoBotonesValidarTurno = (tipo) => {
+        if (tipo === 'todos') {
+            setBotonTurnosTodos(true);
+            setBotonTurnosAprobados(false);
+            setBotonTurnosNoAprobados(false);
+            setBotonTurnosSinValidar(false);
+            
+          } else if (tipo === 'aprobados'){
+            setBotonTurnosTodos(false);
+            setBotonTurnosAprobados(true);
+            setBotonTurnosNoAprobados(false);
+            setBotonTurnosSinValidar(false);
+          } else if (tipo === 'noAprobados'){
+            setBotonTurnosTodos(false);
+            setBotonTurnosAprobados(false);
+            setBotonTurnosNoAprobados(true);
+            setBotonTurnosSinValidar(false);
+          } else if (tipo === 'sinValidar'){
+            setBotonTurnosTodos(false);
+            setBotonTurnosAprobados(false);
+            setBotonTurnosNoAprobados(false);
+            setBotonTurnosSinValidar(true);
           }
     }
 
@@ -411,7 +450,7 @@ export const GridEstudiantes = ({ asignatura }) => {
 
     //Listar horarios
     const listarHorarios = useCallback(() => {
-        const url = `http://127.0.0.1:8085/turnos/1/1/${asignatura.idAsignatura}` //cambiar
+        const url = `http://127.0.0.1:8085/turnos/1/1/${asignatura.idAsignatura}` 
         axios.get(url) 
         .then(response => setHorarios(response.data))
         .catch(error => console.error(error));
@@ -433,6 +472,33 @@ export const GridEstudiantes = ({ asignatura }) => {
             })
             .catch(error => console.error(error));
     }
+
+    const listarEstudiantesConAlimentacion = (fecha) => {
+        const fechaR = `${fecha.getFullYear()}-${String(fecha.getMonth() + 1).padStart(2, '0')}-${String(fecha.getDate()).padStart(2, '0')}`;
+        
+        const url = `http://127.0.0.1:8085/turnos/estudiantesConAlimentacion/1/${asignatura.idAsignatura}/1/${fechaR}`
+
+        axios.get(url)
+            .then(response => {
+            console.log('Turnos listados:');
+            setEstudiantesConAlimentacion(response.data);
+            })
+            .catch(error => console.error(error));
+
+    }
+
+    const handleEstudiantesConAlimentacion = () => {
+        
+        if (diaSeleccionado) {
+          listarEstudiantesConAlimentacion(diaSeleccionado);
+          setVisibleAlimentacion(true);
+        } else {
+          // Acción a realizar cuando no hay un día seleccionado
+          showErrorAlimentacion();
+          console.log("No se ha seleccionado un día");
+        }
+      };
+
     //Crear etiqueta
     const handleCrearEtiqueta = (etiquetaCrear) => {
         const url = `http://127.0.0.1:8085/etiquetas/`;
@@ -606,7 +672,6 @@ export const GridEstudiantes = ({ asignatura }) => {
         };
 
         const url = `http://127.0.0.1:8085/turnos/seleccion`
-        
         axios.put(url, estadoEstudiante)
           .then(response => {
             console.log('Estado cambiado:', response.data);
@@ -615,6 +680,7 @@ export const GridEstudiantes = ({ asignatura }) => {
           })
           .catch(error => {
             console.error('Error :', error);
+
             //showErrorEtiquetaAsociado();
           });
     };
@@ -680,6 +746,12 @@ export const GridEstudiantes = ({ asignatura }) => {
             .toLowerCase()
             .includes(filtroEstudiantesNoSeleccionados.toLowerCase())
       );
+
+      const handleClickDiaSeleccionado = (fecha) => {
+        setDiaSeleccionado(fecha);
+      }
+
+      
 
     return (
     <div className="card">
@@ -1055,8 +1127,79 @@ export const GridEstudiantes = ({ asignatura }) => {
                         </div>
                     </Dialog>
                     }
-                    
-                    <Button label="Alimentación" style={{ fontSize: '0.8rem', backgroundColor: 'blue', marginRight: '15px' }} />
+                    <Toast ref={toast} />
+                    <Button label="Alimentación" onClick={() => handleEstudiantesConAlimentacion()} style={{ fontSize: '0.8rem', backgroundColor: 'blue', marginRight: '15px' }} />
+                    <Dialog header="LISTA ESTUDIANTES CON ALIMENTACIÓN" visible={visibleAlimentacion} style={{ width: '65vw' }} onHide={() => setVisibleAlimentacion(false)}>
+                        <div >
+                        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                            <p style={{ marginRight: '10px' }}><span style={{ fontWeight: 'bold' }}>MES:</span> {months.find(m => m.value === month)?.label}</p>
+                            <p style={{ marginRight: '10px' }}><span style={{ fontWeight: 'bold' }}>AÑO:</span> {year}</p>
+                            <p style={{  }}><span style={{ fontWeight: 'bold' }}>DIA:</span> {diaSeleccionado.getDate() + ' / ' + diaSeleccionado.toLocaleDateString('es-ES', { weekday: 'long' })}</p>
+                            <br></br>
+                        </div>
+                        <DataTable value={estudiantesConAlimentacion} tableStyle={{ minWidth: '50rem' }}>
+                                    <Column header="Nombre y Apellidos"
+                                    body={(rowData) => {
+                                        return (
+                                        <div style={{ display: 'flex', alignItems: 'center' }}>
+                                            <PerfilEstudiante src="https://primefaces.org/cdn/primereact/images/avatar/amyelsner.png" style={{ marginBottom: '0.5rem' }} />
+                                            <p style={{ fontSize: '0.8rem', margin: 0, fontWeight: 'bold', marginLeft: '0.5rem' }}>{rowData.nombreEstudiante}</p>      
+                                        </div>
+                                        );
+                                    }}
+
+                                    />
+                                    <Column header="Desayuno"
+                                    body={(rowData) => {
+                                        return (
+                                        <div style={{ display: 'flex', alignItems: 'center' }}>
+                                            {rowData.desayuno ? (
+                                                <Badge value="✓" severity="success"></Badge>
+                                                ) : (
+                                                <Badge value="X" severity="danger"></Badge>
+                                            )}
+                                        </div>
+                                        );
+                                    }}
+                                    />
+                                    <Column header="Almuerzo"
+                                     body={(rowData) => {
+                                        return (
+                                        <div style={{ display: 'flex', alignItems: 'center' }}>
+                                            {rowData.almuerzo ? (
+                                                <Badge value="✓" severity="success"></Badge>
+                                                ) : (
+                                                <Badge value="X" severity="danger"></Badge>
+                                            )}
+                                        </div>
+                                        );
+                                    }}
+                                    />
+                                    <Column header="Comida"
+                                     body={(rowData) => {
+                                        return (
+                                        <div style={{ display: 'flex', alignItems: 'center' }}>
+                                            {rowData.comida ? (
+                                                <Badge value="✓" severity="success"></Badge>
+                                                ) : (
+                                                <Badge value="X" severity="danger"></Badge>
+                                            )}
+                                        </div>
+                                        );
+                                    }}
+                                    />
+                                    <Column header="Horario Turno"
+                                     body={(rowData) => {
+                                        return (
+                                        <div style={{ display: 'flex', alignItems: 'center' }}>
+                                            <p style={{ fontSize: '0.8rem', margin: 0, fontWeight: 'bold', marginLeft: '0.5rem' }}>{rowData.rangoHorario}</p>
+                                        </div>
+                                        );
+                                    }}
+                                    />
+                        </DataTable>
+                        </div>
+                    </Dialog>
                     <span className="p-input-icon-left" style={{ marginRight: '15px' }}>
                         <i className="pi pi-search" />
                         <InputText placeholder="Buscar estudiante" style={{fontSize: '0.8rem', width: '180px', height: '30px'}} value={filtroEstudiantesSeleccionados} onChange={handleFiltroChangeSeleccionados} />
@@ -1078,9 +1221,48 @@ export const GridEstudiantes = ({ asignatura }) => {
                     />
                     <button onClick={irSemanaAnterior} style={{ marginRight: '2px' }}>&lt;</button>
                     <button onClick={irSemanaSiguiente} style={{ marginRight: '10px' }}>&gt;</button>
-                    <Button label="Validación de turnos" style={{ fontSize: '0.8rem', backgroundColor: 'red', marginRight: '5px' }}  />
-                </div>
+                    <Button label="Validación de turnos" onClick={() => setVisibleValidarTurnos(true)} style={{ fontSize: '0.8rem', backgroundColor: 'red', marginRight: '5px' }}  />
+                    <Dialog header="VALIDACIÓN DE TURNOS" visible={visibleValidarTurnos} style={{ width: '65vw' }} onHide={() => setVisibleValidarTurnos(false)}>
+                        <div>
+                            <Button label="MES:" style={{ fontSize: '0.8rem',marginLeft: '10px', backgroundColor: 'blue' }} />
+                            <Button label="AÑO" style={{ fontSize: '0.8rem', backgroundColor: 'blue' }}/>
+                            <span className="p-input-icon-left" style={{ marginRight: '15px' }}>
+                                <i className="pi pi-search" />
+                                <InputText
+                                    placeholder="Buscar estudiante por nombre"
+                                    style={{ fontSize: '0.8rem', width: '230px', height: '30px' }}
+                                />
+                            </span>
+                            <Button label="TODOS" style={{ fontSize: '0.8rem',marginLeft: '10px', backgroundColor: botonTurnosTodos ? 'red' : 'grey' }} onClick={() => handleClickEstadoBotonesValidarTurno('todos')} />
+                            <Button label="APROBADOS" style={{ fontSize: '0.8rem', backgroundColor: botonTurnosAprobados ? 'red' : 'grey' }} onClick={() => handleClickEstadoBotonesValidarTurno('aprobados')}/>
+                            <Button label="NO APROBADOS" style={{ fontSize: '0.8rem', backgroundColor: botonTurnosNoAprobados ? 'red' : 'grey' }}  onClick={() => handleClickEstadoBotonesValidarTurno('noAprobados')} />
+                            <Button label="SIN VALIDAR" style={{ fontSize: '0.8rem', backgroundColor: botonTurnosSinValidar ? 'red' : 'grey' }}  onClick={() => handleClickEstadoBotonesValidarTurno('sinValidar')} />
+                        
+                            <DataTable value={estudiantesFiltradosSeleccionados} tableStyle={{ minWidth: '50rem' }}>
+                                <Column header="NOMBRE"
+                                body={(rowData) => {
+                                    return (
+                                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                                        <PerfilEstudiante src="https://primefaces.org/cdn/primereact/images/avatar/amyelsner.png" style={{ marginBottom: '0.5rem' }} />
+                                        <p style={{ fontSize: '0.8rem', margin: 0, fontWeight: 'bold', marginLeft: '0.5rem' }}>{rowData.nombreCompleto}</p>
+                                    </div>
+                                    );
+                                 }}
 
+                                 />
+                                <Column header="¿EL ESTUDIANTE ASISTIÓ A LOS TURNOS?"></Column>
+                                <Column header="ESTADO"></Column>
+                                <Column header="OBSERVACIONES"></Column>
+                            </DataTable>
+                        
+                        
+                        
+                        
+                        
+                        
+                        </div>
+                    </Dialog>
+                </div>
                 <div style={{ height: '425px', overflow: 'auto' }}>
                     <DataTable value={estudiantesFiltradosSeleccionados} tableStyle={{ minWidth: '50rem' }}>
                         <Column
@@ -1120,10 +1302,12 @@ export const GridEstudiantes = ({ asignatura }) => {
                         return (
                             <Column
                             header={
-                                <div style={{width: '100px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', marginRight: 'auto' }}>
-                                    <div>{dateColumn.toLocaleDateString('es-ES', { weekday: 'short' })}</div>
-                                    <div>{dateColumn.getDate()}</div>
-                                </div>
+                                <Button onClick={() => handleClickDiaSeleccionado(dateColumn)} style={{ width: '100px' , border: 'none', background: 'none', color: 'black'}}>
+                                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', marginRight: 'auto' }}>
+                                        <div>{dateColumn.toLocaleDateString('es-ES', { weekday: 'short' })}</div>
+                                        <div>{dateColumn.getDate()}</div>
+                                    </div>
+                                </Button>
                             }
                             key={dayOfWeek}
                             body={(rowData) => {
