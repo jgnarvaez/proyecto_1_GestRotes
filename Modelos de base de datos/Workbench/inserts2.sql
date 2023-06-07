@@ -277,7 +277,23 @@ VALUES
 -- VALUE
 -- ('2023-05-12', 4, 1, 3, 1, 1, 2, 'Desayuno');
 
-insert into mydb.tbl_validacion_turnos (vtu_mes, vtu_anio, pu_id, prog_id, asig_id, coo_id)
-values 
-("Junio", 2023, 4, 1, 3, 1),
-("Mayo", 2023, 5, 1, 4, 1);
+INSERT INTO mydb.tbl_validacion_turnos (pu_id, prog_id, asig_id, coo_id)
+VALUES
+-- Cuidado de Enfermería en salud comunitaria y familiar
+(7, 1, 1, 1),
+(8, 1, 1, 1),
+(13, 1, 1, 1),
+(14, 1, 1, 1),
+(15, 1, 1, 1),
+(16, 1, 1, 1),
+(17, 1, 1, 1),
+-- Cuidado de Enfermería en Salud Mental
+(3, 1, 3, 1),
+(4, 1, 3, 1),
+(9, 1, 3, 1),
+(10, 1, 3, 1),
+-- Cuidado de Enfermería al Adulto y al Anciano I
+(5, 1, 4, 1),
+(6, 1, 4, 1),
+(11, 1, 4, 1),
+(12, 1, 4, 1);

@@ -7,4 +7,14 @@ public enum Mes {
         return str.substring(0, 1).toUpperCase() + str.substring(1).toLowerCase();
     }
     
+    public static Mes obtenerMesAnterior(Mes mes) {
+        int ordinal = mes.ordinal();
+        if (ordinal == 0) {
+            // Si el mes es Enero, devolvemos Diciembre (el último mes)
+            return Diciembre;
+        } else {
+            // Devolvemos el mes anterior al actual
+            return values()[ordinal - 1];
+        }
+    }
 }

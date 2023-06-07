@@ -48,14 +48,14 @@ public class ControladorAsignacionEstudiantes {
     // * Eliminar todos los estudiantes
     @DeleteMapping("/estudiantes")
     public void deleteAllStudents(@PathVariable int cooId, @PathVariable int progId,@PathVariable int asigId){
+        asignacionEstudiantesService.deleteAssociationsInValidation(progId, asigId, cooId);
         asignacionEstudiantesService.deleteStudents(cooId,progId,asigId);
-        //TODO Eliminar registros asociados en tbl_validacion_turnos
     }
 
     // * Eliminar un estudiante en especifico
     @DeleteMapping("/estudiantes/{puId}")
     public void deleteStudent(@PathVariable int cooId, @PathVariable int progId,@PathVariable int asigId,@PathVariable int puId){
+        asignacionEstudiantesService.deleteAssociationInValidation(puId, progId, asigId, cooId);
         asignacionEstudiantesService.deleteStudent(cooId,progId,asigId,puId);
-        //TODO Eliminar registros asociado en tbl_validacion_turnos
     }
 }
