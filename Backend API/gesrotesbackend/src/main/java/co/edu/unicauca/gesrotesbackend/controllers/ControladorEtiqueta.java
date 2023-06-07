@@ -36,43 +36,44 @@ import jakarta.validation.Valid;
 public class ControladorEtiqueta {
     private final IEtiquetaService etiquetaService;
 
-    public ControladorEtiqueta(IEtiquetaService etiquetaService){
+    public ControladorEtiqueta(IEtiquetaService etiquetaService) {
         this.etiquetaService = etiquetaService;
     }
 
     // * Listar etiquetas creadas
     @GetMapping("/")
-    public List<EtiquetaCreadaDTO> findAll(){
+    public List<EtiquetaCreadaDTO> findAll() throws InterruptedException {
+        Thread.sleep(3000);
         return etiquetaService.obtenerEtiquetasCreadas();
     }
 
     // * Listar etiquetas con servicio
     @GetMapping("/onlyService")
-    public List<EtiquetaConServicioDTO> findAllWithService(){
+    public List<EtiquetaConServicioDTO> findAllWithService() {
         return etiquetaService.obtenerEtiquetasAsociadas();
     }
 
     // * Listar escenarios
     @GetMapping("/escenarios")
-    public List<EscenarioDTO> findHospitals(){
+    public List<EscenarioDTO> findHospitals() {
         return etiquetaService.obetenerEscenarios();
     }
 
     // * Listar servicios
     @GetMapping("/servicios")
-    public List<ServicioDTO> findServices(){
+    public List<ServicioDTO> findServices() {
         return etiquetaService.obtenerServicios();
     }
 
     // * Listar etiquetas de un escenario
     @GetMapping("/escenarios/{escId}/etiquetas")
-    public List<EtiquetaPorEscenarioDTO> findByHospitals(@PathVariable int escId){
+    public List<EtiquetaPorEscenarioDTO> findByHospitals(@PathVariable int escId) {
         return etiquetaService.obtenerEtiquetasPorEscenario(escId);
     }
 
     // * Crear nueva etiqueta
     @PostMapping("/")
-    public ResponseEntity<?> createLabel(@Valid @RequestBody NuevaEtiquetaDTO etiqueta, BindingResult result){
+    public ResponseEntity<?> createLabel(@Valid @RequestBody NuevaEtiquetaDTO etiqueta, BindingResult result) {
         etiquetaService.crearEtiqueta(etiqueta);
         return new ResponseEntity<String>("Etiqueta registrada correctamente", HttpStatus.OK);
     }
@@ -80,7 +81,8 @@ public class ControladorEtiqueta {
     // * Asociar servicio a una etiqueta
     @PutMapping("/asociar")
     @CrossOrigin(origins = "*", methods = { RequestMethod.PUT })
-    public AsociacionEtiquetaServicioDTOResponse updateLabel(@RequestBody AsociacionEtiquetaServicioDTORequest etiqueta){
+    public AsociacionEtiquetaServicioDTOResponse updateLabel(
+            @RequestBody AsociacionEtiquetaServicioDTORequest etiqueta) {
         AsociacionEtiquetaServicioDTOResponse objProducto = etiquetaService.asociarEtiqueta(etiqueta);
         return objProducto;
     }
@@ -90,10 +92,11 @@ public class ControladorEtiqueta {
     @CrossOrigin(origins = "*", methods = { RequestMethod.DELETE })
     public ResponseEntity<String> delete(@PathVariable int idEtiqueta) {
         // try {
-            etiquetaService.eliminarEtiqueta(idEtiqueta);
-            return ResponseEntity.ok("Etiqueta eliminada correctamente");
+        etiquetaService.eliminarEtiqueta(idEtiqueta);
+        return ResponseEntity.ok("Etiqueta eliminada correctamente");
         // } catch (ValidacionException e) {
-        //     return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No se ha encontrado la etiqueta con el ID " + idEtiqueta);
+        // return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No se ha encontrado
+        // la etiqueta con el ID " + idEtiqueta);
         // }
     }
 
@@ -102,10 +105,11 @@ public class ControladorEtiqueta {
     @CrossOrigin(origins = "*", methods = { RequestMethod.PUT })
     public ResponseEntity<String> deleteLabel(@PathVariable int idEtiqueta) {
         // try {
-            etiquetaService.eliminarAsociacion(idEtiqueta);
-            return ResponseEntity.ok("Servicio desvinculado correctamente");
+        etiquetaService.eliminarAsociacion(idEtiqueta);
+        return ResponseEntity.ok("Servicio desvinculado correctamente");
         // } catch (ValidacionException e) {
-        //     return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No se ha encontrado la etiqueta con el ID " + idEtiqueta);
+        // return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No se ha encontrado
+        // la etiqueta con el ID " + idEtiqueta);
         // }
     }
 }
