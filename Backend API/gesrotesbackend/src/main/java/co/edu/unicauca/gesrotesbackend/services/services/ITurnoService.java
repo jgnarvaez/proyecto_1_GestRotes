@@ -99,6 +99,8 @@ public interface ITurnoService {
 
     List<ValidacionEstudianteDTO> obtenerEstudiantesValidacion(int progId, int asigId, int cooId, String mes, int anio);
 
+    void modificarMesYAnio(int progId, int asigId, int cooId, String mes, int anio);
+
     void modificarAsistenciaYEstado(ValidacionTurnoDTO validacionAsistenciaDTO);
 
     void modificarObservaciones(ModificarObsDTO modificarObsDTO);

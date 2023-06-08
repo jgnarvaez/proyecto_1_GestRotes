@@ -124,4 +124,12 @@ public class AsignacionEstudiantesServiceImpl implements IAsignacionEstudiantesS
         ValidacionCreadaDTO validacionCreadaDTO = new ValidacionCreadaDTO(validacionTurnos.getId().getId(), null, null, null, null);
         return validacionCreadaDTO;
     }
+
+    public void deleteAssociationsInValidation(int progId, int subjId, int cooId){
+        validacionTurnosRepository.deleteRowsByAsignation(progId, subjId, cooId);
+    }
+
+    public void deleteAssociationInValidation(int studId, int progId, int subjId, int cooId){
+        validacionTurnosRepository.deleteRowByUnique(studId, progId, subjId, cooId);
+    }
 }

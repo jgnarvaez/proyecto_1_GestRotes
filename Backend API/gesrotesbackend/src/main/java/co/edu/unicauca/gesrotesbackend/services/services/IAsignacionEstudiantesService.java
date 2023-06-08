@@ -69,7 +69,7 @@ public interface IAsignacionEstudiantesService {
 
     ValidacionCreadaDTO crearValidacionTurnos(int studId, int progId, int subjId, int cooId);
 
-    // void deleteAssociationInValidation();
+    void deleteAssociationsInValidation(int progId, int subjId, int cooId);
 
-    // void deleteAssociationsInValidation();
+    void deleteAssociationInValidation(int studId, int progId, int subjId, int cooId);
 }

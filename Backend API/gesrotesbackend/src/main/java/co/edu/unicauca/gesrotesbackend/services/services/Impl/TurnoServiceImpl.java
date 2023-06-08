@@ -20,6 +20,8 @@ import co.edu.unicauca.gesrotesbackend.models.Mes;
 import co.edu.unicauca.gesrotesbackend.models.TipoAlimentacion;
 import co.edu.unicauca.gesrotesbackend.models.Turno;
 import co.edu.unicauca.gesrotesbackend.models.TurnoId;
+import co.edu.unicauca.gesrotesbackend.models.ValidacionTurnos;
+import co.edu.unicauca.gesrotesbackend.models.ValidacionTurnosId;
 import co.edu.unicauca.gesrotesbackend.repositories.EstAsignacionRepository;
 import co.edu.unicauca.gesrotesbackend.repositories.EtiquetaRepository;
 import co.edu.unicauca.gesrotesbackend.repositories.JornadaRepository;
@@ -80,7 +82,6 @@ public class TurnoServiceImpl implements ITurnoService{
                                                 seleccionEstudiante.getAsigId(), 
                                                 seleccionEstudiante.getCooId());
         
-        //TODO hacer testing
         // if(seleccionEstudiante.getEstado()){
         //     EstAsignacion estAsignacion = estAsignacionRepository.getRowByIds(seleccionEstudiante.getPuId(), 
         //                                                                 seleccionEstudiante.getProgId(), 
@@ -113,7 +114,6 @@ public class TurnoServiceImpl implements ITurnoService{
                                                     seleccionEstudiantes.getAsigId(), 
                                                     seleccionEstudiantes.getCooId());
                     
-        //TODO hacer testing
         // validacionTurnosRepository.deleteRowsByAsignation(Mes.valueOf(seleccionEstudiantes.getMes()), seleccionEstudiantes.getAnio(), 
         //                                                 seleccionEstudiantes.getProgId(), seleccionEstudiantes.getAsigId(), 
         //                                                 seleccionEstudiantes.getCooId());
@@ -317,7 +317,6 @@ public class TurnoServiceImpl implements ITurnoService{
         return alimentacion;
     }
 
-    //TODO
     public List<InformacionHorarioTurnoDTO> obtenerEstudiantesConAlimentacion(Date fechaTurno, int progId, int asigId, int cooId){
         // * Inicializar la lista de InformacionHorarioTurnoDTO
         List<InformacionHorarioTurnoDTO> listDTO = new ArrayList<>();
@@ -339,14 +338,49 @@ public class TurnoServiceImpl implements ITurnoService{
         return validacionTurnosRepository.getStudentsToValidate(Mes.valueOf(mes), anio, progId, asigId, cooId);
     }
 
+    public void modificarMesYAnio(int progId, int asigId, int cooId, String mes, int anio){
+        Boolean flag = true;
+        List<ValidacionTurnos> validacionTurnos = new ArrayList<>();
+        // * Obtener registros por progId, asigId y cooId
+        validacionTurnos = validacionTurnosRepository.getStudentsByProgSubjAndCoo(progId, asigId, cooId);
+        for (ValidacionTurnos validacionTurno : validacionTurnos) {
+            if(validacionTurno.getMes()==null && validacionTurno.getAnio()==null){
+                validacionTurnosRepository.modifyMonthAndYearOfAssosiations(Mes.valueOf(mes), anio, progId, asigId, cooId);
+            }else {
+                flag = false;
+            }
+        }
+
+        if(!flag){
+            validacionTurnos.clear();
+            List<ValidacionTurnos> validacionTurnosDos = new ArrayList<>();
+            validacionTurnos = validacionTurnosRepository.getStudentsByProgSubjAndCooMonthAndYear(Mes.valueOf(mes), anio, progId, asigId, cooId);
+            validacionTurnosDos = validacionTurnosRepository.getStudentsByProgSubjAndCooMonthAndYear(Mes.obtenerMesAnterior(Mes.valueOf(mes)), anio, progId, asigId, cooId);
+            if(validacionTurnos.size()==0){//No existen validaciones para ese mes
+                for (ValidacionTurnos validacionTurno : validacionTurnosDos) {
+                    // if(!validacionTurno.getMes().toString().equals(mes)){
+                        // * Crear un nuevo registro de validacion turnos con los mismos pu_id, prog_id, asig_id y coo_id, pero con el mes y anio dados
+                        // int puId = validacionTurno.getId().getEstAsignacion().getId().getEstudiante().getId();
+                        EstAsignacion estAsignacion = validacionTurno.getId().getEstAsignacion();
+                        ValidacionTurnosId idValidacionTurnos = new ValidacionTurnosId();
+                        idValidacionTurnos.setEstAsignacion(estAsignacion);
+                        ValidacionTurnos newValidacionTurnos = new ValidacionTurnos(idValidacionTurnos, Mes.valueOf(mes), anio, null, 
+                                                                            null, null);
+                        validacionTurnosRepository.save(newValidacionTurnos);
+                    // }
+                }
+            }
+        }
+    }
+
     public void modificarAsistenciaYEstado(ValidacionTurnoDTO validacionTurnoDTO){
         Boolean estado = validacionTurnoDTO.getAsistencia();
-        validacionTurnosRepository.asociarEtiquetaConServicio(validacionTurnoDTO.getVtuId(), validacionTurnoDTO.getAsistencia(), 
+        validacionTurnosRepository.modifyAssistanceAndState(validacionTurnoDTO.getVtuId(), validacionTurnoDTO.getAsistencia(), 
                                                                 estado, validacionTurnoDTO.getObservaciones());
     }
 
     public void modificarObservaciones(ModificarObsDTO modificarObsDTO){
-        validacionTurnosRepository.actualizarObservaciones(modificarObsDTO.getVtuId(), modificarObsDTO.getObservaciones());
+        validacionTurnosRepository.modifyObservations(modificarObsDTO.getVtuId(), modificarObsDTO.getObservaciones());
     }
 
     public static List<Integer> eliminarRepetidos(List<Integer> listaOriginal) {

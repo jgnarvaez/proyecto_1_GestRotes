@@ -24,7 +24,7 @@ public class ValidacionTurnos implements Serializable {
     private Mes mes;
 
     @Column(name = "vtu_anio")
-    private int anio;
+    private Integer anio;
 
     @Column(name = "vtu_asistencia")
     private Boolean asistencia;
