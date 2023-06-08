@@ -16,6 +16,7 @@ import { Badge } from 'primereact/badge';
 import { Toast } from 'primereact/toast';
 import { Checkbox } from "primereact/checkbox";
 import { Tag } from 'primereact/tag';
+import { RadioButton } from "primereact/radiobutton";
 import axios from 'axios';
 
 export const GridEstudiantes = ({ asignatura }) => {
@@ -515,13 +516,9 @@ export const GridEstudiantes = ({ asignatura }) => {
             .catch(error => console.error(error));
     }
 
-    const handleEstudiantesValidacion = () => {
-        
-          listarEstudiantesValidacion();
-          setVisibleValidarTurnos(true);
-        
-          
-        
+    const handleEstudiantesValidacion = () => { 
+        listarEstudiantesValidacion();
+        setVisibleValidarTurnos(true);
       };
 
     //Crear etiqueta
@@ -711,6 +708,7 @@ export const GridEstudiantes = ({ asignatura }) => {
     };
 
     const handleDesSeleccionarEstudiantes = () => {
+
         const estudiantesDesSeleccionados ={
             progId: 1,
             asigId: asignatura.idAsignatura,
@@ -729,7 +727,30 @@ export const GridEstudiantes = ({ asignatura }) => {
             console.error('Error:', error);
             //showErrorEtiquetaAsociado();
           });
-      };
+    };
+
+    const handleValidarAsistencia = (turno, estado) => {
+
+        const asistencia ={
+            vtuId: turno.idTurno,
+            asistencia: estado,
+            observaciones: turno.estado
+        };
+
+        const url = `http://127.0.0.1:8085/turnos/validarAsistencia`;
+              
+        axios.put(url, asistencia)
+          .then(response => {
+            console.log('Validacion asistencia:', response.data);
+            listarEstudiantesValidacion();
+            //showSuccessEtiquetaAsociado();
+          })
+          .catch(error => {
+            console.error('Error:', error);
+            //showErrorEtiquetaAsociado();
+          });
+    }
+
 
     const estudiantesNoSeleccionados = estudiantes.filter((estudiante) => {
         return !estudiantesSeleccionados.some((est) => est.id === estudiante.id);
@@ -1263,22 +1284,64 @@ export const GridEstudiantes = ({ asignatura }) => {
                             <Button label="NO APROBADOS" style={{ fontSize: '0.8rem', backgroundColor: botonTurnosNoAprobados ? 'red' : 'grey' }}  onClick={() => handleClickEstadoBotonesValidarTurno('noAprobados')} />
                             <Button label="SIN VALIDAR" style={{ fontSize: '0.8rem', backgroundColor: botonTurnosSinValidar ? 'red' : 'grey' }}  onClick={() => handleClickEstadoBotonesValidarTurno('sinValidar')} />
                         
-                            <DataTable value={estudiantesValidacion} tableStyle={{ minWidth: '50rem' }}>
-                                <Column header="NOMBRE"
-                                body={(rowData) => {
-                                    return (
-                                    <div style={{ display: 'flex', alignItems: 'center' }}>
-                                        <PerfilEstudiante src="https://primefaces.org/cdn/primereact/images/avatar/amyelsner.png" style={{ marginBottom: '0.5rem' }} />
-                                        <p style={{ fontSize: '0.8rem', margin: 0, fontWeight: 'bold', marginLeft: '0.5rem' }}>{rowData.nombreCompleto}</p>
+                            <DataTable value={estudiantesValidacion} tableStyle={{ minWidth: '200px' }}>
+                            <Column
+                                header="NOMBRE"
+                                body={(rowData) => (
+                                <div style={{ display: 'flex', alignItems: 'center' }}>
+                                    <PerfilEstudiante
+                                    src="https://primefaces.org/cdn/primereact/images/avatar/amyelsner.png"
+                                    style={{ marginBottom: '0.5rem' }}
+                                    />
+                                    <p style={{ fontSize: '0.8rem', margin: 0, fontWeight: 'bold', marginLeft: '0.5rem' }}>
+                                    {rowData.nombreCompleto}
+                                    </p>
+                                </div>
+                                )}
+                            />
+                            <Column
+                                header="¿EL ESTUDIANTE ASISTIÓ A LOS TURNOS?"
+                                body={(rowData) => (
+                                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                      <div style={{ display: 'flex', alignItems: 'center', width: '80px', justifyContent: 'center' }}>
+                                        <RadioButton
+                                            value={true}
+                                            onChange={(e) => handleValidarAsistencia(rowData, e.value)}
+                                            checked={rowData.asistencia === true}
+                                        />
+                                        <label htmlFor="si" className="ml-2"> Si </label>
+                                        </div>
+                                      <div style={{ display: 'flex', alignItems: 'center', width: '80px', justifyContent: 'center' }}>
+                                        <RadioButton
+                                          value={false}
+                                          onChange={(e) => handleValidarAsistencia(rowData, e.value)}
+                                          checked={rowData.asistencia === false}
+                                        />
+                                        <label htmlFor="no" className="ml-2"> No </label>
+                                      </div>
                                     </div>
-                                    );
-                                 }}
-
-                                 />
-                                <Column header="¿EL ESTUDIANTE ASISTIÓ A LOS TURNOS?"></Column>
-                                <Column header="ESTADO"></Column>
-                                <Column header="OBSERVACIONES"></Column>
+                                  )}
+                            />
+                            <Column header="ESTADO" style={{ textAlign: 'center' }} 
+                                body={(rowData) => (
+                                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                        {rowData.estado === true && (
+                                            <Tag severity="info" value="APROBADO" />
+                                        )}
+                                        {rowData.estado === false && (
+                                            <Tag severity="danger" value="NO APROBADO" />
+                                        )}
+                                        {rowData.estado === null && (
+                                            <Tag severity="danger" value="SIN VALIDAR" />
+                                        )}
+                                    </div>
+                                  )}
+                            />
+                            <Column header="OBSERVACIONES" style={{ textAlign: 'center' }} 
+                            
+                            />
                             </DataTable>
+
                         
                         
                         
