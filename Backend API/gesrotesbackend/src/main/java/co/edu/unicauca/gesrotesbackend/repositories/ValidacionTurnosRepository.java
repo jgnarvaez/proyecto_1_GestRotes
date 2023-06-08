@@ -59,9 +59,13 @@ public interface ValidacionTurnosRepository extends JpaRepository<ValidacionTurn
      *  @param asignaturaId : id de la asignatura asociada
      *  @param coordinadorId : id del coordinador asociado
      */
-    @Query("SELECT new co.edu.unicauca.gesrotesbackend.services.DTO.ValidacionEstudianteDTO(vtu.id.id, CONCAT(e.nombres, ' ', e.apellidos), vtu.asistencia, vtu.estado, vtu.observaciones) " +
+    @Query("SELECT DISTINCT new co.edu.unicauca.gesrotesbackend.services.DTO.ValidacionEstudianteDTO(vtu.id.id, CONCAT(e.nombres, ' ', e.apellidos), vtu.asistencia, vtu.estado, vtu.observaciones) " +
             "FROM ValidacionTurnos vtu " +
             "INNER JOIN Estudiante e ON vtu.id.estAsignacion.id.estudiante.id = e.id " +
+            "INNER JOIN Turno t ON e.id = t.id.estAsignacion.id.estudiante.id " +
+            "AND vtu.id.estAsignacion.id.asignacion.id.programa.id = t.id.estAsignacion.id.asignacion.id.programa.id " +
+            "AND vtu.id.estAsignacion.id.asignacion.id.asignatura.id = t.id.estAsignacion.id.asignacion.id.asignatura.id " +
+            "AND vtu.id.estAsignacion.id.asignacion.id.coordinador.id = t.id.estAsignacion.id.asignacion.id.coordinador.id " +
             "WHERE vtu.mes = :mes " +
             "AND vtu.anio = :anio " +
             "AND vtu.id.estAsignacion.id.asignacion.id.programa.id = :programaId " +
