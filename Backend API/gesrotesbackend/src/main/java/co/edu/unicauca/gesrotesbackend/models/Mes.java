@@ -1,12 +1,18 @@
 package co.edu.unicauca.gesrotesbackend.models;
 
 public enum Mes {
-    Enero, Febrero, Marzo, Abril, Mayo, Junio, Julio, Agosto, Septiembre, Octubre, Noviembre, Diciembre;
+    Enero(1), Febrero(2), Marzo(3), Abril(4), Mayo(5), Junio(6), Julio(7), Agosto(8), Septiembre(9), Octubre(10), Noviembre(11), Diciembre(12);
 
-    public static String capitalizeFirstLetter(String str) {
-        return str.substring(0, 1).toUpperCase() + str.substring(1).toLowerCase();
+    private int numero;
+
+    Mes(int numero) {
+        this.numero = numero;
     }
-    
+
+    public int getNumero() {
+        return numero;
+    }
+
     public static Mes obtenerMesAnterior(Mes mes) {
         int ordinal = mes.ordinal();
         if (ordinal == 0) {

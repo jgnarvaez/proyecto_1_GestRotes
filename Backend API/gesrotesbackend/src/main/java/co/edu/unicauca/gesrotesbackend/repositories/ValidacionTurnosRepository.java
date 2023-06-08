@@ -70,11 +70,14 @@ public interface ValidacionTurnosRepository extends JpaRepository<ValidacionTurn
             "AND vtu.anio = :anio " +
             "AND vtu.id.estAsignacion.id.asignacion.id.programa.id = :programaId " +
             "AND vtu.id.estAsignacion.id.asignacion.id.asignatura.id = :asignaturaId " +
-            "AND vtu.id.estAsignacion.id.asignacion.id.coordinador.id = :coordinadorId ")
+            "AND vtu.id.estAsignacion.id.asignacion.id.coordinador.id = :coordinadorId " +
+            "AND MONTH(t.fecha) = :numMes " +
+            "AND YEAR(t.fecha) = :anio ")
     List<ValidacionEstudianteDTO> getStudentsToValidate(@Param("mes") Mes mes, @Param("anio") int anio, 
                                                         @Param("programaId") int programaId, 
                                                         @Param("asignaturaId") int asignaturaId, 
-                                                        @Param("coordinadorId") int coordinadorId);
+                                                        @Param("coordinadorId") int coordinadorId,
+                                                        @Param("numMes") int numMes);
     
     /**
      *  Obtiene los registros de validacion turnos dados unos IDs.

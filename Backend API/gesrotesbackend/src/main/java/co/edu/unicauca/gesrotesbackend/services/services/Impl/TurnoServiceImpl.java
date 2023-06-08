@@ -335,7 +335,7 @@ public class TurnoServiceImpl implements ITurnoService{
     }
 
     public List<ValidacionEstudianteDTO> obtenerEstudiantesValidacion(int progId, int asigId, int cooId, String mes, int anio){
-        return validacionTurnosRepository.getStudentsToValidate(Mes.valueOf(mes), anio, progId, asigId, cooId);
+        return validacionTurnosRepository.getStudentsToValidate(Mes.valueOf(mes), anio, progId, asigId, cooId, Mes.valueOf(mes).getNumero());
     }
 
     public void modificarMesYAnio(int progId, int asigId, int cooId, String mes, int anio){
