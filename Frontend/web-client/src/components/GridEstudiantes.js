@@ -94,8 +94,9 @@ export const GridEstudiantes = ({ asignatura }) => {
     const [turnoIdEliminar, setTurnoIdEliminar] = useState([]);
     const [visibleValidarTurnos, setVisibleValidarTurnos] = useState(false);
     const [visibleAlimentacion, setVisibleAlimentacion] = useState(false);
-    const [diaSeleccionado, setDiaSeleccionado] = useState(false);
+    const [diaSeleccionado, setDiaSeleccionado] = useState(null);
     const [estudiantesConAlimentacion, setEstudiantesConAlimentacion] = useState([]);
+    const [estudiantesValidacion, setEstudiantesValidacion] = useState([]);
 
 
     //CREAR ETIQUETAS
@@ -473,6 +474,7 @@ export const GridEstudiantes = ({ asignatura }) => {
             .catch(error => console.error(error));
     }
 
+    //LISTAR ESTUDIANTES CON ALIMENTACION
     const listarEstudiantesConAlimentacion = (fecha) => {
         const fechaR = `${fecha.getFullYear()}-${String(fecha.getMonth() + 1).padStart(2, '0')}-${String(fecha.getDate()).padStart(2, '0')}`;
         
@@ -497,6 +499,29 @@ export const GridEstudiantes = ({ asignatura }) => {
           showErrorAlimentacion();
           console.log("No se ha seleccionado un día");
         }
+      };
+
+    //LISTAR ESTUDIANTE-VALIDACION
+    const listarEstudiantesValidacion = () => {
+        //const fechaR = `${fecha.getFullYear()}-${String(fecha.getMonth() + 1).padStart(2, '0')}-${String(fecha.getDate()).padStart(2, '0')}`;
+        const mes = months.find(m => m.value === month)?.label
+        const url = `http://127.0.0.1:8085/turnos/estudiantesAValidar/1/${asignatura.idAsignatura}/1/${mes}/${year}`
+
+        axios.get(url)
+            .then(response => {
+            console.log('Estudiantes a validar listados:');
+            setEstudiantesValidacion(response.data);
+            })
+            .catch(error => console.error(error));
+    }
+
+    const handleEstudiantesValidacion = () => {
+        
+          listarEstudiantesValidacion();
+          setVisibleValidarTurnos(true);
+        
+          
+        
       };
 
     //Crear etiqueta
@@ -1134,7 +1159,7 @@ export const GridEstudiantes = ({ asignatura }) => {
                         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                             <p style={{ marginRight: '10px' }}><span style={{ fontWeight: 'bold' }}>MES:</span> {months.find(m => m.value === month)?.label}</p>
                             <p style={{ marginRight: '10px' }}><span style={{ fontWeight: 'bold' }}>AÑO:</span> {year}</p>
-                            <p style={{  }}><span style={{ fontWeight: 'bold' }}>DIA:</span> {diaSeleccionado.getDate() + ' / ' + diaSeleccionado.toLocaleDateString('es-ES', { weekday: 'long' })}</p>
+                            <p style={{  }}><span style={{ fontWeight: 'bold' }}>DIA:</span> {diaSeleccionado !== null ? diaSeleccionado.getDate() + " / " + diaSeleccionado.toLocaleDateString('es-ES', { weekday: 'long' }) : ''}</p>
                             <br></br>
                         </div>
                         <DataTable value={estudiantesConAlimentacion} tableStyle={{ minWidth: '50rem' }}>
@@ -1221,7 +1246,7 @@ export const GridEstudiantes = ({ asignatura }) => {
                     />
                     <button onClick={irSemanaAnterior} style={{ marginRight: '2px' }}>&lt;</button>
                     <button onClick={irSemanaSiguiente} style={{ marginRight: '10px' }}>&gt;</button>
-                    <Button label="Validación de turnos" onClick={() => setVisibleValidarTurnos(true)} style={{ fontSize: '0.8rem', backgroundColor: 'red', marginRight: '5px' }}  />
+                    <Button label="Validación de turnos" onClick={() => handleEstudiantesValidacion()} style={{ fontSize: '0.8rem', backgroundColor: 'red', marginRight: '5px' }}  />
                     <Dialog header="VALIDACIÓN DE TURNOS" visible={visibleValidarTurnos} style={{ width: '65vw' }} onHide={() => setVisibleValidarTurnos(false)}>
                         <div>
                             <Button label="MES:" style={{ fontSize: '0.8rem',marginLeft: '10px', backgroundColor: 'blue' }} />
@@ -1238,7 +1263,7 @@ export const GridEstudiantes = ({ asignatura }) => {
                             <Button label="NO APROBADOS" style={{ fontSize: '0.8rem', backgroundColor: botonTurnosNoAprobados ? 'red' : 'grey' }}  onClick={() => handleClickEstadoBotonesValidarTurno('noAprobados')} />
                             <Button label="SIN VALIDAR" style={{ fontSize: '0.8rem', backgroundColor: botonTurnosSinValidar ? 'red' : 'grey' }}  onClick={() => handleClickEstadoBotonesValidarTurno('sinValidar')} />
                         
-                            <DataTable value={estudiantesFiltradosSeleccionados} tableStyle={{ minWidth: '50rem' }}>
+                            <DataTable value={estudiantesValidacion} tableStyle={{ minWidth: '50rem' }}>
                                 <Column header="NOMBRE"
                                 body={(rowData) => {
                                     return (
