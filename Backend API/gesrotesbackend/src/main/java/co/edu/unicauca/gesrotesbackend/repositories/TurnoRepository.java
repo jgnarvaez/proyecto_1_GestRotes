@@ -159,4 +159,21 @@ public interface TurnoRepository extends JpaRepository<Turno, TurnoId> {
     int alreadyExists(@Param("fecha") Date fecha, @Param("estudianteId") int estudianteId, @Param("programaId") int programaId, 
                                         @Param("asignaturaId") int asignaturaId, @Param("coordinadorId") int coordinadorId,
                                         @Param("jornadaId") int jornadaId, @Param("etiquetaId") int etiquetaId);
+
+    /** Actualiza un registro de la tabla tbl_turno
+     *  
+     *  @param turnoId : id del turno
+     *  @param etiquetaId : id de la etiqueta asociada
+     * 
+     *  @return un entero con el conteo de reigstros que tienen esos atributos  
+     */
+    @Transactional
+    @Modifying
+    @Query(value = "UPDATE tbl_turno " +
+            "SET jor_id = :jornadaId, eti_id = :etiquetaId "+ 
+            "WHERE tur_id = :turnoId " , nativeQuery = true)
+    int updateShift(@Param("turnoId") int turnoId,
+                                        @Param("jornadaId") int jornadaId, 
+                                        @Param("etiquetaId") int etiquetaId);
+                                        
 }

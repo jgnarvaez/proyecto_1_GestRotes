@@ -11,6 +11,7 @@ import co.edu.unicauca.gesrotesbackend.services.DTO.ModificarObsDTO;
 import co.edu.unicauca.gesrotesbackend.services.DTO.NuevoTurnoDTO;
 import co.edu.unicauca.gesrotesbackend.services.DTO.SeleccionEstudianteDTO;
 import co.edu.unicauca.gesrotesbackend.services.DTO.SeleccionEstudiantesDTO;
+import co.edu.unicauca.gesrotesbackend.services.DTO.TurnoAModificarDTO;
 import co.edu.unicauca.gesrotesbackend.services.DTO.TurnoAsociadoDTO;
 import co.edu.unicauca.gesrotesbackend.services.DTO.TurnoCreadoDTO;
 import co.edu.unicauca.gesrotesbackend.services.DTO.ValidacionEstudianteDTO;
@@ -94,6 +95,8 @@ public interface ITurnoService {
      *  @param idTurno : id del turno a eliminar
      */
     void eliminarTurnoAsociado(int idTurno);
+
+    Boolean modificarTurno(TurnoAModificarDTO turnoAModificarDTO);
 
     List<InformacionHorarioTurnoDTO> obtenerEstudiantesConAlimentacion(Date fechaTurno, int progId, int asigId, int cooId);
 

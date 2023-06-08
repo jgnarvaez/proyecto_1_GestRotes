@@ -24,6 +24,7 @@ import co.edu.unicauca.gesrotesbackend.services.DTO.ModificarObsDTO;
 import co.edu.unicauca.gesrotesbackend.services.DTO.NuevoTurnoDTO;
 import co.edu.unicauca.gesrotesbackend.services.DTO.SeleccionEstudianteDTO;
 import co.edu.unicauca.gesrotesbackend.services.DTO.SeleccionEstudiantesDTO;
+import co.edu.unicauca.gesrotesbackend.services.DTO.TurnoAModificarDTO;
 import co.edu.unicauca.gesrotesbackend.services.DTO.TurnoAsociadoDTO;
 import co.edu.unicauca.gesrotesbackend.services.DTO.TurnoCreadoDTO;
 import co.edu.unicauca.gesrotesbackend.services.DTO.ValidacionEstudianteDTO;
@@ -92,11 +93,18 @@ public class ControladorTurno {
     }
 
     // * Modificar turno
-    @PutMapping("/{idTurno}")
+    @PutMapping("/")
     @CrossOrigin(origins = "*", methods = { RequestMethod.PUT })
-    public void modifyShift(/*@RequestBody ValidacionTurnoDTO validacionTurnoDTO*/){
-        // TODO modificar turno
-        // turnoService.modificarAsistenciaYEstado(validacionTurnoDTO);
+    public ResponseEntity<String> modifyShift(@RequestBody TurnoAModificarDTO turnoAModificarDTO){
+        Boolean modificado = turnoService.modificarTurno(turnoAModificarDTO);
+        String body;
+        if(modificado){
+            body = "Turno modificado exitosamente!";
+            return ResponseEntity.ok(body);
+        }else{
+            body = "NO se pudo modificar el turno";
+            return ResponseEntity.internalServerError().body(body);
+        }
     }
 
     // * Eliminar turno asociado a un estudiante

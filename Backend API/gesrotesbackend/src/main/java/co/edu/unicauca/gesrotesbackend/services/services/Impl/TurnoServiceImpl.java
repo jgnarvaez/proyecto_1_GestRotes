@@ -35,6 +35,7 @@ import co.edu.unicauca.gesrotesbackend.services.DTO.ModificarObsDTO;
 import co.edu.unicauca.gesrotesbackend.services.DTO.NuevoTurnoDTO;
 import co.edu.unicauca.gesrotesbackend.services.DTO.SeleccionEstudianteDTO;
 import co.edu.unicauca.gesrotesbackend.services.DTO.SeleccionEstudiantesDTO;
+import co.edu.unicauca.gesrotesbackend.services.DTO.TurnoAModificarDTO;
 import co.edu.unicauca.gesrotesbackend.services.DTO.TurnoAsociadoDTO;
 import co.edu.unicauca.gesrotesbackend.services.DTO.TurnoCreadoDTO;
 import co.edu.unicauca.gesrotesbackend.services.DTO.ValidacionEstudianteDTO;
@@ -315,6 +316,16 @@ public class TurnoServiceImpl implements ITurnoService{
             }
         }
         return alimentacion;
+    }
+
+    public Boolean modificarTurno(TurnoAModificarDTO turnoAModificarDTO){
+        int filasAfectadas = turnoRepository.updateShift(turnoAModificarDTO.getIdTurno(), 
+                                            turnoAModificarDTO.getIdJornada(),
+                                            turnoAModificarDTO.getIdEtiqueta());
+        if(filasAfectadas == 0){
+            return false;
+        }
+        return true;
     }
 
     public List<InformacionHorarioTurnoDTO> obtenerEstudiantesConAlimentacion(Date fechaTurno, int progId, int asigId, int cooId){
