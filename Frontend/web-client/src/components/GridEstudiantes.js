@@ -16,6 +16,8 @@ import { Badge } from 'primereact/badge';
 import { Toast } from 'primereact/toast';
 import { Checkbox } from "primereact/checkbox";
 import { Tag } from 'primereact/tag';
+import { RadioButton } from "primereact/radiobutton";
+import { InputTextarea } from "primereact/inputtextarea";
 import axios from 'axios';
 
 export const GridEstudiantes = ({ asignatura }) => {
@@ -94,8 +96,9 @@ export const GridEstudiantes = ({ asignatura }) => {
     const [turnoIdEliminar, setTurnoIdEliminar] = useState([]);
     const [visibleValidarTurnos, setVisibleValidarTurnos] = useState(false);
     const [visibleAlimentacion, setVisibleAlimentacion] = useState(false);
-    const [diaSeleccionado, setDiaSeleccionado] = useState(false);
+    const [diaSeleccionado, setDiaSeleccionado] = useState(null);
     const [estudiantesConAlimentacion, setEstudiantesConAlimentacion] = useState([]);
+    const [estudiantesValidacion, setEstudiantesValidacion] = useState([]);
 
 
     //CREAR ETIQUETAS
@@ -473,6 +476,7 @@ export const GridEstudiantes = ({ asignatura }) => {
             .catch(error => console.error(error));
     }
 
+    //LISTAR ESTUDIANTES CON ALIMENTACION
     const listarEstudiantesConAlimentacion = (fecha) => {
         const fechaR = `${fecha.getFullYear()}-${String(fecha.getMonth() + 1).padStart(2, '0')}-${String(fecha.getDate()).padStart(2, '0')}`;
         
@@ -497,6 +501,25 @@ export const GridEstudiantes = ({ asignatura }) => {
           showErrorAlimentacion();
           console.log("No se ha seleccionado un día");
         }
+      };
+
+    //LISTAR ESTUDIANTE-VALIDACION
+    const listarEstudiantesValidacion = () => {
+        //const fechaR = `${fecha.getFullYear()}-${String(fecha.getMonth() + 1).padStart(2, '0')}-${String(fecha.getDate()).padStart(2, '0')}`;
+        const mes = months.find(m => m.value === month)?.label
+        const url = `http://127.0.0.1:8085/turnos/estudiantesAValidar/1/${asignatura.idAsignatura}/1/${mes}/${year}`
+
+        axios.get(url)
+            .then(response => {
+            console.log('Estudiantes a validar listados:');
+            setEstudiantesValidacion(response.data);
+            })
+            .catch(error => console.error(error));
+    }
+
+    const handleEstudiantesValidacion = () => { 
+        listarEstudiantesValidacion();
+        setVisibleValidarTurnos(true);
       };
 
     //Crear etiqueta
@@ -686,6 +709,7 @@ export const GridEstudiantes = ({ asignatura }) => {
     };
 
     const handleDesSeleccionarEstudiantes = () => {
+
         const estudiantesDesSeleccionados ={
             progId: 1,
             asigId: asignatura.idAsignatura,
@@ -704,7 +728,49 @@ export const GridEstudiantes = ({ asignatura }) => {
             console.error('Error:', error);
             //showErrorEtiquetaAsociado();
           });
-      };
+    };
+
+    const handleValidarAsistencia = (turno, valor) => {
+
+        const asistencia ={
+            vtuId: turno.idTurno,
+            asistencia: valor,
+            observaciones: turno.observaciones
+        };
+
+        const url = `http://127.0.0.1:8085/turnos/validarAsistencia`;
+              
+        axios.put(url, asistencia)
+          .then(response => {
+            console.log('Validacion asistencia:', response.data);
+            listarEstudiantesValidacion();
+            //showSuccessEtiquetaAsociado();
+          })
+          .catch(error => {
+            console.error('Error:', error);
+            //showErrorEtiquetaAsociado();
+          });
+    }
+
+    const handleObservacionesChange = (turno, texto) => {
+        const observacion ={
+            vtuId: turno.idTurno,
+            observaciones: texto
+        };
+        const url = `http://127.0.0.1:8085/turnos/modificarObservaciones`;
+              
+        axios.put(url, observacion)
+          .then(response => {
+            console.log('Validacion observacion:', response.data);
+            listarEstudiantesValidacion();
+            //showSuccessEtiquetaAsociado();
+          })
+          .catch(error => {
+            console.error('Error:', error);
+            //showErrorEtiquetaAsociado();
+          });
+    }
+
 
     const estudiantesNoSeleccionados = estudiantes.filter((estudiante) => {
         return !estudiantesSeleccionados.some((est) => est.id === estudiante.id);
@@ -1134,7 +1200,7 @@ export const GridEstudiantes = ({ asignatura }) => {
                         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                             <p style={{ marginRight: '10px' }}><span style={{ fontWeight: 'bold' }}>MES:</span> {months.find(m => m.value === month)?.label}</p>
                             <p style={{ marginRight: '10px' }}><span style={{ fontWeight: 'bold' }}>AÑO:</span> {year}</p>
-                            <p style={{  }}><span style={{ fontWeight: 'bold' }}>DIA:</span> {diaSeleccionado.getDate() + ' / ' + diaSeleccionado.toLocaleDateString('es-ES', { weekday: 'long' })}</p>
+                            <p style={{  }}><span style={{ fontWeight: 'bold' }}>DIA:</span> {diaSeleccionado !== null ? diaSeleccionado.getDate() + " / " + diaSeleccionado.toLocaleDateString('es-ES', { weekday: 'long' }) : ''}</p>
                             <br></br>
                         </div>
                         <DataTable value={estudiantesConAlimentacion} tableStyle={{ minWidth: '50rem' }}>
@@ -1221,7 +1287,7 @@ export const GridEstudiantes = ({ asignatura }) => {
                     />
                     <button onClick={irSemanaAnterior} style={{ marginRight: '2px' }}>&lt;</button>
                     <button onClick={irSemanaSiguiente} style={{ marginRight: '10px' }}>&gt;</button>
-                    <Button label="Validación de turnos" onClick={() => setVisibleValidarTurnos(true)} style={{ fontSize: '0.8rem', backgroundColor: 'red', marginRight: '5px' }}  />
+                    <Button label="Validación de turnos" onClick={() => handleEstudiantesValidacion()} style={{ fontSize: '0.8rem', backgroundColor: 'red', marginRight: '5px' }}  />
                     <Dialog header="VALIDACIÓN DE TURNOS" visible={visibleValidarTurnos} style={{ width: '65vw' }} onHide={() => setVisibleValidarTurnos(false)}>
                         <div>
                             <Button label="MES:" style={{ fontSize: '0.8rem',marginLeft: '10px', backgroundColor: 'blue' }} />
@@ -1238,22 +1304,78 @@ export const GridEstudiantes = ({ asignatura }) => {
                             <Button label="NO APROBADOS" style={{ fontSize: '0.8rem', backgroundColor: botonTurnosNoAprobados ? 'red' : 'grey' }}  onClick={() => handleClickEstadoBotonesValidarTurno('noAprobados')} />
                             <Button label="SIN VALIDAR" style={{ fontSize: '0.8rem', backgroundColor: botonTurnosSinValidar ? 'red' : 'grey' }}  onClick={() => handleClickEstadoBotonesValidarTurno('sinValidar')} />
                         
-                            <DataTable value={estudiantesFiltradosSeleccionados} tableStyle={{ minWidth: '50rem' }}>
-                                <Column header="NOMBRE"
-                                body={(rowData) => {
-                                    return (
-                                    <div style={{ display: 'flex', alignItems: 'center' }}>
-                                        <PerfilEstudiante src="https://primefaces.org/cdn/primereact/images/avatar/amyelsner.png" style={{ marginBottom: '0.5rem' }} />
-                                        <p style={{ fontSize: '0.8rem', margin: 0, fontWeight: 'bold', marginLeft: '0.5rem' }}>{rowData.nombreCompleto}</p>
+                            <DataTable value={estudiantesValidacion} tableStyle={{ minWidth: '200px' }}>
+                            <Column
+                                header="NOMBRE"
+                                body={(rowData) => (
+                                <div style={{ display: 'flex', alignItems: 'center' }}>
+                                    <PerfilEstudiante
+                                    src="https://primefaces.org/cdn/primereact/images/avatar/amyelsner.png"
+                                    style={{ marginBottom: '0.5rem' }}
+                                    />
+                                    <p style={{ fontSize: '0.8rem', margin: 0, fontWeight: 'bold', marginLeft: '0.5rem' }}>
+                                    {rowData.nombreCompleto}
+                                    </p>
+                                </div>
+                                )}
+                            />
+                            <Column
+                                header="¿EL ESTUDIANTE ASISTIÓ A LOS TURNOS?"
+                                body={(rowData) => (
+                                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                      <div style={{ display: 'flex', alignItems: 'center', width: '80px', justifyContent: 'center' }}>
+                                        <RadioButton
+                                            value={true}
+                                            onChange={(e) => handleValidarAsistencia(rowData, e.value)}
+                                            checked={rowData.asistencia === true}
+                                        />
+                                        <label htmlFor="si" className="ml-2"> Si </label>
+                                        </div>
+                                      <div style={{ display: 'flex', alignItems: 'center', width: '80px', justifyContent: 'center' }}>
+                                        <RadioButton
+                                          value={false}
+                                          onChange={(e) => handleValidarAsistencia(rowData, e.value)}
+                                          checked={rowData.asistencia === false}
+                                        />
+                                        <label htmlFor="no" className="ml-2"> No </label>
+                                      </div>
                                     </div>
-                                    );
-                                 }}
-
-                                 />
-                                <Column header="¿EL ESTUDIANTE ASISTIÓ A LOS TURNOS?"></Column>
-                                <Column header="ESTADO"></Column>
-                                <Column header="OBSERVACIONES"></Column>
+                                  )}
+                            />
+                            <Column header="ESTADO" style={{ textAlign: 'center' }} 
+                                body={(rowData) => (
+                                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                        {rowData.estado === true && (
+                                            <Tag severity="info" value="APROBADO" />
+                                        )}
+                                        {rowData.estado === false && (
+                                            <Tag severity="danger" value="NO APROBADO" />
+                                        )}
+                                        {rowData.estado === null && (
+                                            <Tag severity="danger" value="SIN VALIDAR" />
+                                        )}
+                                    </div>
+                                  )}
+                            />
+                            <Column header="OBSERVACIONES" style={{ textAlign: 'center' }} 
+                                body={(rowData) => (
+                                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                    <InputTextarea
+                                        autoResize
+                                        value={rowData.observaciones}
+                                        onChange={(e) => handleObservacionesChange(rowData, e.target.value)}
+                                        rows={0}
+                                        cols={20}
+                                        disabled={rowData.asistencia === true || rowData.asistencia === null}
+                                        style={{
+                                            backgroundColor: rowData.asistencia === true || rowData.asistencia === null ? 'lightgray' : 'inherit'
+                                        }}
+                                    />
+                                    </div>
+                                )}
+                            />
                             </DataTable>
+
                         
                         
                         
