@@ -17,6 +17,7 @@ import { Toast } from 'primereact/toast';
 import { Checkbox } from "primereact/checkbox";
 import { Tag } from 'primereact/tag';
 import { RadioButton } from "primereact/radiobutton";
+import { InputTextarea } from "primereact/inputtextarea";
 import axios from 'axios';
 
 export const GridEstudiantes = ({ asignatura }) => {
@@ -729,12 +730,12 @@ export const GridEstudiantes = ({ asignatura }) => {
           });
     };
 
-    const handleValidarAsistencia = (turno, estado) => {
+    const handleValidarAsistencia = (turno, valor) => {
 
         const asistencia ={
             vtuId: turno.idTurno,
-            asistencia: estado,
-            observaciones: turno.estado
+            asistencia: valor,
+            observaciones: turno.observaciones
         };
 
         const url = `http://127.0.0.1:8085/turnos/validarAsistencia`;
@@ -742,6 +743,25 @@ export const GridEstudiantes = ({ asignatura }) => {
         axios.put(url, asistencia)
           .then(response => {
             console.log('Validacion asistencia:', response.data);
+            listarEstudiantesValidacion();
+            //showSuccessEtiquetaAsociado();
+          })
+          .catch(error => {
+            console.error('Error:', error);
+            //showErrorEtiquetaAsociado();
+          });
+    }
+
+    const handleObservacionesChange = (turno, texto) => {
+        const observacion ={
+            vtuId: turno.idTurno,
+            observaciones: texto
+        };
+        const url = `http://127.0.0.1:8085/turnos/modificarObservaciones`;
+              
+        axios.put(url, observacion)
+          .then(response => {
+            console.log('Validacion observacion:', response.data);
             listarEstudiantesValidacion();
             //showSuccessEtiquetaAsociado();
           })
@@ -1338,7 +1358,21 @@ export const GridEstudiantes = ({ asignatura }) => {
                                   )}
                             />
                             <Column header="OBSERVACIONES" style={{ textAlign: 'center' }} 
-                            
+                                body={(rowData) => (
+                                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                    <InputTextarea
+                                        autoResize
+                                        value={rowData.observaciones}
+                                        onChange={(e) => handleObservacionesChange(rowData, e.target.value)}
+                                        rows={0}
+                                        cols={20}
+                                        disabled={rowData.asistencia === true || rowData.asistencia === null}
+                                        style={{
+                                            backgroundColor: rowData.asistencia === true || rowData.asistencia === null ? 'lightgray' : 'inherit'
+                                        }}
+                                    />
+                                    </div>
+                                )}
                             />
                             </DataTable>
 
