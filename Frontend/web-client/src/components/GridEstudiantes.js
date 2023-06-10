@@ -817,7 +817,8 @@ export const GridEstudiantes = ({ asignatura }) => {
         setDiaSeleccionado(fecha);
       }
 
-      
+      const todosDesmarcados = estudiantesSeleccionados.length === 0;
+      const sinEstudiantes = estudiantes.length === 0;
 
     return (
     <div className="card">
@@ -908,13 +909,16 @@ export const GridEstudiantes = ({ asignatura }) => {
                     <div className='navegador-estudiantes-registrados' style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                         <p></p>
                         <p style={{ textAlign: 'center', margin: 0 }}>Estudiantes Registrados</p>
-                        <Button label="Eliminar todo" style={{ fontSize: '0.5rem', backgroundColor: 'red'}}  onClick={() => handleEliminarTodosClick()}/>
+                        <Button label="Eliminar todo" style={{ fontSize: '0.5rem', backgroundColor: sinEstudiantes ? 'grey' : 'red'}}  onClick={() => handleEliminarTodosClick()} disabled={sinEstudiantes}/>
                         <ConfirmDialog visible={confirmDialogVisibleTodos} onHide={() => setConfirmDialogVisibleTodos(false)} message="¿Estás seguro de que deseas eliminar todos los estudiantes?" header="Confirmar eliminación" acceptLabel="Aceptar" rejectLabel="Cancelar" icon="pi pi-exclamation-triangle" accept={() => eliminarTodo()} />
                     </div>
                     <div className='component-grid' style={{ maxHeight: '450px', overflowY: 'auto' }}>
                         <Box sx={{ flexGrow: 1 }}>
                             <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 8, md: 12 }}>
-                                {estudiantes.map((estudiante, index) => {
+                                {sinEstudiantes ? (
+                                                    <h2>&nbsp; &nbsp;&nbsp;No hay estudiantes registrados.</h2>
+                                ) : (
+                                estudiantes.map((estudiante, index) => {
 
                                     const footerStyle = {
                                         paddingTop: '2px'
@@ -948,8 +952,9 @@ export const GridEstudiantes = ({ asignatura }) => {
 
                                         
                                     </Grid>
-                                    )
-                                })}
+                                     );
+                                })
+                                )}
                             </Grid>
                         </Box>
                     </div>
@@ -1000,24 +1005,28 @@ export const GridEstudiantes = ({ asignatura }) => {
                             <Button label="TODOS" style={{ fontSize: '0.8rem',marginLeft: '10px', backgroundColor: botonEstudiantesTodos ? 'red' : 'grey' }} onClick={() => handleClickEstadoBotonesEstudiantes('todos')}/>
                             <Button label="SELECCIONADOS" style={{ fontSize: '0.8rem', backgroundColor: botonEstudiantesSeleccionados ? 'red' : 'grey' }} onClick={() => handleClickEstadoBotonesEstudiantes('seleccionados')} />
                             <Button label="NO SELECCIONADOS" style={{ fontSize: '0.8rem', backgroundColor: botonEstudiantesNoSeleccionados ? 'red' : 'grey' }} onClick={() => handleClickEstadoBotonesEstudiantes('noSeleccionados')} />
-                            <Button label="DESMARCAR TODOS" style={{ fontSize: '0.8rem', backgroundColor: 'red', marginLeft: '25px' }}  onClick={() => handleDesSeleccionarEstudiantes()} />
+                            <Button label="DESMARCAR TODOS" style={{ fontSize: '0.8rem', backgroundColor: todosDesmarcados ? 'grey' : 'red', marginLeft: '25px' }}  onClick={() => handleDesSeleccionarEstudiantes()} disabled={todosDesmarcados}/>
                             {botonEstudiantesTodos ? (
                                 <div>
                                     <div className='component-grid' style={{ maxHeight: '650px', overflowY: 'auto' }}>
                                     <Box sx={{ flexGrow: 1 }}>
                                         <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 8, md: 12 }}>
-                                            {estudiantesFiltradosTodos.map((estudiante, index) => {
+                                            {sinEstudiantes ? (
+                                                <h2>&nbsp; &nbsp;&nbsp;No hay estudiantes registrados para seleccionar.</h2>
+                                            ) : (
+                                            estudiantesFiltradosTodos.map((estudiante, index) => {
                                             const isSelected = estudiantesSeleccionados.some((est) => est.id === estudiante.id);
 
                                             return (
-                                                <Grid item xs={2} sm={4} md={4} key={index}>
+                                            <Grid item xs={2} sm={4} md={4} key={index}>
                                                 <div style={{ border: '1px solid grey', padding: '5px', display: 'flex', alignItems: 'center', width: '240px', justifyContent: 'center', borderRadius: '10px' }}>
-                                                    <InputText value={estudiante.nombreCompleto} readOnly style={{ border: "none", boxShadow: "none" }} />
-                                                    <Checkbox onChange={() => handleEstudianteSeleccionado(estudiante.id)} checked={isSelected} />
+                                                <InputText value={estudiante.nombreCompleto} readOnly style={{ border: "none", boxShadow: "none" }} />
+                                                <Checkbox onChange={() => handleEstudianteSeleccionado(estudiante.id)} checked={isSelected} />
                                                 </div>
-                                                </Grid>
+                                            </Grid>
                                             );
-                                            })}
+                                        })
+                                        )}
                                         </Grid>
                                     </Box>
                                     </div>
@@ -1027,7 +1036,10 @@ export const GridEstudiantes = ({ asignatura }) => {
                                     <div className='component-grid' style={{ maxHeight: '450px', overflowY: 'auto' }}>
                                     <Box sx={{ flexGrow: 1 }}>
                                         <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 8, md: 12 }}>
-                                            {estudiantesFiltradosSeleccionados.map((estudiante, index) => {
+                                            {sinEstudiantes ? (
+                                                <h2>&nbsp; &nbsp;&nbsp;No hay estudiantes registrados para deseleccionar.</h2>
+                                            ) : (
+                                            estudiantesFiltradosSeleccionados.map((estudiante, index) => {
                                             const isSelected = estudiantesSeleccionados.some((est) => est.id === estudiante.id);
 
                                             return (
@@ -1037,8 +1049,9 @@ export const GridEstudiantes = ({ asignatura }) => {
                                                     <Checkbox onChange={() => handleEstudianteSeleccionado(estudiante.id)} checked={isSelected} />
                                                 </div>
                                                 </Grid>
-                                            );
-                                            })}
+                                               );
+                                            })
+                                            )}
                                         </Grid>
                                     </Box>
                                     </div>
@@ -1049,8 +1062,10 @@ export const GridEstudiantes = ({ asignatura }) => {
                                     <div className='component-grid' style={{ maxHeight: '450px', overflowY: 'auto' }}>
                                     <Box sx={{ flexGrow: 1 }}>
                                         <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 8, md: 12 }}>
-                                            
-                                            {estudiantesFiltradosNoSeleccionados.map((estudiante, index) => {
+                                            {sinEstudiantes ? (
+                                                    <h2>&nbsp; &nbsp;&nbsp;No hay estudiantes registrados para seleccionar.</h2>
+                                                ) : (
+                                            estudiantesFiltradosNoSeleccionados.map((estudiante, index) => {
                                             const isSelected = estudiantesSeleccionados.some((est) => est.id === estudiante.id);
                                                 
                                             return (
@@ -1061,8 +1076,8 @@ export const GridEstudiantes = ({ asignatura }) => {
                                                 </div>
                                                 </Grid>
                                             );
-                                            })}
-                                        
+                                        })
+                                        )}   
                                         </Grid>
                                     </Box>
                                     </div>
@@ -1106,7 +1121,7 @@ export const GridEstudiantes = ({ asignatura }) => {
                                 </div>
                                 <div style={{ display: 'block', marginTop: '10px' }}>
                                     <Toast ref={toast} />
-                                    <Button label="CREAR" style={{ fontSize: '0.5rem', backgroundColor: 'blue' }} onClick={() => handleCrearEtiqueta(etiquetaNueva)}  disabled={!isFormValid} />
+                                    <Button label="CREAR" style={{ fontSize: '0.5rem', backgroundColor: isFormValid ? 'blue' : 'gray' }} onClick={() => handleCrearEtiqueta(etiquetaNueva)}  disabled={!isFormValid} />
                                 </div>
                             </div>
                         </div>
@@ -1114,7 +1129,7 @@ export const GridEstudiantes = ({ asignatura }) => {
                         <div style={{ textAlign: 'center', width:'600px' }}>
                             <p style={{fontWeight: 'bold' }}>LISTA DE ETIQUETAS CREADAS </p>
                             <Toast ref={toast} />
-                            <DataTable value={etiquetasListarCreadas} tableStyle={{ width:'500px' , margin: 'auto'}} bodystyle={{ textAlign: 'center' }}>
+                            <DataTable value={etiquetasListarCreadas} tableStyle={{ width:'500px' , margin: 'auto'}} bodystyle={{ textAlign: 'center' }}  emptyMessage={<strong>No existen etiquetas creadas.</strong>}>
                                 <Column field="nombreEtiqueta" header="Etiqueta"></Column>
                                 <Column field="nombreEscenario" header="Hospital"></Column>
                                 <Column header="Eliminar" body={(rowData) => (
@@ -1168,7 +1183,7 @@ export const GridEstudiantes = ({ asignatura }) => {
                                 </div>
                                 <div style={{ display: 'block', marginTop: '10px' }}>
                                     <Toast ref={toast} />
-                                    <Button label="ASOCIAR" style={{ fontSize: '0.5rem', backgroundColor: 'blue' }} onClick={() => asociarServicioEtiqueta(etiquetaAsociacionServicio)} disabled={!isFormValidAsociado}/>
+                                    <Button label="ASOCIAR" style={{ fontSize: '0.5rem', backgroundColor: isFormValidAsociado ? 'blue' : 'gray' }} onClick={() => asociarServicioEtiqueta(etiquetaAsociacionServicio)} disabled={!isFormValidAsociado}/>
                                 </div>
                             </div>
                         </div>
@@ -1176,7 +1191,7 @@ export const GridEstudiantes = ({ asignatura }) => {
                         <div style={{ textAlign: 'center', width:'600px' }}>
                             <p style={{fontWeight: 'bold' }}>LISTA DE ETIQUETAS ASOCIADAS </p>
                             <Toast ref={toast} />
-                            <DataTable value={etiquetasListarAsociadas} tableStyle={{ width:'500px' , margin: 'auto'}} bodystyle={{ textAlign: 'center' }}>
+                            <DataTable value={etiquetasListarAsociadas} tableStyle={{ width:'500px' , margin: 'auto'}} bodystyle={{ textAlign: 'center' }} emptyMessage={<strong>No existen etiquetas asociadas.</strong>}>
                                 <Column field="nombreEtiqueta" header="Etiqueta"></Column>
                                 <Column field="nombreServicio" header="Servicio"></Column>
                                 <Column field="nombreEscenario" header="Hospital"></Column>
@@ -1386,7 +1401,7 @@ export const GridEstudiantes = ({ asignatura }) => {
                     </Dialog>
                 </div>
                 <div style={{ height: '425px', overflow: 'auto' }}>
-                    <DataTable value={estudiantesFiltradosSeleccionados} tableStyle={{ minWidth: '50rem' }}>
+                    <DataTable value={estudiantesFiltradosSeleccionados} tableStyle={{ minWidth: '50rem' }}emptyMessage={<strong>No hay estudiantes seleccionados.</strong>}>
                         <Column
                             header={
                                 <div style={{ width: '80px', height:'55px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexDirection: 'column', padding: '8px', position: 'relative' }}>
