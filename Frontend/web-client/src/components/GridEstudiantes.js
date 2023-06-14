@@ -326,7 +326,7 @@ export const GridEstudiantes = ({ asignatura }) => {
       const isUltimaSemanaDelMes = () => {
         const ultimoDiaMesActual = new Date(year, month + 1, 0).getDate();
         const ultimoDiaSemanaActual = new Date(year, month, ultimoDiaMesActual).getDay();
-        const ultimaSemana = Math.ceil((ultimoDiaMesActual - ultimoDiaSemanaActual) / 7);
+        const ultimaSemana = Math.ceil((ultimoDiaMesActual + (7 - ultimoDiaSemanaActual)) / 7);
         const semanaActual = Math.ceil((fechaActual.getDate() - ultimoDiaSemanaActual) / 7) + 1;
       
         return semanaActual === ultimaSemana;
@@ -1200,7 +1200,6 @@ export const GridEstudiantes = ({ asignatura }) => {
                             )}
                         </div>
                     </Dialog>
-                    
                     <Button label="Gestión etiquetas" style={{ fontSize: '0.8rem', backgroundColor: 'blue', marginRight: '5px' }} onClick={() => {setVisibleEtiqueta(true); setVisibleAsociacion(true)}} /> 
                     {botonCrearEtiquetas ?
                         <Dialog header="GESTIONAR ETIQUETAS" visible={visibleEtiqueta} onHide={() => {setVisibleEtiqueta(false); setVisibleAsociacion(false)}}>
@@ -1790,6 +1789,8 @@ export const GridEstudiantes = ({ asignatura }) => {
                         const daysToAdd = dayOfWeek - fechaActual.getDay();
                         const dateColumn = new Date(year, month, fechaActual.getDate() + daysToAdd);
 
+                        const isCurrentMonth = dateColumn.getMonth() === month;
+
                         return (
                             <Column
                             header={
@@ -1801,7 +1802,7 @@ export const GridEstudiantes = ({ asignatura }) => {
                                 </Button>
                             }
                             key={dayOfWeek}
-                            body={(rowData) => {
+                            body={isCurrentMonth ? (rowData) => {
                                 
                                 const formattedDateColumn = `${dateColumn.getFullYear()}-${String(dateColumn.getMonth() + 1).padStart(2, '0')}-${String(dateColumn.getDate()).padStart(2, '0')}`;
                                 const hasMatchingHorario = horarios.find((horario) => horario.idEstudiante === rowData.id && horario.fechaTurno === formattedDateColumn);
@@ -1896,7 +1897,7 @@ export const GridEstudiantes = ({ asignatura }) => {
                                         </CustomCard>
                                     );
                                 }
-                            }}
+                            }: null}
                             />
                         );
                         })}
