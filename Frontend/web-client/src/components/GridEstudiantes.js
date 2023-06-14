@@ -40,6 +40,9 @@ export const GridEstudiantes = ({ asignatura }) => {
       );
 
     const toast = useRef(null);
+    const toastEtiqueta = useRef(null);
+    const toastAsociacion = useRef(null);
+    const toastEstudiantes = useRef(null);
     // CAMBIO
     const [searchText, setSearchText] = useState('');
     const [timer, setTimer] = useState(null);
@@ -57,7 +60,7 @@ export const GridEstudiantes = ({ asignatura }) => {
     const [fechaActual, setFechaActual] = useState(new Date());
     const [month, setMonth] = useState(new Date().getMonth());
     const [year, setYear] = useState(new Date().getFullYear());
-    
+   
     
 
     const months = [
@@ -99,6 +102,8 @@ export const GridEstudiantes = ({ asignatura }) => {
     const [diaSeleccionado, setDiaSeleccionado] = useState(null);
     const [estudiantesConAlimentacion, setEstudiantesConAlimentacion] = useState([]);
     const [estudiantesValidacion, setEstudiantesValidacion] = useState([]);
+    const [confirmDialogVisibleSeleccion, setConfirmDialogVisibleSeleccion] = useState(false);
+    const [confirmDialogVisibleSeleccionTodos, setConfirmDialogVisibleSeleccionTodos] = useState(false);
 
 
     //CREAR ETIQUETAS
@@ -127,7 +132,7 @@ export const GridEstudiantes = ({ asignatura }) => {
     const [botonTurnosTodos, setBotonTurnosTodos] = useState(true);
     const [botonTurnosAprobados, setBotonTurnosAprobados] = useState(false);
     const [botonTurnosNoAprobados, setBotonTurnosNoAprobados] = useState(false);
-    const [botonTurnosSinValidar, setBotonTurnosSinValidar] = useState(true);
+    const [botonTurnosSinValidar, setBotonTurnosSinValidar] = useState(false);
 
     //ELIMINAR ETIQUETAS
     const [etiquetaIdEliminar, setEtiquetaIdEliminar] = useState([]);
@@ -171,7 +176,7 @@ export const GridEstudiantes = ({ asignatura }) => {
     }
 
     const showSuccessCrearEtiqueta = () => {
-        toast.current.show({severity:'success', summary: 'Creada!', detail:'Se ha creado una nueva etiqueta.', life: 8000});
+        toastEtiqueta.current.show({severity:'success', summary: 'Creada!', detail:'Se ha creado una nueva etiqueta.', life: 8000});
     }
 
     const showSuccessCrearTurno = () => {
@@ -179,7 +184,7 @@ export const GridEstudiantes = ({ asignatura }) => {
     }
 
     const showSuccessEtiquetaAsociado = () => {
-        toast.current.show({severity:'success', summary: 'Asociado!', detail:'El servicio se ha asociado exitosamente a la etiqueta.', life: 8000});
+        toastAsociacion.current.show({severity:'success', summary: 'Asociado!', detail:'El servicio se ha asociado exitosamente a la etiqueta.', life: 8000});
     }
 
     const showInfoEliminarEstudiante = () => {
@@ -191,15 +196,23 @@ export const GridEstudiantes = ({ asignatura }) => {
     }
 
     const showInfoEliminarEtiquetaCreada = () => {
-        toast.current.show({severity:'info', summary: 'Eliminado!', detail:'Se ha eliminado la etiqueta correctamente.', life: 8000});
+        toastEtiqueta.current.show({severity:'info', summary: 'Eliminado!', detail:'Se ha eliminado la etiqueta correctamente.', life: 8000});
     }
 
     const showInfoEliminarEtiquetaAsociado = () => {
-        toast.current.show({severity:'info', summary: 'Eliminado!', detail:'Se ha eliminado el servicio asociado a la etiqueta correctamente.', life: 8000});
+        toastAsociacion.current.show({severity:'info', summary: 'Eliminado!', detail:'Se ha eliminado el servicio asociado a la etiqueta correctamente.', life: 8000});
     }
 
     const showInfoEliminarTurno = () => {
         toast.current.show({severity:'info', summary: 'Eliminado!', detail:'Se ha eliminado el turno correctamente.', life: 8000});
+    }
+
+    const showInfoDesmarcarEstudiante = () => {
+        toastEstudiantes.current.show({severity:'info', summary: 'Desmarcado!', detail:'Se ha desmarcado el estudiante correctamente.', life: 8000});
+    }
+
+    const showInfoDesmarcarEstudiantes = () => {
+        toastEstudiantes.current.show({severity:'info', summary: 'Desmarcados!', detail:'Se han desmarcado todos los estudiantes correctamente.', life: 8000});
     }
 
     const showErrorRegistrarEstudiante = () => {
@@ -215,7 +228,9 @@ export const GridEstudiantes = ({ asignatura }) => {
     }
 
     const showErrorAlimentacion = () => {
-        toast.current.show({severity:'error', summary: 'Error', detail:'No ha seleccionado un dia.', life: 8000});
+        if (toast.current) {
+            toast.current.show({severity: 'error', summary: 'Error', detail: 'No ha seleccionado un día.', life: 8000});
+        }
     }
 
     const handleClickEstadoBotones = (tipo) => {
@@ -306,6 +321,15 @@ export const GridEstudiantes = ({ asignatura }) => {
         }
         
         setFechaActual(fechaNueva);
+      };
+
+      const isUltimaSemanaDelMes = () => {
+        const ultimoDiaMesActual = new Date(year, month + 1, 0).getDate();
+        const ultimoDiaSemanaActual = new Date(year, month, ultimoDiaMesActual).getDay();
+        const ultimaSemana = Math.ceil((ultimoDiaMesActual - ultimoDiaSemanaActual) / 7);
+        const semanaActual = Math.ceil((fechaActual.getDate() - ultimoDiaSemanaActual) / 7) + 1;
+      
+        return semanaActual === ultimaSemana;
       };
 
     const fetchEstudiantes = useCallback(() => {
@@ -499,7 +523,7 @@ export const GridEstudiantes = ({ asignatura }) => {
         } else {
           // Acción a realizar cuando no hay un día seleccionado
           showErrorAlimentacion();
-          console.log("No se ha seleccionado un día");
+          
         }
       };
 
@@ -698,13 +722,15 @@ export const GridEstudiantes = ({ asignatura }) => {
         axios.put(url, estadoEstudiante)
           .then(response => {
             console.log('Estado cambiado:', response.data);
+            if (estadoEstudiante.estado === false) {
+                showInfoDesmarcarEstudiante();
+            }
             listarEstudiantesSeleccionados();
-            //showSuccessEtiquetaAsociado();
+            listarEstudiantesValidacion();
+            listarHorarios();
           })
           .catch(error => {
             console.error('Error :', error);
-
-            //showErrorEtiquetaAsociado();
           });
     };
 
@@ -721,8 +747,10 @@ export const GridEstudiantes = ({ asignatura }) => {
         axios.put(url, estudiantesDesSeleccionados)
           .then(response => {
             console.log('Estudiantes deseleccionados:', response.data);
+            showInfoDesmarcarEstudiantes();
             listarEstudiantesSeleccionados();
-            //showSuccessEtiquetaAsociado();
+            listarEstudiantesValidacion();
+            listarHorarios();
           })
           .catch(error => {
             console.error('Error:', error);
@@ -775,21 +803,45 @@ export const GridEstudiantes = ({ asignatura }) => {
     const estudiantesNoSeleccionados = estudiantes.filter((estudiante) => {
         return !estudiantesSeleccionados.some((est) => est.id === estudiante.id);
       });
+      const estudiantesAprobados = estudiantesValidacion.filter(estudiante => estudiante.estado === true);
+      const estudiantesNoAprobados = estudiantesValidacion.filter(estudiante => estudiante.estado === false);
+      const estudiantesSinValidar = estudiantesValidacion.filter(estudiante => estudiante.estado === null);
 
       const [filtroEstudiantesTodos, setFiltroEstudiantesTodos] = useState('');
       const [filtroEstudiantesSeleccionados, setFiltroEstudiantesSeleccionados] = useState('');
       const [filtroEstudiantesNoSeleccionados, setFiltroEstudiantesNoSeleccionados] = useState('');
+      const [filtroTurnosTodos, setFiltroTurnosTodos] = useState('');
+      const [filtroTurnosAprobados, setFiltroTurnosAprobados] = useState('');
+      const [filtroTurnosNoAprobados, setFiltroTurnosNoAprobados] = useState('');
+      const [filtroTurnosSinValidar, setFiltroTurnosSinValidar] = useState('');
+      
 
       const handleFiltroChangeTodos = (event) => {
         setFiltroEstudiantesTodos(event.target.value);
       };
-
+      
       const handleFiltroChangeSeleccionados = (event) => {
         setFiltroEstudiantesSeleccionados(event.target.value);
       };
 
       const handleFiltroChangeNoSeleccionados = (event) => {
         setFiltroEstudiantesNoSeleccionados(event.target.value);
+      };
+
+      const handleFiltroChangeTurnosTodos = (event) => {
+        setFiltroTurnosTodos(event.target.value);
+      };
+
+      const handleFiltroChangeTurnosAprobados = (event) => {
+        setFiltroTurnosAprobados(event.target.value);
+      };
+
+      const handleFiltroChangeTurnosNoAprobados = (event) => {
+        setFiltroTurnosNoAprobados(event.target.value);
+      };
+
+      const handleFiltroChangeTurnosSinValidar = (event) => {
+        setFiltroTurnosSinValidar(event.target.value);
       };
 
       const estudiantesFiltradosTodos = estudiantes.filter(
@@ -813,11 +865,52 @@ export const GridEstudiantes = ({ asignatura }) => {
             .includes(filtroEstudiantesNoSeleccionados.toLowerCase())
       );
 
+      const estudiantesTurnosFiltradosTodos = estudiantesValidacion.filter(
+        (estudiante) =>
+          estudiante.nombreCompleto
+            .toLowerCase()
+            .includes(filtroTurnosTodos.toLowerCase())
+      );
+
+      const estudiantesTurnosFiltradosAprobados = estudiantesAprobados.filter(
+        (estudiante) =>
+          estudiante.nombreCompleto
+            .toLowerCase()
+            .includes(filtroTurnosAprobados.toLowerCase())
+      );
+
+      const estudiantesTurnosFiltradosNoAprobados = estudiantesNoAprobados.filter(
+        (estudiante) =>
+          estudiante.nombreCompleto
+            .toLowerCase()
+            .includes(filtroTurnosNoAprobados.toLowerCase())
+      );
+
+      const estudiantesTurnosFiltradosSinValidar = estudiantesSinValidar.filter(
+        (estudiante) =>
+          estudiante.nombreCompleto
+            .toLowerCase()
+            .includes(filtroTurnosSinValidar.toLowerCase())
+      );
+
       const handleClickDiaSeleccionado = (fecha) => {
         setDiaSeleccionado(fecha);
       }
 
+      const todosDesmarcados = estudiantesSeleccionados.length === 0;
+      const sinEstudiantes = estudiantes.length === 0;
+      const [estudianteSeleccionadoId, setEstudianteSeleccionadoId] = useState(null);
       
+
+      const confirmarDeseleccion = (estudianteId, isSelected) => {
+        if (isSelected) {
+          // Mostrar el confirmDialog cuando el estado del estudiante pase de true a false
+          setConfirmDialogVisibleSeleccion(true);
+          setEstudianteSeleccionadoId(estudianteId); 
+        } else {
+            handleEstudianteSeleccionado(estudianteId);
+        }    
+      }
 
     return (
     <div className="card">
@@ -908,13 +1001,16 @@ export const GridEstudiantes = ({ asignatura }) => {
                     <div className='navegador-estudiantes-registrados' style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                         <p></p>
                         <p style={{ textAlign: 'center', margin: 0 }}>Estudiantes Registrados</p>
-                        <Button label="Eliminar todo" style={{ fontSize: '0.5rem', backgroundColor: 'red'}}  onClick={() => handleEliminarTodosClick()}/>
+                        <Button label="Eliminar todo" style={{ fontSize: '0.5rem', backgroundColor: sinEstudiantes ? 'grey' : 'red'}}  onClick={() => handleEliminarTodosClick()} disabled={sinEstudiantes}/>
                         <ConfirmDialog visible={confirmDialogVisibleTodos} onHide={() => setConfirmDialogVisibleTodos(false)} message="¿Estás seguro de que deseas eliminar todos los estudiantes?" header="Confirmar eliminación" acceptLabel="Aceptar" rejectLabel="Cancelar" icon="pi pi-exclamation-triangle" accept={() => eliminarTodo()} />
                     </div>
                     <div className='component-grid' style={{ maxHeight: '450px', overflowY: 'auto' }}>
                         <Box sx={{ flexGrow: 1 }}>
                             <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 8, md: 12 }}>
-                                {estudiantes.map((estudiante, index) => {
+                                {sinEstudiantes ? (
+                                                    <h2>&nbsp; &nbsp;&nbsp;No hay estudiantes registrados.</h2>
+                                ) : (
+                                estudiantes.map((estudiante, index) => {
 
                                     const footerStyle = {
                                         paddingTop: '2px'
@@ -948,8 +1044,9 @@ export const GridEstudiantes = ({ asignatura }) => {
 
                                         
                                     </Grid>
-                                    )
-                                })}
+                                     );
+                                })
+                                )}
                             </Grid>
                         </Box>
                     </div>
@@ -997,27 +1094,43 @@ export const GridEstudiantes = ({ asignatura }) => {
                                 )}
                                
                             </span>
+                            <Toast ref={toastEstudiantes} />
                             <Button label="TODOS" style={{ fontSize: '0.8rem',marginLeft: '10px', backgroundColor: botonEstudiantesTodos ? 'red' : 'grey' }} onClick={() => handleClickEstadoBotonesEstudiantes('todos')}/>
                             <Button label="SELECCIONADOS" style={{ fontSize: '0.8rem', backgroundColor: botonEstudiantesSeleccionados ? 'red' : 'grey' }} onClick={() => handleClickEstadoBotonesEstudiantes('seleccionados')} />
                             <Button label="NO SELECCIONADOS" style={{ fontSize: '0.8rem', backgroundColor: botonEstudiantesNoSeleccionados ? 'red' : 'grey' }} onClick={() => handleClickEstadoBotonesEstudiantes('noSeleccionados')} />
-                            <Button label="DESMARCAR TODOS" style={{ fontSize: '0.8rem', backgroundColor: 'red', marginLeft: '25px' }}  onClick={() => handleDesSeleccionarEstudiantes()} />
+                            <Button label="DESMARCAR TODOS" style={{ fontSize: '0.8rem', backgroundColor: todosDesmarcados ? 'grey' : 'red', marginLeft: '25px' }}  onClick={() => {setConfirmDialogVisibleSeleccionTodos(true); listarEstudiantesValidacion();}} disabled={todosDesmarcados}/>
+                            <ConfirmDialog visible={confirmDialogVisibleSeleccionTodos} onHide={() => setConfirmDialogVisibleSeleccionTodos(false)} message="¿Estás seguro de que deseas desmarcar a todos los estudiantes? Esto eliminará todos los turnos asociados a estos estuciantes." header="Confirmar deselección" acceptLabel="Aceptar" rejectLabel="Cancelar" icon="pi pi-exclamation-triangle" accept={() => handleDesSeleccionarEstudiantes()} />
                             {botonEstudiantesTodos ? (
                                 <div>
                                     <div className='component-grid' style={{ maxHeight: '650px', overflowY: 'auto' }}>
                                     <Box sx={{ flexGrow: 1 }}>
                                         <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 8, md: 12 }}>
-                                            {estudiantesFiltradosTodos.map((estudiante, index) => {
+                                            {sinEstudiantes ? (
+                                                <h2>&nbsp; &nbsp;&nbsp;No hay estudiantes registrados para seleccionar.</h2>
+                                            ) : (
+                                            estudiantesFiltradosTodos.map((estudiante, index) => {
                                             const isSelected = estudiantesSeleccionados.some((est) => est.id === estudiante.id);
 
                                             return (
                                                 <Grid item xs={2} sm={4} md={4} key={index}>
                                                 <div style={{ border: '1px solid grey', padding: '5px', display: 'flex', alignItems: 'center', width: '240px', justifyContent: 'center', borderRadius: '10px' }}>
-                                                    <InputText value={estudiante.nombreCompleto} readOnly style={{ border: "none", boxShadow: "none" }} />
-                                                    <Checkbox onChange={() => handleEstudianteSeleccionado(estudiante.id)} checked={isSelected} />
+                                                  <InputText value={estudiante.nombreCompleto} readOnly style={{ border: "none", boxShadow: "none" }} />
+                                                  <Checkbox onChange={() => confirmarDeseleccion(estudiante.id, isSelected)} checked={isSelected} />
                                                 </div>
-                                                </Grid>
+                                              </Grid>
                                             );
-                                            })}
+                                        })
+                                        )}
+                                        <ConfirmDialog
+                                            visible={confirmDialogVisibleSeleccion}
+                                            onHide={() => setConfirmDialogVisibleSeleccion(false)}
+                                            message="¿Estás seguro de que deseas desmarcar este estudiante? Esto eliminará todos los turnos asociados a este estudiante."
+                                            header="Confirmar desmarcación"
+                                            acceptLabel="Aceptar"
+                                            rejectLabel="Cancelar"
+                                            icon="pi pi-exclamation-triangle"
+                                            accept={() => handleEstudianteSeleccionado(estudianteSeleccionadoId)}
+                                        />
                                         </Grid>
                                     </Box>
                                     </div>
@@ -1027,18 +1140,33 @@ export const GridEstudiantes = ({ asignatura }) => {
                                     <div className='component-grid' style={{ maxHeight: '450px', overflowY: 'auto' }}>
                                     <Box sx={{ flexGrow: 1 }}>
                                         <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 8, md: 12 }}>
-                                            {estudiantesFiltradosSeleccionados.map((estudiante, index) => {
+                                            {sinEstudiantes ? (
+                                                <h2>&nbsp; &nbsp;&nbsp;No hay estudiantes registrados para deseleccionar.</h2>
+                                            ) : (
+                                            estudiantesFiltradosSeleccionados.map((estudiante, index) => {
                                             const isSelected = estudiantesSeleccionados.some((est) => est.id === estudiante.id);
 
                                             return (
                                                 <Grid item xs={2} sm={4} md={4} key={index}>
                                                 <div style={{ border: '1px solid grey', padding: '5px', display: 'flex', alignItems: 'center', width: '240px', justifyContent: 'center', borderRadius: '10px' }}>
                                                     <InputText value={estudiante.nombreCompleto} readOnly style={{ border: "none", boxShadow: "none" }} />
-                                                    <Checkbox onChange={() => handleEstudianteSeleccionado(estudiante.id)} checked={isSelected} />
+                                                    <Checkbox onChange={() => confirmarDeseleccion(estudiante.id, isSelected)} checked={isSelected} />
+                                                   
                                                 </div>
                                                 </Grid>
-                                            );
-                                            })}
+                                               );
+                                            })
+                                            )}
+                                            <ConfirmDialog
+                                            visible={confirmDialogVisibleSeleccion}
+                                            onHide={() => setConfirmDialogVisibleSeleccion(false)}
+                                            message="¿Estás seguro de que deseas desmarcar este estudiante? Esto eliminará todos los turnos asociados a este estudiante."
+                                            header="Confirmar desmarcación"
+                                            acceptLabel="Aceptar"
+                                            rejectLabel="Cancelar"
+                                            icon="pi pi-exclamation-triangle"
+                                            accept={() => handleEstudianteSeleccionado(estudianteSeleccionadoId)}
+                                        />
                                         </Grid>
                                     </Box>
                                     </div>
@@ -1049,20 +1177,22 @@ export const GridEstudiantes = ({ asignatura }) => {
                                     <div className='component-grid' style={{ maxHeight: '450px', overflowY: 'auto' }}>
                                     <Box sx={{ flexGrow: 1 }}>
                                         <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 8, md: 12 }}>
-                                            
-                                            {estudiantesFiltradosNoSeleccionados.map((estudiante, index) => {
+                                            {sinEstudiantes ? (
+                                                    <h2>&nbsp; &nbsp;&nbsp;No hay estudiantes registrados para seleccionar.</h2>
+                                                ) : (
+                                            estudiantesFiltradosNoSeleccionados.map((estudiante, index) => {
                                             const isSelected = estudiantesSeleccionados.some((est) => est.id === estudiante.id);
                                                 
                                             return (
                                                 <Grid item xs={2} sm={4} md={4} key={index}>
                                                 <div style={{ border: '1px solid grey', padding: '5px', display: 'flex', alignItems: 'center', width: '240px', justifyContent: 'center', borderRadius: '10px' }}>
                                                     <InputText value={estudiante.nombreCompleto} readOnly style={{ border: "none", boxShadow: "none" }} />
-                                                    <Checkbox onChange={() => handleEstudianteSeleccionado(estudiante.id)} checked={isSelected} />
+                                                    <Checkbox onChange={() => confirmarDeseleccion(estudiante.id, isSelected)} checked={isSelected} />
                                                 </div>
                                                 </Grid>
                                             );
-                                            })}
-                                        
+                                        })
+                                        )}   
                                         </Grid>
                                     </Box>
                                     </div>
@@ -1070,6 +1200,7 @@ export const GridEstudiantes = ({ asignatura }) => {
                             )}
                         </div>
                     </Dialog>
+                    
                     <Button label="Gestión etiquetas" style={{ fontSize: '0.8rem', backgroundColor: 'blue', marginRight: '5px' }} onClick={() => {setVisibleEtiqueta(true); setVisibleAsociacion(true)}} /> 
                     {botonCrearEtiquetas ?
                         <Dialog header="GESTIONAR ETIQUETAS" visible={visibleEtiqueta} onHide={() => {setVisibleEtiqueta(false); setVisibleAsociacion(false)}}>
@@ -1105,16 +1236,16 @@ export const GridEstudiantes = ({ asignatura }) => {
                                     />
                                 </div>
                                 <div style={{ display: 'block', marginTop: '10px' }}>
-                                    <Toast ref={toast} />
-                                    <Button label="CREAR" style={{ fontSize: '0.5rem', backgroundColor: 'blue' }} onClick={() => handleCrearEtiqueta(etiquetaNueva)}  disabled={!isFormValid} />
+                                    <Toast ref={toastEtiqueta} />
+                                    <Button label="CREAR" style={{ fontSize: '0.5rem', backgroundColor: isFormValid ? 'blue' : 'gray' }} onClick={() => handleCrearEtiqueta(etiquetaNueva)}  disabled={!isFormValid} />
                                 </div>
                             </div>
                         </div>
                         <Divider/>
                         <div style={{ textAlign: 'center', width:'600px' }}>
                             <p style={{fontWeight: 'bold' }}>LISTA DE ETIQUETAS CREADAS </p>
-                            <Toast ref={toast} />
-                            <DataTable value={etiquetasListarCreadas} tableStyle={{ width:'500px' , margin: 'auto'}} bodystyle={{ textAlign: 'center' }}>
+                            <Toast ref={toastEtiqueta} />
+                            <DataTable value={etiquetasListarCreadas} tableStyle={{ width:'500px' , margin: 'auto'}} bodystyle={{ textAlign: 'center' }}  emptyMessage={<strong>No existen etiquetas creadas.</strong>}>
                                 <Column field="nombreEtiqueta" header="Etiqueta"></Column>
                                 <Column field="nombreEscenario" header="Hospital"></Column>
                                 <Column header="Eliminar" body={(rowData) => (
@@ -1167,16 +1298,16 @@ export const GridEstudiantes = ({ asignatura }) => {
                                     />
                                 </div>
                                 <div style={{ display: 'block', marginTop: '10px' }}>
-                                    <Toast ref={toast} />
-                                    <Button label="ASOCIAR" style={{ fontSize: '0.5rem', backgroundColor: 'blue' }} onClick={() => asociarServicioEtiqueta(etiquetaAsociacionServicio)} disabled={!isFormValidAsociado}/>
+                                    <Toast ref={toastAsociacion} />
+                                    <Button label="ASOCIAR" style={{ fontSize: '0.5rem', backgroundColor: isFormValidAsociado ? 'blue' : 'gray' }} onClick={() => asociarServicioEtiqueta(etiquetaAsociacionServicio)} disabled={!isFormValidAsociado}/>
                                 </div>
                             </div>
                         </div>
                         <Divider/>
                         <div style={{ textAlign: 'center', width:'600px' }}>
                             <p style={{fontWeight: 'bold' }}>LISTA DE ETIQUETAS ASOCIADAS </p>
-                            <Toast ref={toast} />
-                            <DataTable value={etiquetasListarAsociadas} tableStyle={{ width:'500px' , margin: 'auto'}} bodystyle={{ textAlign: 'center' }}>
+                            <Toast ref={toastAsociacion} />
+                            <DataTable value={etiquetasListarAsociadas} tableStyle={{ width:'500px' , margin: 'auto'}} bodystyle={{ textAlign: 'center' }} emptyMessage={<strong>No existen etiquetas asociadas.</strong>}>
                                 <Column field="nombreEtiqueta" header="Etiqueta"></Column>
                                 <Column field="nombreServicio" header="Servicio"></Column>
                                 <Column field="nombreEscenario" header="Hospital"></Column>
@@ -1203,7 +1334,7 @@ export const GridEstudiantes = ({ asignatura }) => {
                             <p style={{  }}><span style={{ fontWeight: 'bold' }}>DIA:</span> {diaSeleccionado !== null ? diaSeleccionado.getDate() + " / " + diaSeleccionado.toLocaleDateString('es-ES', { weekday: 'long' }) : ''}</p>
                             <br></br>
                         </div>
-                        <DataTable value={estudiantesConAlimentacion} tableStyle={{ minWidth: '50rem' }}>
+                        <DataTable value={estudiantesConAlimentacion} tableStyle={{ minWidth: '50rem' }} emptyMessage={<strong>No hay turnos registrados para este dia.</strong>}>
                                     <Column header="Nombre y Apellidos"
                                     body={(rowData) => {
                                         return (
@@ -1287,24 +1418,196 @@ export const GridEstudiantes = ({ asignatura }) => {
                     />
                     <button onClick={irSemanaAnterior} style={{ marginRight: '2px' }}>&lt;</button>
                     <button onClick={irSemanaSiguiente} style={{ marginRight: '10px' }}>&gt;</button>
-                    <Button label="Validación de turnos" onClick={() => handleEstudiantesValidacion()} style={{ fontSize: '0.8rem', backgroundColor: 'red', marginRight: '5px' }}  />
+                    <Button label="Validación de turnos" onClick={() => handleEstudiantesValidacion()} style={{ fontSize: '0.8rem', backgroundColor: isUltimaSemanaDelMes() ? 'red' : 'gray', marginRight: '5px' }} disabled={!isUltimaSemanaDelMes()} />
                     <Dialog header="VALIDACIÓN DE TURNOS" visible={visibleValidarTurnos} style={{ width: '65vw' }} onHide={() => setVisibleValidarTurnos(false)}>
                         <div>
-                            <Button label="MES:" style={{ fontSize: '0.8rem',marginLeft: '10px', backgroundColor: 'blue' }} />
-                            <Button label="AÑO" style={{ fontSize: '0.8rem', backgroundColor: 'blue' }}/>
-                            <span className="p-input-icon-left" style={{ marginRight: '15px' }}>
+                            <Button label={`MES: ${months.find(m => m.value === month)?.label}`} style={{ fontSize: '0.8rem',marginLeft: '10px', backgroundColor: 'blue' }} />
+                            <Button label={`AÑO: ${year}`} style={{ fontSize: '0.8rem', backgroundColor: 'blue' }}/>
+                            <span className="p-input-icon-left" style={{ marginLeft: '15px',marginRight: '15px' }}>
                                 <i className="pi pi-search" />
-                                <InputText
+                                {botonTurnosTodos && (
+                                    <InputText
                                     placeholder="Buscar estudiante por nombre"
                                     style={{ fontSize: '0.8rem', width: '230px', height: '30px' }}
-                                />
+                                    value={filtroTurnosTodos}
+                                    onChange={handleFiltroChangeTurnosTodos}
+                                    />
+                                )}
+                                {botonTurnosAprobados && (
+                                    <InputText
+                                    placeholder="Buscar estudiante por nombre"
+                                    style={{ fontSize: '0.8rem', width: '230px', height: '30px' }}
+                                    value={filtroTurnosAprobados}
+                                    onChange={handleFiltroChangeTurnosAprobados}
+                                    />
+                                )}
+                                {botonTurnosNoAprobados && (
+                                    <InputText
+                                    placeholder="Buscar estudiante por nombre"
+                                    style={{ fontSize: '0.8rem', width: '230px', height: '30px' }}
+                                    value={filtroTurnosNoAprobados}
+                                    onChange={handleFiltroChangeTurnosNoAprobados}
+                                    />
+                                )}
+                                {botonTurnosSinValidar && (
+                                    <InputText
+                                    placeholder="Buscar estudiante por nombre"
+                                    style={{ fontSize: '0.8rem', width: '230px', height: '30px' }}
+                                    value={filtroTurnosSinValidar}
+                                    onChange={handleFiltroChangeTurnosSinValidar}
+                                    />
+                                )}
                             </span>
                             <Button label="TODOS" style={{ fontSize: '0.8rem',marginLeft: '10px', backgroundColor: botonTurnosTodos ? 'red' : 'grey' }} onClick={() => handleClickEstadoBotonesValidarTurno('todos')} />
                             <Button label="APROBADOS" style={{ fontSize: '0.8rem', backgroundColor: botonTurnosAprobados ? 'red' : 'grey' }} onClick={() => handleClickEstadoBotonesValidarTurno('aprobados')}/>
                             <Button label="NO APROBADOS" style={{ fontSize: '0.8rem', backgroundColor: botonTurnosNoAprobados ? 'red' : 'grey' }}  onClick={() => handleClickEstadoBotonesValidarTurno('noAprobados')} />
                             <Button label="SIN VALIDAR" style={{ fontSize: '0.8rem', backgroundColor: botonTurnosSinValidar ? 'red' : 'grey' }}  onClick={() => handleClickEstadoBotonesValidarTurno('sinValidar')} />
-                        
-                            <DataTable value={estudiantesValidacion} tableStyle={{ minWidth: '200px' }}>
+                            {botonTurnosTodos ? (
+                                <DataTable value={estudiantesTurnosFiltradosTodos} tableStyle={{ minWidth: '200px' }} emptyMessage={<strong>No hay turnos por validar.</strong>}>
+                                <Column
+                                    header="NOMBRE"
+                                    body={(rowData) => (
+                                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                                        <PerfilEstudiante
+                                        src="https://primefaces.org/cdn/primereact/images/avatar/amyelsner.png"
+                                        style={{ marginBottom: '0.5rem' }}
+                                        />
+                                        <p style={{ fontSize: '0.8rem', margin: 0, fontWeight: 'bold', marginLeft: '0.5rem' }}>
+                                        {rowData.nombreCompleto}
+                                        </p>
+                                    </div>
+                                    )}
+                                />
+                                <Column
+                                    header="¿EL ESTUDIANTE ASISTIÓ A LOS TURNOS?"
+                                    body={(rowData) => (
+                                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                          <div style={{ display: 'flex', alignItems: 'center', width: '80px', justifyContent: 'center' }}>
+                                            <RadioButton
+                                                value={true}
+                                                onChange={(e) => handleValidarAsistencia(rowData, e.value)}
+                                                checked={rowData.asistencia === true}
+                                            />
+                                            <label htmlFor="si" className="ml-2"> Si </label>
+                                            </div>
+                                          <div style={{ display: 'flex', alignItems: 'center', width: '80px', justifyContent: 'center' }}>
+                                            <RadioButton
+                                              value={false}
+                                              onChange={(e) => handleValidarAsistencia(rowData, e.value)}
+                                              checked={rowData.asistencia === false}
+                                            />
+                                            <label htmlFor="no" className="ml-2"> No </label>
+                                          </div>
+                                        </div>
+                                      )}
+                                />
+                                <Column header="ESTADO" style={{ textAlign: 'center' }} 
+                                    body={(rowData) => (
+                                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                            {rowData.estado === true && (
+                                                <Tag severity="info" value="APROBADO" />
+                                            )}
+                                            {rowData.estado === false && (
+                                                <Tag severity="danger" value="NO APROBADO" />
+                                            )}
+                                            {rowData.estado === null && (
+                                                <Tag severity="danger" value="SIN VALIDAR" />
+                                            )}
+                                        </div>
+                                      )}
+                                />
+                                <Column header="OBSERVACIONES" style={{ textAlign: 'center' }} 
+                                    body={(rowData) => (
+                                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                        <InputTextarea
+                                            autoResize
+                                            value={rowData.observaciones}
+                                            onChange={(e) => handleObservacionesChange(rowData, e.target.value)}
+                                            rows={0}
+                                            cols={20}
+                                            disabled={rowData.asistencia === true || rowData.asistencia === null}
+                                            style={{
+                                                backgroundColor: rowData.asistencia === true || rowData.asistencia === null ? 'lightgray' : 'inherit'
+                                            }}
+                                        />
+                                        </div>
+                                    )}
+                                />
+                                </DataTable>
+                            ) : botonTurnosAprobados ? (
+                                <DataTable value={estudiantesTurnosFiltradosAprobados} tableStyle={{ minWidth: '200px' }} emptyMessage={<strong>No hay turnos por validar.</strong>}>
+                            <Column
+                                header="NOMBRE"
+                                body={(rowData) => (
+                                <div style={{ display: 'flex', alignItems: 'center' }}>
+                                    <PerfilEstudiante
+                                    src="https://primefaces.org/cdn/primereact/images/avatar/amyelsner.png"
+                                    style={{ marginBottom: '0.5rem' }}
+                                    />
+                                    <p style={{ fontSize: '0.8rem', margin: 0, fontWeight: 'bold', marginLeft: '0.5rem' }}>
+                                    {rowData.nombreCompleto}
+                                    </p>
+                                </div>
+                                )}
+                            />
+                            <Column
+                                header="¿EL ESTUDIANTE ASISTIÓ A LOS TURNOS?"
+                                body={(rowData) => (
+                                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                      <div style={{ display: 'flex', alignItems: 'center', width: '80px', justifyContent: 'center' }}>
+                                        <RadioButton
+                                            value={true}
+                                            onChange={(e) => handleValidarAsistencia(rowData, e.value)}
+                                            checked={rowData.asistencia === true}
+                                        />
+                                        <label htmlFor="si" className="ml-2"> Si </label>
+                                        </div>
+                                      <div style={{ display: 'flex', alignItems: 'center', width: '80px', justifyContent: 'center' }}>
+                                        <RadioButton
+                                          value={false}
+                                          onChange={(e) => handleValidarAsistencia(rowData, e.value)}
+                                          checked={rowData.asistencia === false}
+                                        />
+                                        <label htmlFor="no" className="ml-2"> No </label>
+                                      </div>
+                                    </div>
+                                  )}
+                            />
+                            <Column header="ESTADO" style={{ textAlign: 'center' }} 
+                                body={(rowData) => (
+                                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                        {rowData.estado === true && (
+                                            <Tag severity="info" value="APROBADO" />
+                                        )}
+                                        {rowData.estado === false && (
+                                            <Tag severity="danger" value="NO APROBADO" />
+                                        )}
+                                        {rowData.estado === null && (
+                                            <Tag severity="danger" value="SIN VALIDAR" />
+                                        )}
+                                    </div>
+                                  )}
+                            />
+                            <Column header="OBSERVACIONES" style={{ textAlign: 'center' }} 
+                                body={(rowData) => (
+                                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                    <InputTextarea
+                                        autoResize
+                                        value={rowData.observaciones}
+                                        onChange={(e) => handleObservacionesChange(rowData, e.target.value)}
+                                        rows={0}
+                                        cols={20}
+                                        disabled={rowData.asistencia === true || rowData.asistencia === null}
+                                        style={{
+                                            backgroundColor: rowData.asistencia === true || rowData.asistencia === null ? 'lightgray' : 'inherit'
+                                        }}
+                                    />
+                                    </div>
+                                )}
+                            />
+                                </DataTable>
+                            ) : botonTurnosNoAprobados ? (
+                                <DataTable value={estudiantesTurnosFiltradosNoAprobados} tableStyle={{ minWidth: '200px' }} emptyMessage={<strong>No hay turnos por validar.</strong>}>
                             <Column
                                 header="NOMBRE"
                                 body={(rowData) => (
@@ -1375,18 +1678,84 @@ export const GridEstudiantes = ({ asignatura }) => {
                                 )}
                             />
                             </DataTable>
-
-                        
-                        
-                        
-                        
-                        
-                        
+                            ) : (
+                                <DataTable value={estudiantesTurnosFiltradosSinValidar} tableStyle={{ minWidth: '200px' }} emptyMessage={<strong>No hay turnos por validar.</strong>}>
+                            <Column
+                                header="NOMBRE"
+                                body={(rowData) => (
+                                <div style={{ display: 'flex', alignItems: 'center' }}>
+                                    <PerfilEstudiante
+                                    src="https://primefaces.org/cdn/primereact/images/avatar/amyelsner.png"
+                                    style={{ marginBottom: '0.5rem' }}
+                                    />
+                                    <p style={{ fontSize: '0.8rem', margin: 0, fontWeight: 'bold', marginLeft: '0.5rem' }}>
+                                    {rowData.nombreCompleto}
+                                    </p>
+                                </div>
+                                )}
+                            />
+                            <Column
+                                header="¿EL ESTUDIANTE ASISTIÓ A LOS TURNOS?"
+                                body={(rowData) => (
+                                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                      <div style={{ display: 'flex', alignItems: 'center', width: '80px', justifyContent: 'center' }}>
+                                        <RadioButton
+                                            value={true}
+                                            onChange={(e) => handleValidarAsistencia(rowData, e.value)}
+                                            checked={rowData.asistencia === true}
+                                        />
+                                        <label htmlFor="si" className="ml-2"> Si </label>
+                                        </div>
+                                      <div style={{ display: 'flex', alignItems: 'center', width: '80px', justifyContent: 'center' }}>
+                                        <RadioButton
+                                          value={false}
+                                          onChange={(e) => handleValidarAsistencia(rowData, e.value)}
+                                          checked={rowData.asistencia === false}
+                                        />
+                                        <label htmlFor="no" className="ml-2"> No </label>
+                                      </div>
+                                    </div>
+                                  )}
+                            />
+                            <Column header="ESTADO" style={{ textAlign: 'center' }} 
+                                body={(rowData) => (
+                                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                        {rowData.estado === true && (
+                                            <Tag severity="info" value="APROBADO" />
+                                        )}
+                                        {rowData.estado === false && (
+                                            <Tag severity="danger" value="NO APROBADO" />
+                                        )}
+                                        {rowData.estado === null && (
+                                            <Tag severity="danger" value="SIN VALIDAR" />
+                                        )}
+                                    </div>
+                                  )}
+                            />
+                            <Column header="OBSERVACIONES" style={{ textAlign: 'center' }} 
+                                body={(rowData) => (
+                                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                    <InputTextarea
+                                        autoResize
+                                        value={rowData.observaciones}
+                                        onChange={(e) => handleObservacionesChange(rowData, e.target.value)}
+                                        rows={0}
+                                        cols={20}
+                                        disabled={rowData.asistencia === true || rowData.asistencia === null}
+                                        style={{
+                                            backgroundColor: rowData.asistencia === true || rowData.asistencia === null ? 'lightgray' : 'inherit'
+                                        }}
+                                    />
+                                    </div>
+                                )}
+                            />
+                                </DataTable>
+                            )}        
                         </div>
                     </Dialog>
                 </div>
                 <div style={{ height: '425px', overflow: 'auto' }}>
-                    <DataTable value={estudiantesFiltradosSeleccionados} tableStyle={{ minWidth: '50rem' }}>
+                    <DataTable value={estudiantesFiltradosSeleccionados} tableStyle={{ minWidth: '50rem' }} emptyMessage={<strong>No hay estudiantes seleccionados.</strong>}>
                         <Column
                             header={
                                 <div style={{ width: '80px', height:'55px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexDirection: 'column', padding: '8px', position: 'relative' }}>
@@ -1533,7 +1902,6 @@ export const GridEstudiantes = ({ asignatura }) => {
                         })}
                     </DataTable>
                 </div>
-
                 <Dialog header="GESTIONAR TURNO" visible={visibleTurnos} onHide={() => setVisibleTurnos(false)}>
                 {selectedDate && selectedEstudiante && (
                     <div>
