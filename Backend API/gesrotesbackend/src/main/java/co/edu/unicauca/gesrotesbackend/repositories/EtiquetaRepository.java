@@ -36,7 +36,7 @@ public interface EtiquetaRepository extends JpaRepository<Etiqueta, Integer> {
     @Modifying
     @Transactional
     @Query(value = "INSERT INTO tbl_etiqueta (eti_nombre, esc_id) " +
-            "VALUE(:nombreEtiqueta, :idEscenario)", nativeQuery = true)
+            "VALUES(:nombreEtiqueta, :idEscenario)", nativeQuery = true)
     int saveLabel(@Param("nombreEtiqueta") String nombre, @Param("idEscenario") int idEscenario);
 
     /**

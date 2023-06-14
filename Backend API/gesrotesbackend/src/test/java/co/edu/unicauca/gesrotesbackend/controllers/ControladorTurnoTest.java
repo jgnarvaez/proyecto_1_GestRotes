@@ -4,8 +4,11 @@ import static org.hamcrest.Matchers.hasSize;
 // import static org.mockito.ArgumentMatchers.any;
 // import static org.mockito.ArgumentMatchers.anyInt;
 // import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.assertj.core.api.Assertions.assertThat;
+
+import co.edu.unicauca.gesrotesbackend.services.DTO.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -30,15 +33,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 import co.edu.unicauca.gesrotesbackend.models.TipoAlimentacion;
-import co.edu.unicauca.gesrotesbackend.services.DTO.EstudianteSeleccionadoDTO;
-import co.edu.unicauca.gesrotesbackend.services.DTO.HorarioDTO;
-import co.edu.unicauca.gesrotesbackend.services.DTO.InformacionHorarioTurnoDTO;
-import co.edu.unicauca.gesrotesbackend.services.DTO.JornadaDTO;
-import co.edu.unicauca.gesrotesbackend.services.DTO.NuevoTurnoDTO;
-import co.edu.unicauca.gesrotesbackend.services.DTO.SeleccionEstudianteDTO;
-import co.edu.unicauca.gesrotesbackend.services.DTO.SeleccionEstudiantesDTO;
-import co.edu.unicauca.gesrotesbackend.services.DTO.TurnoAsociadoDTO;
-import co.edu.unicauca.gesrotesbackend.services.DTO.TurnoCreadoDTO;
 import co.edu.unicauca.gesrotesbackend.services.services.ITurnoService;
 
 import java.sql.Date;
@@ -304,6 +298,48 @@ public class ControladorTurnoTest {
     }
 
     @Test
+    void modifyShiftTest() throws Exception {
+        // given
+        TurnoAModificarDTO turnoAModificarDTO = new TurnoAModificarDTO(1, 2, 2);
+        given(service.modificarTurno(any(TurnoAModificarDTO.class))).willReturn(true);
+
+        // when
+        ResultActions response = mockMvc.perform(put(url)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(turnoAModificarDTO)));
+
+        // then
+        response.andExpect(status().isOk())
+                .andExpect(content().string("Turno modificado exitosamente!"));
+
+        ArgumentCaptor<TurnoAModificarDTO> turnoAModificarDTOArgumentCaptorArgumentCaptor = ArgumentCaptor.forClass(TurnoAModificarDTO.class);
+        verify(service).modificarTurno(turnoAModificarDTOArgumentCaptorArgumentCaptor.capture());
+        TurnoAModificarDTO turnoAModificarDTODos = turnoAModificarDTOArgumentCaptorArgumentCaptor.getValue();
+        verify(service, times(1)).modificarTurno(turnoAModificarDTODos);
+    }
+
+    @Test
+    void cannotModifyShiftTest() throws Exception {
+        // given
+        TurnoAModificarDTO turnoAModificarDTO = new TurnoAModificarDTO(1, 2, 2);
+        given(service.modificarTurno(any(TurnoAModificarDTO.class))).willReturn(false);
+
+        // when
+        ResultActions response = mockMvc.perform(put(url)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(turnoAModificarDTO)));
+
+        // then
+        response.andExpect(status().isInternalServerError())
+                .andExpect(content().string("NO se pudo modificar el turno"));
+
+        ArgumentCaptor<TurnoAModificarDTO> turnoAModificarDTOArgumentCaptorArgumentCaptor = ArgumentCaptor.forClass(TurnoAModificarDTO.class);
+        verify(service).modificarTurno(turnoAModificarDTOArgumentCaptorArgumentCaptor.capture());
+        TurnoAModificarDTO turnoAModificarDTODos = turnoAModificarDTOArgumentCaptorArgumentCaptor.getValue();
+        verify(service, times(1)).modificarTurno(turnoAModificarDTODos);
+    }
+
+    @Test
     void deleteTest() throws Exception {
         // given
         int idTurno = 1;
@@ -319,4 +355,102 @@ public class ControladorTurnoTest {
         verify(service, times(1)).eliminarTurnoAsociado(idTurno);
     }
 
+    @Test
+    void findStudentsWithFoodTest() throws Exception {
+        // given
+        int progId = 1;
+        int asigId = 3;
+        int cooId = 1;
+        Date fecha = Date.valueOf("2023-06-10");
+        String urlGetStudentsWithFood = url + "estudiantesConAlimentacion/"+progId+"/"+asigId+"/"+cooId+"/"+fecha;
+        List<InformacionHorarioTurnoDTO> estudiantesConAlimentacion = new ArrayList<>();
+        estudiantesConAlimentacion.add(new InformacionHorarioTurnoDTO("Juan Camilo Sanchez",
+                                                "06:30 a 12:00 y 14:00 a 21:00 ",
+                                                    true, null, true));
+        estudiantesConAlimentacion.add(new InformacionHorarioTurnoDTO("Hector Esteban Coral",
+                                                "11:30 a 21:30 ",
+                                                true, true, true));
+        given(service.obtenerEstudiantesConAlimentacion(fecha, progId, asigId, cooId))
+                    .willReturn(estudiantesConAlimentacion);
+
+        // when
+        ResultActions response = mockMvc.perform(get(urlGetStudentsWithFood));
+
+        // then
+        response.andExpect(status().isOk())
+                .andExpect(content().json(objectMapper.writeValueAsString(estudiantesConAlimentacion)))
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$").isArray())
+                .andExpect(jsonPath("$", hasSize(estudiantesConAlimentacion.size())));
+
+        verify(service, times(1)).obtenerEstudiantesConAlimentacion(fecha, progId, asigId, cooId);
+    }
+
+    @Test
+    void findStudentsToValidateTest() throws Exception {
+        // given
+        int progId = 1;
+        int asigId = 3;
+        int cooId = 1;
+        String mes = "Junio";
+        int anio = 2023;
+        String urlGetStudentsToValidate = url + "estudiantesAValidar/"+progId+"/"+asigId+"/"+cooId+"/"+mes+"/"+anio;
+        List<ValidacionEstudianteDTO> validacionEstudiantes = new ArrayList<>();
+        validacionEstudiantes.add(new ValidacionEstudianteDTO(1,"Juan Camilo Sanchez",
+                                                    true, true, null));
+        validacionEstudiantes.add(new ValidacionEstudianteDTO(2, "Hector Esteban Coral",
+                                                    false, false, "mal comportamiento"));
+        given(service.obtenerEstudiantesValidacion(progId, asigId, cooId, mes, anio))
+                    .willReturn(validacionEstudiantes);
+
+        // when
+        ResultActions response = mockMvc.perform(get(urlGetStudentsToValidate));
+
+        // then
+        response.andExpect(status().isOk())
+                .andExpect(content().json(objectMapper.writeValueAsString(validacionEstudiantes)))
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$").isArray())
+                .andExpect(jsonPath("$", hasSize(validacionEstudiantes.size())));
+
+        verify(service, times(1)).obtenerEstudiantesValidacion(progId, asigId, cooId, mes, anio);
+    }
+
+    @Test
+    void validateAttendanceTest() throws Exception {
+        // given
+        ValidacionTurnoDTO validacionTurnoDTO = new ValidacionTurnoDTO(1, true, "");
+        String urlValidateAttendance = url + "validarAsistencia";
+        // when
+        ResultActions response = mockMvc.perform(put(urlValidateAttendance)
+                                        .contentType(MediaType.APPLICATION_JSON)
+                                        .content(objectMapper.writeValueAsString(validacionTurnoDTO)));
+
+        // then
+        response.andExpect(status().isOk());
+
+        ArgumentCaptor<ValidacionTurnoDTO> validacionTurnoDTOArgumentCapture = ArgumentCaptor.forClass(ValidacionTurnoDTO.class);
+        verify(service).modificarAsistenciaYEstado(validacionTurnoDTOArgumentCapture.capture());
+        ValidacionTurnoDTO validacionTurnoDTOCapturado = validacionTurnoDTOArgumentCapture.getValue();
+        verify(service, times(1)).modificarAsistenciaYEstado(validacionTurnoDTOCapturado);
+    }
+
+    @Test
+    void modifyObservationsTest() throws Exception {
+        // given
+        ModificarObsDTO modificarObsDTO = new ModificarObsDTO(2, "mal comportamiento");
+        String urlModifyObservations = url + "modificarObservaciones";
+        // when
+        ResultActions response = mockMvc.perform(put(urlModifyObservations)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(modificarObsDTO)));
+
+        // then
+        response.andExpect(status().isOk());
+
+        ArgumentCaptor<ModificarObsDTO> modificarObsDTOArgumentCapture = ArgumentCaptor.forClass(ModificarObsDTO.class);
+        verify(service).modificarObservaciones(modificarObsDTOArgumentCapture.capture());
+        ModificarObsDTO modificarObsDTOCapturado = modificarObsDTOArgumentCapture.getValue();
+        verify(service, times(1)).modificarObservaciones(modificarObsDTOCapturado);
+    }
 }
