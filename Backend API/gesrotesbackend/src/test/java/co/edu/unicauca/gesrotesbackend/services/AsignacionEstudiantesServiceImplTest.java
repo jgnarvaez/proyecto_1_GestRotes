@@ -25,6 +25,7 @@ import co.edu.unicauca.gesrotesbackend.models.EstAsignacion;
 import co.edu.unicauca.gesrotesbackend.models.EstAsignacionId;
 import co.edu.unicauca.gesrotesbackend.models.Estudiante;
 import co.edu.unicauca.gesrotesbackend.models.Programa;
+import co.edu.unicauca.gesrotesbackend.models.ValidacionTurnos;
 import co.edu.unicauca.gesrotesbackend.repositories.AsignacionRepository;
 import co.edu.unicauca.gesrotesbackend.repositories.AsignaturaRepository;
 import co.edu.unicauca.gesrotesbackend.repositories.CoordinadorAsigRepository;
@@ -265,5 +266,90 @@ public class AsignacionEstudiantesServiceImplTest {
         serviceUnderTest.deleteStudent(cooId, progId, asigId, estId);
         // then
         verify(estAsignacionRepository).deleteStudent(progId, asigId, cooId, estId);
+    }
+
+    @Test
+    void crearValidacionTurnosTest() {
+        // given
+        int studId = 4;
+        int progId = 1;
+        int subjId = 3;
+        int cooId = 1;
+
+        Estudiante estudiante = new Estudiante();
+        estudiante.setId(studId);
+        estudiante.setNombres("Cristian");
+        estudiante.setApellidos("Gomez Santos");
+        estudiante.setIdentificacion(106813022001L);
+        estudiante.setUsuario("cgomezs");
+        estudiante.setFotoPerfil("url foto");
+
+        Programa programa = new Programa(progId, "Enfermería");
+
+        Asignatura asignatura = new Asignatura(subjId, "Cuidado de Enfermería en salud comunitaria y familiar");
+
+        CoordinadorAsignatura coordinadorAsignatura = new CoordinadorAsignatura();
+        coordinadorAsignatura.setId(cooId);
+        coordinadorAsignatura.setNombres("Jorge Ivan");
+        coordinadorAsignatura.setApellidos("Solano");
+        coordinadorAsignatura.setCorreo("jsolano");
+        coordinadorAsignatura.setClave("1234");
+        coordinadorAsignatura.setFotoPerfil("url foto");
+
+        AsignacionId idAsignacion = new AsignacionId(programa, asignatura, coordinadorAsignatura);
+
+        Asignacion asignacion = new Asignacion(idAsignacion);
+
+        EstAsignacionId idEstAsignacion = new EstAsignacionId(estudiante, asignacion);
+
+        EstAsignacion estAsignacion = new EstAsignacion(idEstAsignacion, false);
+
+        given(estAsignacionRepository.getRowByIds(studId, progId, subjId, cooId)).willReturn(estAsignacion);
+
+        // when
+        serviceUnderTest.crearValidacionTurnos(studId, progId, subjId, cooId);
+
+        // then
+        ArgumentCaptor<ValidacionTurnos> validacionTurnosArgumentCaptor = ArgumentCaptor.forClass(ValidacionTurnos.class);
+
+        verify(validacionTurnosRepository).save(validacionTurnosArgumentCaptor.capture());
+
+        ValidacionTurnos validacionTurnosCapturado = validacionTurnosArgumentCaptor.getValue();
+
+        assertThat(validacionTurnosCapturado.getId().getEstAsignacion().getId().getEstudiante())
+                .isEqualTo(estAsignacion.getId().getEstudiante());
+        assertThat(validacionTurnosCapturado.getId().getEstAsignacion().getId().getAsignacion().getId().getPrograma())
+                .isEqualTo(estAsignacion.getId().getAsignacion().getId().getPrograma());
+        assertThat(validacionTurnosCapturado.getId().getEstAsignacion().getId().getAsignacion().getId().getAsignatura())
+                .isEqualTo(estAsignacion.getId().getAsignacion().getId().getAsignatura());
+        assertThat(validacionTurnosCapturado.getId().getEstAsignacion().getId().getAsignacion().getId().getCoordinador())
+                .isEqualTo(estAsignacion.getId().getAsignacion().getId().getCoordinador());
+    }
+
+    @Test
+    void deleteAssociationsInValidationTest(){
+        // given
+        int progId = 1;
+        int subjId = 3;
+        int cooId = 1;
+
+        // when
+        serviceUnderTest.deleteAssociationsInValidation(progId, subjId, cooId);
+
+        // then
+        verify(validacionTurnosRepository).deleteRowsByAsignation(progId, subjId, cooId);
+    }
+
+    @Test
+    void deleteAssociationInValidationTest(){
+        // given
+        int studId = 4;
+        int progId = 1;
+        int subjId = 3;
+        int cooId = 1;
+        // when
+        serviceUnderTest.deleteAssociationInValidation(studId, progId, subjId, cooId);
+        // then
+        verify(validacionTurnosRepository).deleteRowByUnique(studId, progId, subjId, cooId);
     }
 }

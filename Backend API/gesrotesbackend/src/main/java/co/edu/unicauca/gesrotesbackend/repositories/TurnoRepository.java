@@ -101,31 +101,6 @@ public interface TurnoRepository extends JpaRepository<Turno, TurnoId> {
             "AND t.fecha = :fecha ")
     List<TurnoAsociadoDTO> findShiftsAssociationsByDate2(@Param("estudianteId") int estudianteId, @Param("fecha") Date fecha);
 
-    /**
-     *  Elimina un registro de la tabla tbl_turno, dados unos parametros específicos
-     *  
-     *  @param fecha : fecha del turno
-     *  @param estudianteId : id del estudiante asociado
-     *  @param programaId : id del programa asociado
-     *  @param asignaturaId : id de la asignatura asociada
-     *  @param coordinadorId : id del coordinador asociado
-     *  @param jornadaId : id de la jornada asociada
-     *  @param etiquetaId : id de la etiqueta asociada
-    */
-    @Modifying
-    @Transactional
-    @Query("DELETE FROM Turno t " +
-            "WHERE t.fecha = :fecha " +
-            "AND t.id.estAsignacion.id.estudiante.id = :estudianteId " +
-            "AND t.id.estAsignacion.id.asignacion.id.programa.id = :programaId " +
-            "AND t.id.estAsignacion.id.asignacion.id.asignatura.id = :asignaturaId " +
-            "AND t.id.estAsignacion.id.asignacion.id.coordinador.id = :coordinadorId " +
-            "AND t.jornada.id = :jornadaId " +
-            "AND t.etiqueta.id = :etiquetaId")
-    void deleteRowByIdsAndOthers(@Param("fecha") Date fecha, @Param("estudianteId") int estudianteId, @Param("programaId") int programaId, 
-                                        @Param("asignaturaId") int asignaturaId, @Param("coordinadorId") int coordinadorId,
-                                        @Param("jornadaId") int jornadaId, @Param("etiquetaId") int etiquetaId);
-
     /** Elimina un registro de la tabla tbl_turno mediante el id del turno
      *  
      *  @param idTurno : id del turno a eliminar

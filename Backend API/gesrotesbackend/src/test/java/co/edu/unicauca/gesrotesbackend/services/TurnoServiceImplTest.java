@@ -3,12 +3,13 @@ package co.edu.unicauca.gesrotesbackend.services;
 import java.sql.Date;
 import java.sql.Time;
 
-// import static org.mockito.Mockito.RETURNS_MOCKS;
 // import static org.mockito.Mockito.doNothing;
 import static org.mockito.ArgumentMatchers.*;
 
 import java.util.Optional;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -30,17 +31,18 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-// import org.mockito.internal.matchers.InstanceOf;
 import org.mockito.junit.jupiter.MockitoExtension;
-// import org.springframework.test.context.jdbc.Sql;
 
 import co.edu.unicauca.gesrotesbackend.models.Jornada;
+import co.edu.unicauca.gesrotesbackend.models.Mes;
 import co.edu.unicauca.gesrotesbackend.models.Programa;
 import co.edu.unicauca.gesrotesbackend.models.Servicio;
 import co.edu.unicauca.gesrotesbackend.models.TipoAlimentacion;
 import co.edu.unicauca.gesrotesbackend.models.Etiqueta;
 import co.edu.unicauca.gesrotesbackend.models.Turno;
 import co.edu.unicauca.gesrotesbackend.models.TurnoId;
+import co.edu.unicauca.gesrotesbackend.models.ValidacionTurnos;
+import co.edu.unicauca.gesrotesbackend.models.ValidacionTurnosId;
 import co.edu.unicauca.gesrotesbackend.models.Asignacion;
 import co.edu.unicauca.gesrotesbackend.models.AsignacionId;
 import co.edu.unicauca.gesrotesbackend.models.Asignatura;
@@ -135,84 +137,6 @@ public class TurnoServiceImplTest {
         // then
         verify(jornadaRepository).findAll();
     }
-
-    /*@Test
-    void test_Can_CreateShift() {
-        // given
-        NuevoTurnoDTO  nuevoTurnoDTO = new NuevoTurnoDTO(Date.valueOf("2023-05-12"), 1, 2, 3, 4, 
-                                                5, 6);
-        TipoAlimentacion alimentacion = TipoAlimentacion.Desayuno;
-        
-        Jornada jornada = new Jornada(nuevoTurnoDTO.getIdJornada(), "Mañana", Time.valueOf("06:30:00"), Time.valueOf("11:35:00"));
-        
-        EscenarioPractica escenario = new EscenarioPractica(1, "Hospital San Jose");
-        
-        Servicio servicio = new Servicio(1, "Cardiologia");
-        
-        Etiqueta etiqueta = new Etiqueta(1, "Primer piso", escenario, servicio);
-        
-        Estudiante estudiante = new Estudiante();
-        estudiante.setId(1);
-        estudiante.setNombres("Cristian");
-        estudiante.setApellidos("Gomez Santos");
-        estudiante.setIdentificacion(106813022001L);
-        estudiante.setUsuario("cgomezs");
-        estudiante.setFotoPerfil("url foto");
-
-        Programa programa = new Programa(1, "Enfermería");
-        
-        Asignatura asignatura = new Asignatura(1, "Cuidado de Enfermería en salud comunitaria y familiar");
-        
-        CoordinadorAsignatura coordinadorAsignatura = new CoordinadorAsignatura();
-        coordinadorAsignatura.setId(1);
-        coordinadorAsignatura.setNombres("Jorge Ivan");
-        coordinadorAsignatura.setApellidos("Solano");
-        coordinadorAsignatura.setCorreo("jsolano");
-        coordinadorAsignatura.setClave("1234");
-        coordinadorAsignatura.setFotoPerfil("url foto");
-        
-        AsignacionId idAsignacion = new AsignacionId(programa, asignatura, coordinadorAsignatura);
-        
-        Asignacion asignacion = new Asignacion(idAsignacion);
-        EstAsignacionId idEstAsignacion = new EstAsignacionId(estudiante, asignacion);
-        EstAsignacion estAsignacion = new EstAsignacion(idEstAsignacion, true);
-        TurnoId idTurno = new TurnoId();
-        idTurno.setEstAsignacion(estAsignacion);
-        Turno turno = new Turno(idTurno, nuevoTurnoDTO.getFechaTurno(), alimentacion, jornada, etiqueta);
-        given(jornadaRepository.findById(nuevoTurnoDTO.getIdJornada())).willReturn(Optional.of(jornada));
-        given(etiquetaRepository.findById(nuevoTurnoDTO.getIdEtiqueta())).willReturn(Optional.of(etiqueta));
-        given(estAsignacionRepository.getRowByIds(nuevoTurnoDTO.getIdEstudiante(), nuevoTurnoDTO.getIdPrograma(), 
-                                                    nuevoTurnoDTO.getIdAsignatura(), nuevoTurnoDTO.getIdCoordinador()))
-                                                    .willReturn(estAsignacion);
-        given(turnoRepository.alreadyExists(nuevoTurnoDTO.getFechaTurno(), nuevoTurnoDTO.getIdEstudiante(), 
-                                            nuevoTurnoDTO.getIdPrograma(), nuevoTurnoDTO.getIdAsignatura(), 
-                                            nuevoTurnoDTO.getIdCoordinador(), nuevoTurnoDTO.getIdJornada(), 
-                                            nuevoTurnoDTO.getIdEtiqueta())).willReturn(0);
-        given(turnoRepository.save(turno)).willReturn(turno);
-
-        // when
-        serviceUnderTest.crearTurno(nuevoTurnoDTO);
-        
-        // then
-        ArgumentCaptor<Turno> turnoArgumentCaptor = ArgumentCaptor.forClass(Turno.class);
-
-        verify(turnoRepository).save(turnoArgumentCaptor.capture());
-
-        Turno turnoCapturado = turnoArgumentCaptor.getValue();
-
-        assertThat(turnoCapturado.getId().getEstAsignacion().getId().getEstudiante())
-                .isEqualTo(turno.getId().getEstAsignacion().getId().getEstudiante());
-        assertThat(turnoCapturado.getId().getEstAsignacion().getId().getAsignacion())
-                .isEqualTo(turno.getId().getEstAsignacion().getId().getAsignacion());
-        assertThat(turnoCapturado.getFecha())
-                .isEqualTo(turno.getFecha());
-        assertThat(turnoCapturado.getAlimentacion())
-                .isEqualTo(turno.getAlimentacion());
-        assertThat(turnoCapturado.getJornada())
-                .isEqualTo(turno.getJornada());
-        assertThat(turnoCapturado.getEtiqueta())
-                .isEqualTo(turno.getEtiqueta());
-    }*/
 
     @Test
     public void testCrearTurno_RangoDesayuno() {
@@ -628,22 +552,6 @@ public class TurnoServiceImplTest {
         assertThat(horarioTurnoDTO.rangoHorario()).isNotBlank();
     }
 
-    /*@Test
-    void test_GetAllSchedulesInSubject (){
-        // given
-        int idPrograma = 1;
-        int idCoordinador = 2;
-        int idAsignatura = 3;
-
-        // when
-        // List<HorarioDTO> horariosDTO = serviceUnderTest.obetenerHorariosTurno(idPrograma, idCoordinador, idAsignatura);
-        serviceUnderTest.obetenerHorariosTurno(idPrograma, idCoordinador, idAsignatura);
-
-        // then
-        verify(turnoRepository).findDifferentSchedules(idPrograma, idAsignatura, idCoordinador);
-        // verify(turnoRepository).findShiftsAssociationsByDate2(idAsignatura, new Date(anyLong()));
-    }*/
-
     @Test
     void obtenerHorariosTurnoTest() {
         // given
@@ -882,5 +790,310 @@ public class TurnoServiceImplTest {
         assertThat(alimentacion[0]).isEqualTo(true);
         assertThat(alimentacion[1]).isEqualTo(true);
         assertThat(alimentacion[2]).isEqualTo(true);
+    }
+
+    @Test
+    void modificarTurnoTest() {
+        //given
+        TurnoAModificarDTO turnoAModificarDTO = new TurnoAModificarDTO(1, 2, 2);
+        given(turnoRepository.updateShift(turnoAModificarDTO.getIdTurno(),turnoAModificarDTO.getIdJornada(),
+                                            turnoAModificarDTO.getIdEtiqueta())).willReturn(1);
+
+        //when
+        Boolean fueModificado = serviceUnderTest.modificarTurno(turnoAModificarDTO);
+
+        //then
+        assertThat(fueModificado).isEqualTo(true);
+    }
+
+    @Test
+    void should_not_modificarTurnoTest() {
+        //given
+        TurnoAModificarDTO turnoAModificarDTO = new TurnoAModificarDTO(1, 2, 2);
+        given(turnoRepository.updateShift(turnoAModificarDTO.getIdTurno(),turnoAModificarDTO.getIdJornada(),
+                turnoAModificarDTO.getIdEtiqueta())).willReturn(0);
+
+        //when
+        Boolean fueModificado = serviceUnderTest.modificarTurno(turnoAModificarDTO);
+
+        //then
+        assertThat(fueModificado).isEqualTo(false);
+    }
+
+    @Test
+    void obtenerEstudiantesConAlimentacionTest() {
+        // given
+        Date fechaTurno = Date.valueOf("2023-06-17");
+        int progId = 1;
+        int asigId = 2;
+        int cooId = 3;
+
+        List<Integer> listaConsulta = Arrays.asList(1, 2);
+        given(turnoRepository.findAllStudentsIdByDate(fechaTurno, progId, asigId, cooId)).willReturn(listaConsulta);
+
+        List<TurnoAsociadoDTO> turnoAsociadoDTOsUno = new ArrayList<>();
+        turnoAsociadoDTOsUno.add(new TurnoAsociadoDTO(1, "Hospital San Jose", "Mañana",
+                Time.valueOf("06:30:00"), Time.valueOf("11:30:00"),
+                "Primer piso", fechaTurno, 1, TipoAlimentacion.Desayuno,
+                "Cristian Paz"));
+        turnoAsociadoDTOsUno.add(new TurnoAsociadoDTO(2, "Hospital San Jose", "Mañana",
+                Time.valueOf("12:30:00"), Time.valueOf("13:30:00"),
+                "Primer piso", fechaTurno, 1, TipoAlimentacion.Almuerzo,
+                "Cristian Paz"));
+        List<TurnoAsociadoDTO> turnoAsociadoDTOsDos = new ArrayList<>();
+        turnoAsociadoDTOsDos.add(new TurnoAsociadoDTO(1, "Hospital San Jose", "Mañana",
+                Time.valueOf("08:30:00"), Time.valueOf("11:00:00"),
+                "Salas", fechaTurno, 2, TipoAlimentacion.Desayuno,
+                "Maria Paz"));
+        given(turnoRepository.findShiftsAssociationsByDate(1, fechaTurno)).willReturn(turnoAsociadoDTOsUno);
+        given(turnoRepository.findShiftsAssociationsByDate(2, fechaTurno)).willReturn(turnoAsociadoDTOsDos);
+
+        // when
+        List<InformacionHorarioTurnoDTO> result = serviceUnderTest.obtenerEstudiantesConAlimentacion(fechaTurno, progId, asigId, cooId);
+
+        // then
+        assertThat(result).hasSize(2);
+    }
+
+    @Test
+    void obtenerEstudiantesValidacionTest() {
+        //given
+        int progId = 1;
+        int asigId = 3;
+        int cooId = 1;
+        String mes = "Junio";
+        int anio = 2023;
+
+        //when
+        serviceUnderTest.obtenerEstudiantesValidacion(progId, asigId, cooId, mes, anio);
+
+        //then
+        verify(validacionTurnosRepository).getStudentsToValidate(Mes.valueOf(mes),anio, progId,
+                                                                asigId, cooId, Mes.valueOf(mes).getNumero());
+    }
+
+    @Test
+    void modificarMesYAnioNullTest() {
+        //given
+        int progId = 1;
+        int asigId = 3;
+        int cooId = 1;
+        String mes = "Junio";
+        Integer anio = 2023;
+
+        List<ValidacionTurnos> validacionTurnos = new ArrayList<>();
+        Estudiante estudiante = new Estudiante();
+        estudiante.setId(1);
+        estudiante.setNombres("Cristian");
+        estudiante.setApellidos("Gomez Santos");
+        estudiante.setIdentificacion(106813022001L);
+        estudiante.setUsuario("cgomezs");
+        estudiante.setFotoPerfil("url foto");
+
+        Programa programa = new Programa(progId, "Enfermería");
+
+        Asignatura asignatura = new Asignatura(asigId, "Cuidado de Enfermería en salud comunitaria y familiar");
+
+        CoordinadorAsignatura coordinadorAsignatura = new CoordinadorAsignatura();
+        coordinadorAsignatura.setId(cooId);
+        coordinadorAsignatura.setNombres("Jorge Ivan");
+        coordinadorAsignatura.setApellidos("Solano");
+        coordinadorAsignatura.setCorreo("jsolano");
+        coordinadorAsignatura.setClave("1234");
+        coordinadorAsignatura.setFotoPerfil("url foto");
+
+        AsignacionId idAsignacion = new AsignacionId(programa, asignatura, coordinadorAsignatura);
+
+        Asignacion asignacion = new Asignacion(idAsignacion);
+
+        EstAsignacionId idEstAsignacion = new EstAsignacionId(estudiante, asignacion);
+
+        EstAsignacion estAsignacion = new EstAsignacion(idEstAsignacion, false);
+
+        ValidacionTurnosId idValidacionTurnosUno = new ValidacionTurnosId();
+        idValidacionTurnosUno.setEstAsignacion(estAsignacion);
+
+        ValidacionTurnos validacionTurnosUno = new ValidacionTurnos();
+        validacionTurnosUno.setId(idValidacionTurnosUno);
+
+        validacionTurnos.add(validacionTurnosUno);
+
+        given(validacionTurnosRepository.getStudentsByProgSubjAndCoo(progId, asigId, cooId)).willReturn(validacionTurnos);
+
+        //when
+        serviceUnderTest.modificarMesYAnio(progId, asigId, cooId, mes, anio);
+
+        //then
+        verify(validacionTurnosRepository).modifyMonthAndYearOfAssosiations(Mes.valueOf(mes), anio, progId, asigId, cooId);
+    }
+
+    @Test
+    void modificarMesYAnioNotNullEmptyListTest() {
+        //given
+        int progId = 1;
+        int asigId = 3;
+        int cooId = 1;
+        String mes = "Junio";
+        Integer anio = 2023;
+
+        List<ValidacionTurnos> validacionTurnos = new ArrayList<>();
+        Estudiante estudiante = new Estudiante();
+        estudiante.setId(1);
+        estudiante.setNombres("Cristian");
+        estudiante.setApellidos("Gomez Santos");
+        estudiante.setIdentificacion(106813022001L);
+        estudiante.setUsuario("cgomezs");
+        estudiante.setFotoPerfil("url foto");
+
+        Programa programa = new Programa(progId, "Enfermería");
+
+        Asignatura asignatura = new Asignatura(asigId, "Cuidado de Enfermería en salud comunitaria y familiar");
+
+        CoordinadorAsignatura coordinadorAsignatura = new CoordinadorAsignatura();
+        coordinadorAsignatura.setId(cooId);
+        coordinadorAsignatura.setNombres("Jorge Ivan");
+        coordinadorAsignatura.setApellidos("Solano");
+        coordinadorAsignatura.setCorreo("jsolano");
+        coordinadorAsignatura.setClave("1234");
+        coordinadorAsignatura.setFotoPerfil("url foto");
+
+        AsignacionId idAsignacion = new AsignacionId(programa, asignatura, coordinadorAsignatura);
+
+        Asignacion asignacion = new Asignacion(idAsignacion);
+
+        EstAsignacionId idEstAsignacion = new EstAsignacionId(estudiante, asignacion);
+
+        EstAsignacion estAsignacion = new EstAsignacion(idEstAsignacion, false);
+
+        ValidacionTurnosId idValidacionTurnosUno = new ValidacionTurnosId();
+        idValidacionTurnosUno.setEstAsignacion(estAsignacion);
+
+        ValidacionTurnos validacionTurnosUno = new ValidacionTurnos();
+        validacionTurnosUno.setId(idValidacionTurnosUno);
+        validacionTurnosUno.setMes(Mes.valueOf("Junio"));
+        validacionTurnosUno.setAnio(anio);
+
+        validacionTurnos.add(validacionTurnosUno);
+
+        given(validacionTurnosRepository.getStudentsByProgSubjAndCoo(progId, asigId, cooId)).willReturn(validacionTurnos);
+        given(validacionTurnosRepository.getStudentsByProgSubjAndCooMonthAndYear(Mes.valueOf(mes), anio, progId, asigId,
+                                                                                cooId)).willReturn(Collections.emptyList());
+
+        //when
+        serviceUnderTest.modificarMesYAnio(progId, asigId, cooId, mes, anio);
+
+        //then
+        verify(validacionTurnosRepository, times(0))
+                .modifyMonthAndYearOfAssosiations(Mes.valueOf(mes), anio, progId, asigId, cooId);
+    }
+
+    @Test
+    void modificarMesYAnioNotNullNotEmptyListTest() {
+        //given
+        int progId = 1;
+        int asigId = 3;
+        int cooId = 1;
+        String mes = "Julio";
+        Integer anio = 2023;
+
+        List<ValidacionTurnos> validacionTurnosUno = new ArrayList<>();
+        List<ValidacionTurnos> validacionTurnosDos = new ArrayList<>();
+        List<ValidacionTurnos> validacionTurnosTres = new ArrayList<>();
+        Estudiante estudiante = new Estudiante();
+        estudiante.setId(1);
+        estudiante.setNombres("Cristian");
+        estudiante.setApellidos("Gomez Santos");
+        estudiante.setIdentificacion(106813022001L);
+        estudiante.setUsuario("cgomezs");
+        estudiante.setFotoPerfil("url foto");
+
+        Programa programa = new Programa(progId, "Enfermería");
+
+        Asignatura asignatura = new Asignatura(asigId, "Cuidado de Enfermería en salud comunitaria y familiar");
+
+        CoordinadorAsignatura coordinadorAsignatura = new CoordinadorAsignatura();
+        coordinadorAsignatura.setId(cooId);
+        coordinadorAsignatura.setNombres("Jorge Ivan");
+        coordinadorAsignatura.setApellidos("Solano");
+        coordinadorAsignatura.setCorreo("jsolano");
+        coordinadorAsignatura.setClave("1234");
+        coordinadorAsignatura.setFotoPerfil("url foto");
+
+        AsignacionId idAsignacion = new AsignacionId(programa, asignatura, coordinadorAsignatura);
+
+        Asignacion asignacion = new Asignacion(idAsignacion);
+
+        EstAsignacionId idEstAsignacion = new EstAsignacionId(estudiante, asignacion);
+
+        EstAsignacion estAsignacion = new EstAsignacion(idEstAsignacion, false);
+
+        ValidacionTurnosId idValidacionTurnosUno = new ValidacionTurnosId();
+        idValidacionTurnosUno.setEstAsignacion(estAsignacion);
+
+        ValidacionTurnos validacionTurnoUno = new ValidacionTurnos();
+        validacionTurnoUno.setId(idValidacionTurnosUno);
+        validacionTurnoUno.setMes(Mes.valueOf("Junio"));
+        validacionTurnoUno.setAnio(anio);
+
+        validacionTurnosUno.add(validacionTurnoUno);
+
+        ValidacionTurnosId idValidacionTurnosTres = new ValidacionTurnosId();
+        //idValidacionTurnosTres.setId(1);
+        idValidacionTurnosTres.setEstAsignacion(estAsignacion);
+
+        ValidacionTurnos validacionTurnoTres = new ValidacionTurnos();
+        validacionTurnoTres.setId(idValidacionTurnosTres);
+        validacionTurnoTres.setMes(Mes.valueOf("Junio"));
+        validacionTurnoTres.setAnio(anio);
+
+        validacionTurnosTres.add(validacionTurnoTres);
+        given(validacionTurnosRepository.getStudentsByProgSubjAndCoo(progId, asigId, cooId)).willReturn(validacionTurnosUno);
+        given(validacionTurnosRepository.getStudentsByProgSubjAndCooMonthAndYear(Mes.valueOf(mes), anio, progId, asigId, cooId))
+                                        .willReturn(validacionTurnosDos);
+        given(validacionTurnosRepository.getStudentsByProgSubjAndCooMonthAndYear(Mes.obtenerMesAnterior(Mes.valueOf(mes)), anio, progId, asigId, cooId))
+                                        .willReturn(validacionTurnosTres);
+
+        //when
+        serviceUnderTest.modificarMesYAnio(progId, asigId, cooId, mes, anio);
+
+        //then
+        verify(validacionTurnosRepository, times(0))
+                .modifyMonthAndYearOfAssosiations(Mes.valueOf(mes), anio, progId, asigId, cooId);
+        ArgumentCaptor<ValidacionTurnos> validacionTurnosArgumentCaptor = ArgumentCaptor.forClass(ValidacionTurnos.class);
+        verify(validacionTurnosRepository).save(validacionTurnosArgumentCaptor.capture());
+        ValidacionTurnos validacionTurnosCapturado = validacionTurnosArgumentCaptor.getValue();
+        assertThat(validacionTurnosCapturado.getId().getEstAsignacion().getId().getAsignacion()).isEqualTo(asignacion);
+        assertThat(validacionTurnosCapturado.getId().getEstAsignacion().getId().getEstudiante()).isEqualTo(estudiante);
+        assertThat(validacionTurnosCapturado.getMes()).isEqualTo(Mes.valueOf(mes));
+        assertThat(validacionTurnosCapturado.getAnio()).isEqualTo(anio);
+        assertThat(validacionTurnosCapturado.getAsistencia()).isNull();
+        assertThat(validacionTurnosCapturado.getEstado()).isNull();
+        assertThat(validacionTurnosCapturado.getObservaciones()).isNull();
+    }
+
+    @Test
+    void modificarAsistenciaYEstadoTest() {
+        //given
+        ValidacionTurnoDTO validacionTurnoDTO = new ValidacionTurnoDTO(1, true, "");
+        Boolean estado = validacionTurnoDTO.getAsistencia();
+
+        //when
+        serviceUnderTest.modificarAsistenciaYEstado(validacionTurnoDTO);
+
+        //then
+        verify(validacionTurnosRepository).modifyAssistanceAndState(validacionTurnoDTO.getVtuId(), validacionTurnoDTO.getAsistencia(),
+                estado, validacionTurnoDTO.getObservaciones());
+    }
+
+    @Test
+    void modificarObservacionesTest() {
+        //given
+        ModificarObsDTO modificarObsDTO = new ModificarObsDTO(2, "mal comportamiento");
+
+        //when
+        serviceUnderTest.modificarObservaciones(modificarObsDTO);
+
+        //then
+        verify(validacionTurnosRepository).modifyObservations(modificarObsDTO.getVtuId(), modificarObsDTO.getObservaciones());
     }
 }
