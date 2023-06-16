@@ -58,6 +58,7 @@ import co.edu.unicauca.gesrotesbackend.repositories.TurnoRepository;
 import co.edu.unicauca.gesrotesbackend.repositories.ValidacionTurnosRepository;
 import co.edu.unicauca.gesrotesbackend.services.Mapper.JornadaDTOMapper;
 import co.edu.unicauca.gesrotesbackend.services.Utilities.HorarioJornada;
+import co.edu.unicauca.gesrotesbackend.services.services.IEmailService;
 import co.edu.unicauca.gesrotesbackend.services.services.Impl.TurnoServiceImpl;
 import org.springframework.dao.DataAccessException;
 
@@ -75,6 +76,8 @@ public class TurnoServiceImplTest {
     private ValidacionTurnosRepository validacionTurnosRepository;
     @Mock
     private JornadaDTOMapper jornadaDTOMapper;
+    @Mock
+    private IEmailService emailService;
 
     private TurnoServiceImpl serviceUnderTest;
 
@@ -85,7 +88,8 @@ public class TurnoServiceImplTest {
                                                     turnoRepository, 
                                                     estAsignacionRepository,
                                                     validacionTurnosRepository, 
-                                                    jornadaDTOMapper);
+                                                    jornadaDTOMapper,
+                                                    emailService);
     }
 
     @Test

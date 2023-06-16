@@ -10,6 +10,7 @@ import org.springframework.data.repository.query.Param;
 
 import co.edu.unicauca.gesrotesbackend.models.Turno;
 import co.edu.unicauca.gesrotesbackend.models.TurnoId;
+import co.edu.unicauca.gesrotesbackend.services.DTO.EmailDTO;
 import co.edu.unicauca.gesrotesbackend.services.DTO.EstudianteFechaDTO;
 import co.edu.unicauca.gesrotesbackend.services.DTO.TurnoAsociadoDTO;
 import jakarta.transaction.Transactional;
@@ -150,5 +151,41 @@ public interface TurnoRepository extends JpaRepository<Turno, TurnoId> {
     int updateShift(@Param("turnoId") int turnoId,
                                         @Param("jornadaId") int jornadaId, 
                                         @Param("etiquetaId") int etiquetaId);
-                                        
+    
+    /** Obtiene la información de un turno para enviarla por correo a un estudiante
+     *  
+     *  @param fecha : fecha del turno
+     *  @param estudianteId : id del estudiante asociado
+     *  @param programaId : id del programa asociado
+     *  @param asignaturaId : id de la asignatura asociada
+     *  @param coordinadorId : id del coordinador asociado
+     *  @param jornadaId : id de la jornada asociada
+     *  @param etiquetaId : id de la etiqueta asociada
+     * 
+     *  @return un DTO con la información necesaria para enviar el correo  
+     */
+    @Query("SELECT new " +
+            "co.edu.unicauca.gesrotesbackend.services.DTO.EmailDTO(CONCAT(e.nombres, ' ', e.apellidos), " +
+                                                                                "e.usuario, " +
+                                                                                "t.fecha, " +
+                                                                                "es.nombre, " + 
+                                                                                "et.nombre, " +
+                                                                                "t.alimentacion, " +
+                                                                                "j.horaInicio, " +
+                                                                                "j.horaFin) " +
+            "FROM Turno t " +
+            "INNER JOIN Estudiante e ON t.id.estAsignacion.id.estudiante.id = e.id " +
+            "INNER JOIN Jornada j ON t.jornada.id = j.id " +
+            "INNER JOIN Etiqueta et ON t.etiqueta.id = et.id " +
+            "INNER JOIN EscenarioPractica es ON et.escenario.id = es.id " +
+            "WHERE t.fecha = :fecha " +
+            "AND t.id.estAsignacion.id.estudiante.id = :estudianteId " +
+            "AND t.id.estAsignacion.id.asignacion.id.programa.id = :programaId " +
+            "AND t.id.estAsignacion.id.asignacion.id.asignatura.id = :asignaturaId " +
+            "AND t.id.estAsignacion.id.asignacion.id.coordinador.id = :coordinadorId " +
+            "AND t.jornada.id = :jornadaId " +
+            "AND t.etiqueta.id = :etiquetaId")
+    EmailDTO getInfoShiftToNotify(@Param("fecha") Date fecha, @Param("estudianteId") int estudianteId, @Param("programaId") int programaId, 
+                                        @Param("asignaturaId") int asignaturaId, @Param("coordinadorId") int coordinadorId,
+                                        @Param("jornadaId") int jornadaId, @Param("etiquetaId") int etiquetaId);
 }

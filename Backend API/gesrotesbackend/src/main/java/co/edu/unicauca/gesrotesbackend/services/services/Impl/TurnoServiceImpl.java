@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import co.edu.unicauca.gesrotesbackend.exceptions.HTTPException;
+import co.edu.unicauca.gesrotesbackend.models.EmailDetails;
 import co.edu.unicauca.gesrotesbackend.models.EstAsignacion;
 import co.edu.unicauca.gesrotesbackend.models.Etiqueta;
 import co.edu.unicauca.gesrotesbackend.models.Jornada;
@@ -27,6 +28,7 @@ import co.edu.unicauca.gesrotesbackend.repositories.EtiquetaRepository;
 import co.edu.unicauca.gesrotesbackend.repositories.JornadaRepository;
 import co.edu.unicauca.gesrotesbackend.repositories.TurnoRepository;
 import co.edu.unicauca.gesrotesbackend.repositories.ValidacionTurnosRepository;
+import co.edu.unicauca.gesrotesbackend.services.DTO.EmailDTO;
 import co.edu.unicauca.gesrotesbackend.services.DTO.EstudianteFechaDTO;
 import co.edu.unicauca.gesrotesbackend.services.DTO.EstudianteSeleccionadoDTO;
 import co.edu.unicauca.gesrotesbackend.services.DTO.HorarioDTO;
@@ -43,6 +45,7 @@ import co.edu.unicauca.gesrotesbackend.services.DTO.ValidacionTurnoDTO;
 import co.edu.unicauca.gesrotesbackend.services.Mapper.JornadaDTOMapper;
 import co.edu.unicauca.gesrotesbackend.services.Utilities.HorarioJornada;
 import co.edu.unicauca.gesrotesbackend.services.Utilities.Intervalo;
+import co.edu.unicauca.gesrotesbackend.services.services.IEmailService;
 import co.edu.unicauca.gesrotesbackend.services.services.ITurnoService;
 import co.edu.unicauca.gesrotesbackend.services.DTO.InformacionHorarioTurnoDTO;
 
@@ -54,6 +57,7 @@ public class TurnoServiceImpl implements ITurnoService{
     private final EstAsignacionRepository estAsignacionRepository;
     private final ValidacionTurnosRepository validacionTurnosRepository;
     private final JornadaDTOMapper jornadaDTOMapper;
+    private final IEmailService emailService;
     private final LocalTime inicioRangoDesayuno = LocalTime.parse("06:00");
     private final LocalTime finRangoDesayuno = LocalTime.parse("12:00");
     private final LocalTime inicioRangoAlmuerzo = LocalTime.parse("12:00");
@@ -66,13 +70,15 @@ public class TurnoServiceImpl implements ITurnoService{
                             TurnoRepository turnoRepository, 
                             EstAsignacionRepository estAsignacionRepository,
                             ValidacionTurnosRepository validacionTurnosRepository,
-                            JornadaDTOMapper jornadaDTOMapper){
+                            JornadaDTOMapper jornadaDTOMapper,
+                            IEmailService emailService){
         this.jornadaRepository = jornadaRepository;
         this.etiquetaRepository = etiquetaRepository;
         this.turnoRepository = turnoRepository;
         this.estAsignacionRepository = estAsignacionRepository;
         this.validacionTurnosRepository = validacionTurnosRepository;
         this.jornadaDTOMapper = jornadaDTOMapper;
+        this.emailService = emailService;
     }
 
     @Override
@@ -399,5 +405,40 @@ public class TurnoServiceImpl implements ITurnoService{
                                                         .distinct()
                                                         .collect(Collectors.toList());
         return listaSinRepetidos;
+    }
+
+    public void notificarTurno(NuevoTurnoDTO nuevoTurnoDTO){
+        String cuerpo, usuario, alimentacion;
+
+        EmailDTO emailBodyDTO = turnoRepository.getInfoShiftToNotify(nuevoTurnoDTO.getFechaTurno(), nuevoTurnoDTO.getIdEstudiante(), 
+                                                                        nuevoTurnoDTO.getIdPrograma(), nuevoTurnoDTO.getIdAsignatura(), 
+                                                                        nuevoTurnoDTO.getIdCoordinador(), nuevoTurnoDTO.getIdJornada(), 
+                                                                        nuevoTurnoDTO.getIdEtiqueta());
+
+        usuario = emailBodyDTO.usuario();
+        
+        TipoAlimentacion tipoAlimentacion = emailBodyDTO.alimentacion();
+        
+        if(tipoAlimentacion==null){
+            alimentacion = "No aplica";
+        }else{
+            alimentacion = tipoAlimentacion.toString();
+        }
+
+        cuerpo = "¡Hola " + emailBodyDTO.nombreEstudiante() + "!" +
+                    "\nSe te ha asignado un nuevo turno con la siguiente información:" +
+                    "\nFecha del turno: " + emailBodyDTO.fechaTurno() +
+                    "\nLugar: " + emailBodyDTO.nombreEscenario() + " - " + emailBodyDTO.nombreEtiqueta() + 
+                    "\nAlimentación: " + alimentacion + "\n" +
+                    "\nHora de inicio: " + emailBodyDTO.horaInicio() +
+                    "\nHora de finalización: " + emailBodyDTO.horaFin();
+        
+        //System.out.println(cuerpo + "\n" + "Usuario: " + emailBodyDTO.usuario());
+        EmailDetails email = EmailDetails.builder()
+                                .recipient(usuario + "@gmail.com")
+                                .msgBody(cuerpo)
+                                .subject("Nuevo turno - GesRotes")
+                                .build();
+        emailService.sendSimpleMail(email);
     }
 }

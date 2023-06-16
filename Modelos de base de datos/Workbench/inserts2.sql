@@ -70,7 +70,7 @@ VALUES
 -- persona universitaria
 INSERT INTO mydb.tbl_persona_universitaria (pu_nombres, pu_apellidos, pu_identificacion, pu_usuario, pu_foto_perfil)
 VALUES
-('Cristian', 'Gomez Santos', 106813022001, 'cgomezs', 'url foto'),
+('Cristian', 'Gomez Santos', 106813022001, 'cristiangomezsantos165', 'url foto'),
 ('Cristobal', 'Colon Lopez', 106813022002,'ccolonl', 'url foto'),
 ('Maria', 'Paz Bolaños', 106813022003, 'mpazb', 'url foto'),
 ('Juan Camilo', 'Sanchez', 106813022004, 'jcamilos', 'url foto'),
@@ -106,7 +106,9 @@ VALUES
 ('Carlos', 'Gonzalez Ramirez', 106813022034, 'cgonzalezr', 'url foto'),
 ('Fabiola', 'Gutierrez', 106813022035, 'fgutierrez', 'url foto'),
 ('Miguel', 'Rodriguez Sanchez', 106813022036, 'mrodriguezs', 'url foto'),
-('Camila', 'Garcia Ramirez', 106813022037, 'cgarcial', 'url foto');
+('Camila', 'Garcia Ramirez', 106813022037, 'cgarcial', 'url foto'),
+('Daniel Mauricio', 'Cisneros Silva', 106813022038, 'dcisneros', 'url foto'),
+('José', 'Gregorio', 106813022039, 'jgnarvaez', 'url foto');
 
 -- estudiante
 INSERT INTO mydb.tbl_estudiante (pu_id) 
@@ -147,7 +149,9 @@ VALUES
 (34),
 (35),
 (36),
-(37);
+(37),
+(38),
+(39);
 
 -- matricula
 INSERT INTO mydb.tbl_matricula (prog_id, pu_id)
@@ -170,6 +174,8 @@ VALUES
 (1, 15),
 (1, 16),
 (1, 17),
+(1, 38),
+(1, 39),
 -- Fisioterapia
 (2, 18),
 (2, 19),

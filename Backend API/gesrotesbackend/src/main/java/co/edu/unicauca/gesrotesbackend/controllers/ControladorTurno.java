@@ -72,8 +72,17 @@ public class ControladorTurno {
 
     // * Crear un turno a un estudiante
     @PostMapping("/")
-    public TurnoCreadoDTO create(@RequestBody NuevoTurnoDTO nuevoTurno){
-        return turnoService.crearTurno(nuevoTurno);
+    public ResponseEntity<String> create(@RequestBody NuevoTurnoDTO nuevoTurno){
+        TurnoCreadoDTO turnoCreadoDTO = turnoService.crearTurno(nuevoTurno);
+        String body;
+        if(turnoCreadoDTO!=null){
+            body = "Turno creado exitosamente!";
+            turnoService.notificarTurno(nuevoTurno);//* Notifica via email
+            return ResponseEntity.ok(body);
+        }else{
+            body = "NO se pudo crear el turno";
+            return ResponseEntity.internalServerError().body(body);
+        }
     }
 
     // * Listar informacion de un horario en determinada fecha

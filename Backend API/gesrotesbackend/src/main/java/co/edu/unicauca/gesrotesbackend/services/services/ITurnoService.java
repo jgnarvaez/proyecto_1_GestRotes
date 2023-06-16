@@ -107,4 +107,11 @@ public interface ITurnoService {
     void modificarAsistenciaYEstado(ValidacionTurnoDTO validacionAsistenciaDTO);
 
     void modificarObservaciones(ModificarObsDTO modificarObsDTO);
+    
+    /**
+     *  Notifica al esstudiante mediante correo electrónico la información del turno 
+     *  @param nuevoTurnoDTO : DTO con la información del turno
+     *  @return cadena que confirma si se pudo enviar el correo
+     */
+    void notificarTurno(NuevoTurnoDTO nuevoTurnoDTO);
 }
