@@ -5,6 +5,7 @@ import co.edu.unicauca.gesrotesbackend.services.DTO.EstudianteDTO;
 import co.edu.unicauca.gesrotesbackend.services.services.IAsignacionEstudiantesService;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,6 +19,7 @@ import java.util.List;
 @RequestMapping("{cooId}/{progId}/asignaturas/{asigId}")
 @Validated
 @CrossOrigin(origins = "*")
+@Transactional(timeout = 2)
 public class ControladorAsignacionEstudiantes {
     private final IAsignacionEstudiantesService asignacionEstudiantesService;
 

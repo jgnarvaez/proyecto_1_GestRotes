@@ -4,6 +4,7 @@ import java.sql.Date;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -35,6 +36,7 @@ import co.edu.unicauca.gesrotesbackend.services.services.ITurnoService;
 @RequestMapping("turnos")
 @Validated
 @CrossOrigin(origins = "*")
+@Transactional(timeout = 2)
 public class ControladorTurno {
     private final ITurnoService turnoService;
 

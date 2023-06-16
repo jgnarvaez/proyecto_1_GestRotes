@@ -9,6 +9,7 @@ import jakarta.validation.constraints.Pattern;
 
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,6 +21,7 @@ import java.util.List;
 @RequestMapping("{cooId}/{progId}/asignaturas")
 @Validated
 @CrossOrigin(origins = "*")
+@Transactional(timeout = 2)
 public class ControladorAsignacion {
     private final IAsignacionService asignacionService;
 

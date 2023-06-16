@@ -7,6 +7,7 @@ import java.util.List;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.TransactionTimedOutException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -93,6 +94,25 @@ public class DefaultExceptionHandler {
         );
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiError);
+    }
+
+    /**
+     *  Maneja las excepciones tipo TransactionTimedOutException
+     *  
+     *  @param e : La excepción TransactionTimedOutException que se ha producido. 
+     *  @param request : La solicitud HttpServletRequest que provocó la excepción.
+     *  @return Una ResponseEntity que contiene un objeto ApiError con los detalles del error.
+     */
+    @ExceptionHandler(TransactionTimedOutException.class)
+    public ResponseEntity<ApiError> handleException(TransactionTimedOutException e, HttpServletRequest request){
+        ApiError apiError = new ApiError(
+                request.getRequestURI(),
+                "Tiempo excedido!!",
+                HttpStatus.REQUEST_TIMEOUT.value(),
+                LocalDateTime.now()
+        );
+
+        return ResponseEntity.status(apiError.statusCode()).body(apiError);
     }
 
     /**
